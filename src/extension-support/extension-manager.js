@@ -23,7 +23,13 @@ const builtinExtensions = {
     ev3: () => require('../extensions/scratch3_ev3'),
     makeymakey: () => require('../extensions/scratch3_makeymakey'),
     boost: () => require('../extensions/scratch3_boost'),
-    gdxfor: () => require('../extensions/scratch3_gdx_for')
+    gdxfor: () => require('../extensions/scratch3_gdx_for'),
+    // my test
+    arduinouno: () => require('../extensions/arduino'),
+    // s3ext
+    onegpioArduino: () => require('../extensions/scratch3_onegpioArduino'),
+    onegpioRpi: () => require('../extensions/scratch3_onegpioRpi'),
+    onegpioEsp: () => require('../extensions/scratch3_onegpioEsp'),
 };
 
 /**
@@ -148,6 +154,7 @@ class ExtensionManager {
                 return Promise.resolve();
             }
 
+            // 在下方修改使得软件可以加载外部未打包的插件文件
             const extension = builtinExtensions[extensionURL]();
             const extensionInstance = new extension(this.runtime);
             const serviceName = this._registerInternalExtension(extensionInstance);
