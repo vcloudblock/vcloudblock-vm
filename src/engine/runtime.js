@@ -1504,6 +1504,17 @@ class Runtime extends EventEmitter {
     }
 
     /**
+     * Upload code to the extension's specified peripheral.
+     * @param {string} extensionId - the id of the extension.
+     * @param {string} code - the code to upload.
+     */
+    uploadToPeripheral(extensionId, code) {
+        if (this.peripheralExtensions[extensionId]) {
+            this.peripheralExtensions[extensionId].upload(code);
+        }
+    }
+
+    /**
      * Emit an event to indicate that the microphone is being used to stream audio.
      * @param {boolean} listening - true if the microphone is currently listening.
      */

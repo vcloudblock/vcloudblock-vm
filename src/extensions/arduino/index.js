@@ -3,13 +3,35 @@ const ArgumentType = require('../../extension-support/argument-type');
 const BlockType = require('../../extension-support/block-type');
 const TargetType = require('../../extension-support/target-type');
 const Serialport = require('../../io/serialport');
+const Base64Util = require('../../util/base64-util');
 
 // ...or VM dependencies:
 const formatMessage = require('format-message');
 
+/* A list of USB device filters. If include '*' means disable the filter */
 const PNPID_LIST = [
     'USB\\VID_1A86&PID_7523'
+    // '*'
 ];
+
+/* Configuration of serialport */
+const CONFIG = {
+    baudRate: 115200,
+    dataBits: 8,
+    stopBits: 1
+};
+
+/**
+ * A string to report to the BLE socket when the micro:bit has stopped receiving data.
+ * @type {string}
+ */
+const SerialportDataStoppedError = 'Arduino UNO extension stopped receiving data';
+
+/**
+ * A time interval to wait (in milliseconds) before reporting to the serialport socket
+ * that data has stopped coming from the peripheral.
+ */
+const SerialportTimeout = 4500;
 
 // Core, Team, and Official extension classes should be registered statically with the Extension Manager.
 // See: scratch-vm/src/extension-support/extension-manager.js
@@ -66,6 +88,11 @@ class Arduino {
         this._onMessage = this._onMessage.bind(this);
     }
 
+    upload(code) {
+        console.log(code);
+        this._serialport.upload(code);
+    }
+
     /**
      * Called by the runtime when user wants to scan for a peripheral.
      */
@@ -74,8 +101,8 @@ class Arduino {
             this._serialport.disconnect();
         }
         this._serialport = new Serialport(this._runtime, this._extensionId, {
-            filters:{
-                id: PNPID_LIST
+            filters: {
+                pnpid: PNPID_LIST,
             }
         }, this._onConnect, this.reset);
     }
@@ -84,9 +111,9 @@ class Arduino {
      * Called by the runtime when user wants to connect to a certain peripheral.
      * @param {number} id - the id of the peripheral to connect to.
      */
-    connect (id) {
+    connect(id) {
         if (this._serialport) {
-            this._serialport.connectPeripheral(id);
+            this._serialport.connectPeripheral(id, { config: CONFIG });
         }
     }
 
@@ -128,34 +155,34 @@ class Arduino {
      * @param {Uint8Array} message - the message to write
      */
     send (command, message) {
-        // if (!this.isConnected()) return;
-        // if (this._busy) return;
+        if (!this.isConnected()) return;
+        if (this._busy) return;
 
-        // // Set a busy flag so that while we are sending a message and waiting for
-        // // the response, additional messages are ignored.
-        // this._busy = true;
+        // Set a busy flag so that while we are sending a message and waiting for
+        // the response, additional messages are ignored.
+        this._busy = true;
 
-        // // Set a timeout after which to reset the busy flag. This is used in case
-        // // a BLE message was sent for which we never received a response, because
-        // // e.g. the peripheral was turned off after the message was sent. We reset
-        // // the busy flag after a while so that it is possible to try again later.
-        // this._busyTimeoutID = window.setTimeout(() => {
-        //     this._busy = false;
-        // }, 5000);
+        // Set a timeout after which to reset the busy flag. This is used in case
+        // a BLE message was sent for which we never received a response, because
+        // e.g. the peripheral was turned off after the message was sent. We reset
+        // the busy flag after a while so that it is possible to try again later.
+        this._busyTimeoutID = window.setTimeout(() => {
+            this._busy = false;
+        }, 5000);
 
-        // const output = new Uint8Array(message.length + 1);
-        // output[0] = command; // attach command to beginning of message
-        // for (let i = 0; i < message.length; i++) {
-        //     output[i + 1] = message[i];
-        // }
-        // const data = Base64Util.uint8ArrayToBase64(output);
+        const output = new Uint8Array(message.length + 1);
+        output[0] = command; // attach command to beginning of message
+        for (let i = 0; i < message.length; i++) {
+            output[i + 1] = message[i];
+        }
+        const data = Base64Util.uint8ArrayToBase64(output);
 
-        // this._ble.write(BLEUUID.service, BLEUUID.txChar, data, 'base64', true).then(
-        //     () => {
-        //         this._busy = false;
-        //         window.clearTimeout(this._busyTimeoutID);
-        //     }
-        // );
+        this._serialport.write(data, 'base64').then(
+            () => {
+                this._busy = false;
+                window.clearTimeout(this._busyTimeoutID);
+            }
+        );
     }
 
     /**
@@ -163,21 +190,22 @@ class Arduino {
      * @private
      */
     _onConnect () {
-        // this._ble.read(BLEUUID.service, BLEUUID.rxChar, true, this._onMessage);
+        this._serialport.read(this._onMessage);
         // this._timeoutID = window.setTimeout(
-        //     () => this._ble.handleDisconnectError(BLEDataStoppedError),
-        //     BLETimeout
+        //     () => this._ble.handleDisconnectError(SerialportDataStoppedError),
+        //     SerialportTimeout
         // );
     }
 
     /**
      * Process the sensor data from the incoming BLE characteristic.
-     * @param {object} base64 - the incoming BLE data.
+     * @param {object} data - the incoming BLE data.
      * @private
      */
-    _onMessage (base64) {
-        // // parse data
-        // const data = Base64Util.base64ToUint8Array(base64);
+    _onMessage(base64) {
+        // parse data
+        const data = Base64Util.base64ToUint8Array(base64);
+        console.log(data);
 
         // this._sensors.tiltX = data[1] | (data[0] << 8);
         // if (this._sensors.tiltX > (1 << 15)) this._sensors.tiltX -= (1 << 16);
@@ -193,11 +221,12 @@ class Arduino {
 
         // this._sensors.gestureState = data[9];
 
-        // // cancel disconnect timeout and start a new one
-        // window.clearTimeout(this._timeoutID);
+        // cancel disconnect timeout and start a new one
+
+        window.clearTimeout(this._timeoutID);
         // this._timeoutID = window.setTimeout(
-        //     () => this._ble.handleDisconnectError(BLEDataStoppedError),
-        //     BLETimeout
+        //     () => this._serialport.handleDisconnectError(SerialportDataStoppedError),
+        //     SerialportTimeout
         // );
     }
 }
@@ -278,7 +307,16 @@ class Scratch3Arduinolocks {
                             defaultValue: "digital"
                         }
                     }
-                }
+                },
+                {
+                    opcode: 'displayClear',
+                    text: formatMessage({
+                        id: 'microbit.clearDisplay',
+                        default: 'clear display',
+                        description: 'display nothing on the micro:bit display'
+                    }),
+                    blockType: BlockType.COMMAND
+                },
             ],
             menus: {
                 buttons: {
@@ -313,6 +351,18 @@ class Scratch3Arduinolocks {
     arduino_pin_mode(args) {
         console.log(args);
         return "test"
+    }
+
+    displayClear() {
+        const text = 'Hello';
+
+        const output = new Uint8Array(text.length);
+
+        for (let i = 0; i < text.length; i++) {
+            output[i] = text.charCodeAt(i);
+        }
+        this._peripheral.send(0x11, output);
+        console.log('send');
     }
 }
 

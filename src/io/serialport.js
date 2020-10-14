@@ -3,8 +3,8 @@ const JSONRPC = require('../util/jsonrpc');
 class Serialport extends JSONRPC {
 
     /**
-     * A BLE peripheral socket object.  It handles connecting, over web sockets, to
-     * BLE peripherals, and reading and writing data to them.
+     * A serialport peripheral socket object.  It handles connecting, over web sockets, to
+     * serialport peripherals, and reading and writing data to them.
      * @param {Runtime} runtime - the Runtime for sending/receiving GUI update events.
      * @param {string} extensionId - the id of the extension using this socket.
      * @param {object} peripheralOptions - the list of options for peripheral discovery.
@@ -25,7 +25,7 @@ class Serialport extends JSONRPC {
         this._availablePeripherals = {};
         this._connectCallback = connectCallback;
         this._connected = false;
-        this._characteristicDidChangeCallback = null;
+        this._onMessage = null;
         this._resetCallback = resetCallback;
         this._discoverTimeoutID = null;
         this._extensionId = extensionId;
@@ -56,8 +56,8 @@ class Serialport extends JSONRPC {
      * callback if connection is successful.
      * @param {number} id - the id of the peripheral to connect to
      */
-    connectPeripheral (id) {
-        this.sendRemoteRequest('connect', {peripheralId: id})
+    connectPeripheral (id, config) {
+        this.sendRemoteRequest('connect', {peripheralId: id, peripheralConfig: config})
             .then(() => {
                 this._connected = true;
                 this._runtime.emit(this._runtime.constructor.PERIPHERAL_CONNECTED);
@@ -96,67 +96,48 @@ class Serialport extends JSONRPC {
     }
 
     /**
-     * Start receiving notifications from the specified ble service.
-     * @param {number} serviceId - the ble service to read.
-     * @param {number} characteristicId - the ble characteristic to get notifications from.
-     * @param {object} onCharacteristicChanged - callback for characteristic change notifications.
-     * @return {Promise} - a promise from the remote startNotifications request.
-     */
-    startNotifications (serviceId, characteristicId, onCharacteristicChanged = null) {
-        const params = {
-            serviceId,
-            characteristicId
-        };
-        this._characteristicDidChangeCallback = onCharacteristicChanged;
-        return this.sendRemoteRequest('startNotifications', params)
-            .catch(e => {
-                this.handleDisconnectError(e);
-            });
-    }
-
-    /**
-     * Read from the specified ble service.
-     * @param {number} serviceId - the ble service to read.
-     * @param {number} characteristicId - the ble characteristic to read.
-     * @param {boolean} optStartNotifications - whether to start receiving characteristic change notifications.
-     * @param {object} onCharacteristicChanged - callback for characteristic change notifications.
+     * Set serialport start read.
+     * @param {object} onMessage - callback for characteristic change notifications.
      * @return {Promise} - a promise from the remote read request.
      */
-    read (serviceId, characteristicId, optStartNotifications = false, onCharacteristicChanged = null) {
-        const params = {
-            serviceId,
-            characteristicId
-        };
-        if (optStartNotifications) {
-            params.startNotifications = true;
+    read(onMessage = null) {
+        if (onMessage) {
+            this._onMessage = onMessage;
         }
-        if (onCharacteristicChanged) {
-            this._characteristicDidChangeCallback = onCharacteristicChanged;
-        }
-        return this.sendRemoteRequest('read', params)
+        return this.sendRemoteRequest('read')
             .catch(e => {
                 this.handleDisconnectError(e);
             });
     }
 
     /**
-     * Write data to the specified ble service.
-     * @param {number} serviceId - the ble service to write.
-     * @param {number} characteristicId - the ble characteristic to write.
+     * Write data to the serialport.
      * @param {string} message - the message to send.
      * @param {string} encoding - the message encoding type.
-     * @param {boolean} withResponse - if true, resolve after peripheral's response.
      * @return {Promise} - a promise from the remote send request.
      */
-    write (serviceId, characteristicId, message, encoding = null, withResponse = null) {
-        const params = {serviceId, characteristicId, message};
+    write (message, encoding = null) {
+        const params = {message};
         if (encoding) {
             params.encoding = encoding;
         }
-        if (withResponse !== null) {
-            params.withResponse = withResponse;
-        }
         return this.sendRemoteRequest('write', params)
+            .catch(e => {
+                this.handleDisconnectError(e);
+            });
+    }
+/**
+     * Upload code to the peripheral.
+     * @param {string} code - the code to upload.
+     * @param {string} encoding - the message encoding type.
+     * @return {Promise} - a promise from the remote send request.
+     */
+    upload(code, encoding = null) {
+        const params = {code};
+        if (encoding) {
+            params.encoding = encoding;
+        }
+        return this.sendRemoteRequest('upload', params)
             .catch(e => {
                 this.handleDisconnectError(e);
             });
@@ -183,9 +164,9 @@ class Serialport extends JSONRPC {
         case 'peripheralUnplug':
             this.handleDisconnectError();
             break;
-        case 'characteristicDidChange':
-            if (this._characteristicDidChangeCallback) {
-                this._characteristicDidChangeCallback(params.message);
+        case 'onMessage':
+            if (this._onMessage) {
+                this._onMessage(params.message);
             }
             break;
         case 'ping':
