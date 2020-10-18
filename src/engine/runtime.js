@@ -648,6 +648,33 @@ class Runtime extends EventEmitter {
     }
 
     /**
+     * Event name for reporting stdout message while peripheral in upload.
+     * This causes the peripheral upload progress print stdout message.
+     * @const {string}
+     */
+    static get PERIPHERAL_UPLOAD_STDOUT () {
+        return 'PERIPHERAL_UPLOAD_STDOUT';
+    }
+
+    /**
+     * Event name for reporting error while peripheral in upload.
+     * This causes the peripheral upload error.
+     * @const {string}
+     */
+    static get PERIPHERAL_UPLOAD_ERROR () {
+        return 'PERIPHERAL_UPLOAD_ERROR';
+    }
+
+    /**
+     * Event name for reporting success when peripheral finish upload.
+     * This causes the peripheral upload finish.
+     * @const {string}
+     */
+    static get PERIPHERAL_UPLOAD_SUCCESS () {
+        return 'PERIPHERAL_UPLOAD_SUCCESS';
+    }
+
+    /**
      * Event name to indicate that the microphone is being used to stream audio.
      * @const {string}
      */

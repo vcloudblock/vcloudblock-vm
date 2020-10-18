@@ -88,9 +88,12 @@ class Arduino {
         this._onMessage = this._onMessage.bind(this);
     }
 
+    /**
+     * Called by the runtime when user wants to upload code to a peripheral.
+     */
     upload(code) {
-        console.log(code);
-        this._serialport.upload(code);
+        var base64Str = Buffer.from(code).toString('base64');
+        this._serialport.upload(base64Str, 'base64');
     }
 
     /**

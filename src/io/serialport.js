@@ -128,12 +128,12 @@ class Serialport extends JSONRPC {
     }
 /**
      * Upload code to the peripheral.
-     * @param {string} code - the code to upload.
+     * @param {string} message - the code to upload.
      * @param {string} encoding - the message encoding type.
      * @return {Promise} - a promise from the remote send request.
      */
-    upload(code, encoding = null) {
-        const params = {code};
+    upload(message, encoding = null) {
+        const params = {message};
         if (encoding) {
             params.encoding = encoding;
         }
@@ -151,23 +151,39 @@ class Serialport extends JSONRPC {
      */
     didReceiveCall (method, params) {
         switch (method) {
-        case 'didDiscoverPeripheral':
-            this._availablePeripherals[params.peripheralId] = params;
+            case 'didDiscoverPeripheral':
+                this._availablePeripherals[params.peripheralId] = params;
+                this._runtime.emit(
+                    this._runtime.constructor.PERIPHERAL_LIST_UPDATE,
+                    this._availablePeripherals
+                );
+                if (this._discoverTimeoutID) {
+                    window.clearTimeout(this._discoverTimeoutID);
+                }
+                break;
+            case 'peripheralUnplug':
+                this.handleDisconnectError();
+                break;
+            case 'onMessage':
+                if (this._onMessage) {
+                    this._onMessage(params.message);
+                }
+                break;
+            case 'uploadStdout':
+                this._runtime.emit(
+                    this._runtime.constructor.PERIPHERAL_UPLOAD_STDOUT, {
+                    message: params.message
+                });
+                break;
+            case 'uploadError':
+                this._runtime.emit(
+                    this._runtime.constructor.PERIPHERAL_UPLOAD_ERROR, {
+                    message: params.message
+                });
+            break;
+        case 'uploadSuccess':
             this._runtime.emit(
-                this._runtime.constructor.PERIPHERAL_LIST_UPDATE,
-                this._availablePeripherals
-            );
-            if (this._discoverTimeoutID) {
-                window.clearTimeout(this._discoverTimeoutID);
-            }
-            break;
-        case 'peripheralUnplug':
-            this.handleDisconnectError();
-            break;
-        case 'onMessage':
-            if (this._onMessage) {
-                this._onMessage(params.message);
-            }
+                this._runtime.constructor.PERIPHERAL_UPLOAD_SUCCESS, {});
             break;
         case 'ping':
             return 42;
