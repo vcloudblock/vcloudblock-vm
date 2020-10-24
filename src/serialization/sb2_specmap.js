@@ -1626,7 +1626,7 @@ const specMap = {
     },
     'getParam': {
         // Doesn't map to single opcode. Import step assigns final correct opcode.
-        opcode: 'argument_reporter_string_number',
+        opcode: 'argument_reporter_string',
         argMap: [
             {
                 type: 'field',
