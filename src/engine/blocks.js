@@ -343,7 +343,6 @@ class Blocks {
             });
             break;
         case 'toolBoxFinish':
-            console.log('toolBoxFinish');
             this.runtime.emitToolboxUploadFinish();
             break;
         case 'dragOutside':
