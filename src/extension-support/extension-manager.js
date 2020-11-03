@@ -14,22 +14,25 @@ const builtinExtensions = {
     coreExample: () => require('../blocks/scratch3_core_example'),
     // These are the non-core built-in extensions.
     pen: () => require('../extensions/scratch3_pen'),
-    wedo2: () => require('../extensions/scratch3_wedo2'),
     music: () => require('../extensions/scratch3_music'),
-    microbit: () => require('../extensions/scratch3_microbit'),
     text2speech: () => require('../extensions/scratch3_text2speech'),
     translate: () => require('../extensions/scratch3_translate'),
     videoSensing: () => require('../extensions/scratch3_video_sensing'),
-    ev3: () => require('../extensions/scratch3_ev3'),
     makeymakey: () => require('../extensions/scratch3_makeymakey'),
-    boost: () => require('../extensions/scratch3_boost'),
-    gdxfor: () => require('../extensions/scratch3_gdx_for'),
-    // my test
-    arduinouno: () => require('../extensions/arduino'),
-    // s3ext
-    onegpioArduino: () => require('../extensions/scratch3_onegpioArduino'),
-    onegpioRpi: () => require('../extensions/scratch3_onegpioRpi'),
-    onegpioEsp: () => require('../extensions/scratch3_onegpioEsp'),
+    // ironsuit
+    ironsuit: () => require('../extensions/ironsuit'),
+};
+
+const builtinDevices = {
+    arduinoUno: () => require('../devices/arduinoUno'),
+    arduinoNano: () => require('../devices/arduinoNano'),
+
+    // todo transform these to device extension
+    // wedo2: () => require('../extensions/scratch3_wedo2'),
+    // microbit: () => require('../extensions/scratch3_microbit'),
+    // ev3: () => require('../extensions/scratch3_ev3'),
+    // boost: () => require('../extensions/scratch3_boost'),
+    // gdxfor: () => require('../extensions/scratch3_gdx_for'),
 };
 
 /**
@@ -94,6 +97,13 @@ class ExtensionManager {
         this._loadedExtensions = new Map();
 
         /**
+         * Set of loaded device URLs/IDs (equivalent for built-in devices).
+         * @type {Set.<string>}
+         * @private
+         */
+        this._loadedDevice = new Map();
+
+        /**
          * Keep a reference to the runtime so we can construct internal extension objects.
          * TODO: remove this in favor of extensions accessing the runtime as a service.
          * @type {Runtime}
@@ -114,6 +124,17 @@ class ExtensionManager {
      */
     isExtensionLoaded (extensionID) {
         return this._loadedExtensions.has(extensionID);
+    }
+
+    /**
+     * Check whether an device is registered or is in the process of loading. This is intended to control loading or
+     * adding device so it may return `true` before the device is ready to be used. Use the promise returned by
+     * `loadDeviceURL` if you need to wait until the device is truly ready.
+     * @param {string} deviceID - the ID of the device.
+     * @returns {boolean} - true if loaded, false otherwise.
+     */
+    isDeviceLoaded (deviceID) {
+        return this._loadedDevice.has(deviceID);
     }
 
     /**
@@ -154,7 +175,6 @@ class ExtensionManager {
                 return Promise.resolve();
             }
 
-            // 在下方修改使得软件可以加载外部未打包的插件文件
             const extension = builtinExtensions[extensionURL]();
             const extensionInstance = new extension(this.runtime);
             const serviceName = this._registerInternalExtension(extensionInstance);
@@ -167,6 +187,45 @@ class ExtensionManager {
             const ExtensionWorker = require('worker-loader?name=extension-worker.js!./extension-worker');
 
             this.pendingExtensions.push({extensionURL, resolve, reject});
+            dispatch.addWorker(new ExtensionWorker());
+        });
+    }
+
+    /**
+     * Unload an extension by URL or internal extension ID
+     * @param {string} extensionURL - the URL for the extension to load OR the ID of an internal extension
+     * @returns {Promise} resolved once the extension is unloaded and reset or rejected on failure
+     */
+    unloadExtensionURL(extensionURL) {
+
+    }
+
+    /**
+     * Load an device by URL or internal device ID
+     * @param {string} deviceURL - the URL for the device to load OR the ID of an internal device
+     * @returns {Promise} resolved once the device is loaded and initialized or rejected on failure
+     */
+    loadDeviceURL(deviceURL) {
+        if (builtinDevices.hasOwnProperty(deviceURL)) {
+            if (this.isDeviceLoaded(deviceURL)) {
+                const message = `Rejecting attempt to load a device twice with ID ${deviceURL}`;
+                log.warn(message);
+                return Promise.resolve();
+            }
+
+            const device = builtinDevices[deviceURL]();
+            const deviceInstance = new device(this.runtime);
+            const serviceName = this._registerInternalDevice(deviceInstance);
+            this._loadedDevice.clear();
+            this._loadedDevice.set(deviceURL, serviceName);
+            return Promise.resolve();
+        }
+
+        return new Promise((resolve, reject) => {
+            // If we `require` this at the global level it breaks non-webpack targets, including tests
+            const ExtensionWorker = require('worker-loader?name=extension-worker.js!./extension-worker');
+
+            this.pendingExtensions.push({deviceURL, resolve, reject});
             dispatch.addWorker(new ExtensionWorker());
         });
     }
@@ -203,6 +262,15 @@ class ExtensionManager {
     registerExtensionServiceSync (serviceName) {
         const info = dispatch.callSync(serviceName, 'getInfo');
         this._registerExtensionInfo(serviceName, info);
+    }
+
+    /**
+     * Synchronously collect device metadata from the specified service and begin the device registration process.
+     * @param {string} serviceName - the name of the service hosting the device.
+     */
+    registerDeviceServiceSync(serviceName) {
+        const infos = dispatch.callSync(serviceName, 'getInfo');
+        this._registerDeviceInfo(serviceName, infos);
     }
 
     /**
@@ -245,6 +313,20 @@ class ExtensionManager {
     }
 
     /**
+     * Register an internal (non-Worker) device object
+     * @param {object} deviceObject - the device object to register
+     * @returns {string} The name of the registered device service
+     */
+    _registerInternalDevice (deviceObject) {
+        const deviceId = deviceObject.DEVICE_ID;
+        const fakeWorkerId = this.nextExtensionWorker++;
+        const serviceName = `extension_${fakeWorkerId}_${deviceId}`;
+        dispatch.setServiceSync(serviceName, deviceObject);
+        dispatch.callSync('extensions', 'registerDeviceServiceSync', serviceName);
+        return serviceName;
+    }
+
+    /**
      * Sanitize extension info then register its primitives with the VM.
      * @param {string} serviceName - the name of the service hosting the extension
      * @param {ExtensionInfo} extensionInfo - the extension's metadata
@@ -254,6 +336,19 @@ class ExtensionManager {
         extensionInfo = this._prepareExtensionInfo(serviceName, extensionInfo);
         dispatch.call('runtime', '_registerExtensionPrimitives', extensionInfo).catch(e => {
             log.error(`Failed to register primitives for extension on service ${serviceName}:`, e);
+        });
+    }
+
+    /**
+     * Sanitize device info then register its primitives with the VM.
+     * @param {string} serviceName - the name of the service hosting the device
+     * @param [DeviceInfo] deviceInfos - the device's metadatas
+     * @private
+     */
+    _registerDeviceInfo(serviceName, deviceInfos) {
+        deviceInfos = this._prepareDeviceInfo(serviceName, deviceInfos);
+        dispatch.call('runtime', '_registerDevicePrimitives', deviceInfos).catch(e => {
+            log.error(`Failed to register primitives for device on service ${serviceName}:`, e);
         });
     }
 
@@ -304,6 +399,48 @@ class ExtensionManager {
         extensionInfo.menus = extensionInfo.menus || {};
         extensionInfo.menus = this._prepareMenuInfo(serviceName, extensionInfo.menus);
         return extensionInfo;
+    }
+
+    /**
+     * Apply minor cleanup and defaults for optional device fields.
+     * @param {string} serviceName - the name of the service hosting this device block
+     * @param [DeviceInfo] deviceInfos - the device info to be sanitized
+     * @returns [DeviceInfo] - a new device info object with cleaned-up values
+     * @private
+     */
+    _prepareDeviceInfo(serviceName, deviceInfos) {
+        let infos = [];
+        let deviceInfosCopy = JSON.parse(JSON.stringify(deviceInfos));
+
+        deviceInfosCopy.forEach(deviceInfo => {
+            if (!/^[a-z0-9]+$/i.test(deviceInfo.id)) {
+                throw new Error('Invalid extension id');
+            }
+            deviceInfo.name = deviceInfo.name || deviceInfo.id;
+            deviceInfo.blocks = deviceInfo.blocks || [];
+            deviceInfo.targetTypes = deviceInfo.targetTypes || [];
+            deviceInfo.blocks = deviceInfo.blocks.reduce((results, blockInfo) => {
+                try {
+                    let result;
+                    switch (blockInfo) {
+                    case '---': // separator
+                        result = '---';
+                        break;
+                    default: // an ExtensionBlockMetadata object
+                        result = this._prepareBlockInfo(serviceName, blockInfo);
+                        break;
+                    }
+                    results.push(result);
+                } catch (e) {
+                    log.error(`Error processing block: ${e.message}, Block:\n${JSON.stringify(blockInfo)}`);
+                }
+                return results;
+            }, []);
+            deviceInfo.menus = deviceInfo.menus || {};
+            deviceInfo.menus = this._prepareMenuInfo(serviceName, deviceInfo.menus);
+            infos.push(deviceInfo);
+        });
+        return infos;
     }
 
     /**
@@ -426,6 +563,7 @@ class ExtensionManager {
                 if (!serviceObject[funcName]) {
                     // The function might show up later as a dynamic property of the service object
                     log.warn(`Could not find extension block function called ${funcName}`);
+                    return () => { };
                 }
                 return (args, util, realBlockInfo) =>
                     serviceObject[funcName](args, util, realBlockInfo);

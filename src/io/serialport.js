@@ -11,7 +11,7 @@ class Serialport extends JSONRPC {
      * @param {object} connectCallback - a callback for connection.
      * @param {object} resetCallback - a callback for resetting extension state.
      */
-    constructor (runtime, extensionId, peripheralOptions, connectCallback, resetCallback = null) {
+    constructor (runtime, extensionId, peripheralOptions, connectCallback = null, resetCallback = null) {
         super();
 
         this._socket = runtime.getScratchLinkSocket('SERIALPORT');
@@ -183,7 +183,7 @@ class Serialport extends JSONRPC {
             break;
         case 'uploadSuccess':
             this._runtime.emit(
-                this._runtime.constructor.PERIPHERAL_UPLOAD_SUCCESS, {});
+                this._runtime.constructor.PERIPHERAL_UPLOAD_SUCCESS);
             break;
         case 'ping':
             return 42;

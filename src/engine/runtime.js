@@ -10,6 +10,7 @@ const Sequencer = require('./sequencer');
 const execute = require('./execute.js');
 const ScratchBlocksConstants = require('./scratch-blocks-constants');
 const TargetType = require('../extension-support/target-type');
+const ProgramModeType = require('../extension-support/program-mode-type');
 const Thread = require('./thread');
 const log = require('../util/log');
 const maybeFormatMessage = require('../util/maybe-format-message');
@@ -561,6 +562,14 @@ class Runtime extends EventEmitter {
     }
 
     /**
+     * Event name for toolbox update finish.
+     * @const {string}
+     */
+    static get TOOLBOX_UPLOAD_FINISH () {
+        return 'TOOLBOX_UPLOAD_FINISH';
+    }
+
+    /**
      * Event name for block drag update.
      * @const {string}
      */
@@ -590,6 +599,22 @@ class Runtime extends EventEmitter {
      */
     static get EXTENSION_FIELD_ADDED () {
         return 'EXTENSION_FIELD_ADDED';
+    }
+
+    /**
+     * Event name for reporting that an deivce was added.
+     * @const {string}
+     */
+    static get DEVICE_ADDED () {
+        return 'DEVICE_ADDED';
+    }
+
+    /**
+     * Event name for reporting that an device as asked for a custom field to be added
+     * @const {string}
+     */
+    static get DEVICE_FIELD_ADDED () {
+        return 'DEVICE_FIELD_ADDED';
     }
 
     /**
@@ -868,6 +893,55 @@ class Runtime extends EventEmitter {
         }
 
         this.emit(Runtime.EXTENSION_ADDED, categoryInfo);
+    }
+
+    /**
+     * Register the primitives provided by an device.
+     * @param [DeviceMetadata] deviceInfos - information array about the device (id, blocks, etc.)
+     * @private
+     */
+    _registerDevicePrimitives(deviceInfos) {
+        this._blockInfo = [];
+        let categoryInfoArray = [];
+        deviceInfos.forEach((info) => {
+            const categoryInfo = {
+                id: info.id,
+                name: maybeFormatMessage(info.name),
+                showStatusButton: info.showStatusButton,
+                blockIconURI: info.blockIconURI,
+                menuIconURI: info.menuIconURI
+            };
+
+            if (info.color1) {
+                categoryInfo.color1 = info.color1;
+                categoryInfo.color2 = info.color2;
+                categoryInfo.color3 = info.color3;
+            } else {
+                categoryInfo.color1 = defaultExtensionColors[0];
+                categoryInfo.color2 = defaultExtensionColors[1];
+                categoryInfo.color3 = defaultExtensionColors[2];
+            }
+
+            this._blockInfo.push(categoryInfo);
+
+            this._fillExtensionCategory(categoryInfo, info);
+
+            for (const fieldTypeName in categoryInfo.customFieldTypes) {
+                if (info.customFieldTypes.hasOwnProperty(fieldTypeName)) {
+                    const fieldTypeInfo = categoryInfo.customFieldTypes[fieldTypeName];
+
+                    // Emit events for custom field types from device
+                    this.emit(Runtime.DEVICE_FIELD_ADDED, {
+                        name: `field_${fieldTypeInfo.extendedName}`,
+                        implementation: fieldTypeInfo.fieldImplementation
+                    });
+                }
+            }
+
+            categoryInfoArray.push(categoryInfo);
+        });
+
+        this.emit(Runtime.DEVICE_ADDED, categoryInfoArray);
     }
 
     /**
@@ -1396,7 +1470,7 @@ class Runtime extends EventEmitter {
      * @property {string} id - the category / extension ID
      * @property {string} xml - the XML text for this category, starting with `<category>` and ending with `</category>`
      */
-    getBlocksXML (target) {
+    getBlocksXML (target, programmode) {
         return this._blockInfo.map(categoryInfo => {
             const {name, color1, color2} = categoryInfo;
             // Filter out blocks that aren't supposed to be shown on this target, as determined by the block info's
@@ -1412,6 +1486,21 @@ class Runtime extends EventEmitter {
                 }
                 // If the block info's `hideFromPalette` is true, then filter out this block
                 return blockFilterIncludesTarget && !block.info.hideFromPalette;
+            });
+
+            const blocksWithDisableProp = paletteBlocks.map(block => {
+                let blockCopy = JSON.parse(JSON.stringify(block));
+
+                if (blockCopy.info.programMode) {
+                    let blockFilterIncludesMode = blockCopy.info.programMode.includes(
+                        programmode == 'realtime' ? ProgramModeType.REALTIME : ProgramModeType.UPLOAD
+                    );
+                    if (!blockFilterIncludesMode) {
+                        const index = blockCopy.xml.indexOf('>');
+                        blockCopy.xml = blockCopy.xml.slice(0, index) + ' disabled=\"true\"' + blockCopy.xml.slice(index);
+                    }
+                }
+                return blockCopy;
             });
 
             const colorXML = `colour="${color1}" secondaryColour="${color2}"`;
@@ -1435,7 +1524,7 @@ class Runtime extends EventEmitter {
             return {
                 id: categoryInfo.id,
                 xml: `<category name="${name}" id="${categoryInfo.id}" ${statusButtonXML} ${colorXML} ${menuIconXML}>${
-                    paletteBlocks.map(block => block.xml).join('')}</category>`
+                    blocksWithDisableProp.map(block => block.xml).join('')}</category>`
             };
         });
     }
@@ -2293,6 +2382,13 @@ class Runtime extends EventEmitter {
      */
     emitBlockDragUpdate (areBlocksOverGui) {
         this.emit(Runtime.BLOCK_DRAG_UPDATE, areBlocksOverGui);
+    }
+
+    /**
+     * Emit toolbox upload is finish
+     */
+    emitToolboxUploadFinish () {
+        this.emit(Runtime.TOOLBOX_UPLOAD_FINISH);
     }
 
     /**

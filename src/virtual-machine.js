@@ -103,6 +103,9 @@ class VirtualMachine extends EventEmitter {
         this.runtime.on(Runtime.MONITORS_UPDATE, monitorList => {
             this.emit(Runtime.MONITORS_UPDATE, monitorList);
         });
+        this.runtime.on(Runtime.TOOLBOX_UPLOAD_FINISH, () => {
+            this.emit(Runtime.TOOLBOX_UPLOAD_FINISH);
+        });
         this.runtime.on(Runtime.BLOCK_DRAG_UPDATE, areBlocksOverGui => {
             this.emit(Runtime.BLOCK_DRAG_UPDATE, areBlocksOverGui);
         });
@@ -114,6 +117,12 @@ class VirtualMachine extends EventEmitter {
         });
         this.runtime.on(Runtime.EXTENSION_FIELD_ADDED, (fieldName, fieldImplementation) => {
             this.emit(Runtime.EXTENSION_FIELD_ADDED, fieldName, fieldImplementation);
+        });
+        this.runtime.on(Runtime.DEVICE_ADDED, categoryInfoArray => {
+            this.emit(Runtime.DEVICE_ADDED, categoryInfoArray);
+        });
+        this.runtime.on(Runtime.DEVICE_FIELD_ADDED, (fieldName, fieldImplementation) => {
+            this.emit(Runtime.DEVICE_FIELD_ADDED, fieldName, fieldImplementation);
         });
         this.runtime.on(Runtime.BLOCKSINFO_UPDATE, categoryInfo => {
             this.emit(Runtime.BLOCKSINFO_UPDATE, categoryInfo);

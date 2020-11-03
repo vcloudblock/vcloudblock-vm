@@ -342,6 +342,10 @@ class Blocks {
                 newCoordinate: e.newCoordinate
             });
             break;
+        case 'toolBoxFinish':
+            console.log('toolBoxFinish');
+            this.runtime.emitToolboxUploadFinish();
+            break;
         case 'dragOutside':
             this.runtime.emitBlockDragUpdate(e.isOutside);
             break;
