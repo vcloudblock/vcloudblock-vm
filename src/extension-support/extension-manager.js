@@ -18,9 +18,7 @@ const builtinExtensions = {
     text2speech: () => require('../extensions/scratch3_text2speech'),
     translate: () => require('../extensions/scratch3_translate'),
     videoSensing: () => require('../extensions/scratch3_video_sensing'),
-    makeymakey: () => require('../extensions/scratch3_makeymakey'),
-    // ironsuit
-    ironsuit: () => require('../extensions/ironsuit'),
+    makeymakey: () => require('../extensions/scratch3_makeymakey')
 };
 
 const builtinDevices = {

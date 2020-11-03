@@ -86,7 +86,6 @@ class ArduinoUno {
          */
         this._busyTimeoutID = null;
 
-        this.reset = this.reset.bind(this);
         this._onConnect = this._onConnect.bind(this);
         this._onMessage = this._onMessage.bind(this);
     }
@@ -110,7 +109,7 @@ class ArduinoUno {
             filters: {
                 pnpid: PNPID_LIST,
             }
-        }, this._onConnect, this.reset);
+        }, this._onConnect);
     }
 
     /**
