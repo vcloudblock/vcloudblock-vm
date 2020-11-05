@@ -225,6 +225,52 @@ class ArduinoUno {
     }
 }
 
+const DigitalPins = {
+    D0: '0',
+    D1: '1',
+    D2: '2',
+    D3: '3',
+    D4: '4',
+    D5: '5',
+    D6: '6',
+    D7: '7',
+    D8: '8',
+    D9: '9',
+    D10: '10',
+    D11: '11',
+    D12: '12',
+    D13: '13'
+};
+
+const AnaglogPins = {
+    A0: 'A0',
+    A1: 'A1',
+    A2: 'A2',
+    A3: 'A3',
+    A4: 'A4',
+    A5: 'A5'
+};
+
+const Level = {
+    High: 'HIGH',
+    Low: 'LOW'
+};
+
+const PwmPins = {
+    D3: '3',
+    D5: '5',
+    D6: '6',
+    D9: '9',
+    D10: '10',
+    D11: '11'
+};
+
+const Buadrate = {
+    B9600: 9600,
+    B19200: 19200,
+    B115200: 115200
+};
+
 /**
  * Scratch 3.0 blocks to interact with a Arduino Uno peripheral.
  */
@@ -234,6 +280,163 @@ class Scratch3ArduinoUnoDevice {
      */
     static get DEVICE_ID () {
         return 'arduinoUno';
+    }
+
+    get DIGITAL_PINS_MENU () {
+        return [
+            {
+                text: '0',
+                value: DigitalPins.D0
+            },
+            {
+                text: '1',
+                value: DigitalPins.D1
+            },
+            {
+                text: '2',
+                value: DigitalPins.D2
+            },
+            {
+                text: '3',
+                value: DigitalPins.D3
+            },
+            {
+                text: '4',
+                value: DigitalPins.D4
+            },
+            {
+                text: '5',
+                value: DigitalPins.D5
+            },
+            {
+                text: '6',
+                value: DigitalPins.D6
+            },
+            {
+                text: '7',
+                value: DigitalPins.D7
+            },
+            {
+                text: '8',
+                value: DigitalPins.D8
+            },
+            {
+                text: '9',
+                value: DigitalPins.D9
+            },
+            {
+                text: '10',
+                value: DigitalPins.D10
+            },
+            {
+                text: '11',
+                value: DigitalPins.D11
+            },
+            {
+                text: '12',
+                value: DigitalPins.D12
+            },
+            {
+                text: '13',
+                value: DigitalPins.D13
+            }
+        ];
+    }
+
+    get ANALOG_PINS_MENU () {
+        return [
+            {
+                text: 'A0',
+                value: AnaglogPins.A0
+            },
+            {
+                text: 'A1',
+                value: AnaglogPins.A1
+            },
+            {
+                text: 'A2',
+                value: AnaglogPins.A2
+            },
+            {
+                text: 'A3',
+                value: AnaglogPins.A3
+            },
+            {
+                text: 'A4',
+                value: AnaglogPins.A4
+            },
+            {
+                text: 'A5',
+                value: AnaglogPins.A5
+            }
+        ];
+    }
+
+    get LEVEL_MENU() {
+        return [
+            {
+                text: formatMessage({
+                    id: 'arduinoUno.levelMenu.high',
+                    default: 'HIGH',
+                    description: 'label for high level'
+                }),
+                value: Level.High
+            },
+            {
+                text: formatMessage({
+                    id: 'arduinoUno.levelMenu.low',
+                    default: 'LOW',
+                    description: 'label for low level'
+                }),
+                value: Level.Low
+            },
+        ];
+    }
+
+    get PWM_PINS_MENU() {
+        return [
+            {
+                text: '3',
+                value: PwmPins.D3
+            },
+            {
+                text: '5',
+                value: PwmPins.D5
+            },
+            {
+                text: '6',
+                value: PwmPins.D6
+            },
+            {
+                text: '9',
+                value: PwmPins.D9
+            },
+            {
+                text: '10',
+                value: PwmPins.D10
+            },
+            {
+                text: '11',
+                value: PwmPins.D11
+            }
+        ];
+    }
+
+    get BAUDTATE_MENU() {
+        return [
+            {
+                text: '9600',
+                value: Buadrate.B9600
+            },
+            {
+                text: '19200',
+                value: Buadrate.B19200
+            },
+            {
+                text: '115200',
+                value: Buadrate.B115200
+            }
+        ];
     }
 
     /**
@@ -261,7 +464,7 @@ class Scratch3ArduinoUnoDevice {
                 name: formatMessage({
                     default: 'Pins',
                     description: 'The name of the arduino uno device pin category',
-                    id: 'arduinouno.category.Pins',
+                    id: 'arduinoUno.category.pins',
                 }),
                 color1: '#4C97FF',
                 color2: '#3373CC',
@@ -269,145 +472,155 @@ class Scratch3ArduinoUnoDevice {
 
                 blocks: [
                     {
-                        opcode: 'whenButtonPressed',
-                        text: 'when [BTN] button pressed',
-                        blockType: BlockType.HAT,
+                        opcode: 'readDigitalPin',
+                        text: formatMessage({
+                            id: 'arduinoUno.pins.readDigitalPin',
+                            default: 'read digital pin [PIN]',
+                            description: 'arduinoUno read digital pin'
+                        }),
+                        blockType: BlockType.BOOLEAN,
                         arguments: {
-                            BTN: {
+                            PIN: {
                                 type: ArgumentType.STRING,
-                                menu: 'buttons',
-                                defaultValue: "A"
-                            }
-                        },
-                        programMode: [ProgramModeType.UPLOAD]
-                    },
-                    {
-                        opcode: 'arduino_pin_mode',
-                        text: 'set arduino pin mode as [MODE]',
-                        blockType: BlockType.COMMAND,
-                        arguments: {
-                            MODE: {
-                                type: ArgumentType.STRING,
-                                menu: 'pinmode',
-                                defaultValue: "digital"
-                            }
-                        },
-                        programMode: [ProgramModeType.REALTIME]
-                    },
-                    {
-                        opcode: 'displayClear',
-                        text: 'clear display',
-                        blockType: BlockType.COMMAND,
-                        programMode: [ProgramModeType.REALTIME, ProgramModeType.UPLOAD]
-                    },
-                ],
-                menus: {
-                    buttons: {
-                        items: [{
-                            text: 'A',
-                            value: "A"
-                        },
-                        {
-                            text: 'B',
-                            value: "B"
-                        }]
-                    },
-                    pinmode: {
-                        items: [{
-                            text: 'digital',
-                            value: "digital"
-                        },
-                        {
-                            text: 'analog',
-                            value: "analog"
-                        }]
-                    }
-                }
-            },
-            {
-                id: 'serial',
-                name: formatMessage({
-                    default: 'Serial',
-                    description: 'The name of the arduino uno device serial category',
-                    id: 'arduinouno.category.Serial',
-                }),
-                color1: '#9966FF',
-                color2: '#774DCB',
-                color3: '#774DCB',
-                blocks: [
-                    {
-                        opcode: 'motorWrite',
-                        text: 'set MOTOR direction speed as [SPEED]',
-                        blockType: BlockType.COMMAND,
-                        arguments: {
-                            SPEED: {
-                                type: ArgumentType.NUMBER,
-                                defaultValue: 255
-                            }
-                        },
-                        programMode: [ProgramModeType.UPLOAD]
-                    },
-                    {
-                        opcode: 'arduino_pin_mode',
-                        text: 'set arduino pin mode as [MODE]',
-                        blockType: BlockType.COMMAND,
-                        arguments: {
-                            MODE: {
-                                type: ArgumentType.STRING,
-                                menu: 'pinmode',
-                                defaultValue: "digital"
+                                menu: 'digitalPins',
+                                defaultValue: DigitalPins.D0
                             }
                         }
                     },
                     {
-                        opcode: 'displayClear',
-                        text: 'clear display',
-                        blockType: BlockType.COMMAND
+                        opcode: 'readAnalogPin',
+                        text: formatMessage({
+                            id: 'arduinoUno.pins.readAnalogPin',
+                            default: 'read analog pin [PIN]',
+                            description: 'arduinoUno read analog pin'
+                        }),
+                        blockType: BlockType.REPORTER,
+                        arguments: {
+                            PIN: {
+                                type: ArgumentType.STRING,
+                                menu: 'analogPins',
+                                defaultValue: AnaglogPins.A0
+                            }
+                        }
                     },
+                    '---',
+                    {
+                        opcode: 'setDigitalOutput',
+                        text: formatMessage({
+                            id: 'arduinoUno.pins.setDigitalOutput',
+                            default: 'set digital pin [PIN] out [LEVEL]',
+                            description: 'arduinoUno set digital pin out'
+                        }),
+                        blockType: BlockType.COMMAND,
+                        arguments: {
+                            PIN: {
+                                type: ArgumentType.STRING,
+                                menu: 'digitalPins',
+                                defaultValue: DigitalPins.D0
+                            },
+                            LEVEL: {
+                                type: ArgumentType.STRING,
+                                menu: 'level',
+                                defaultValue: Level.High
+                            }
+                        }
+                    },
+                    {
+
+                        opcode: 'setPwmOutput',
+                        text: formatMessage({
+                            id: 'arduinoUno.pins.setPwmOutput',
+                            default: 'set pwm pin [PIN] out [OUT]',
+                            description: 'arduinoUno set pwm pin out'
+                        }),
+                        blockType: BlockType.COMMAND,
+                        arguments: {
+                            PIN: {
+                                type: ArgumentType.STRING,
+                                menu: 'pwmPins',
+                                defaultValue: PwmPins.D3
+                            },
+                            OUT: {
+                                type: ArgumentType.NUMBER,
+                                defaultValue: 0
+                            }
+                        }
+                    },
+                    '---',
+                    {
+
+                        opcode: 'setServoOutput',
+                        text: formatMessage({
+                            id: 'arduinoUno.pins.setServoOutput',
+                            default: 'set servo pin [PIN] out [OUT]',
+                            description: 'arduinoUno set servo pin out'
+                        }),
+                        blockType: BlockType.COMMAND,
+                        arguments: {
+                            PIN: {
+                                type: ArgumentType.STRING,
+                                menu: 'pwmPins',
+                                defaultValue: PwmPins.D3
+                            },
+                            OUT: {
+                                type: ArgumentType.ANGLE,
+                                defaultValue: 0
+                            }
+                        }
+                    }
                 ],
                 menus: {
-                    buttons: {
-                        items: [{
-                            text: 'A',
-                            value: "AA1"
-                        },
-                        {
-                            text: 'B',
-                            value: "BB1"
-                        }]
+                    digitalPins: {
+                        items: this.DIGITAL_PINS_MENU
                     },
-                    pinmode: {
-                        items: [{
-                            text: 'digital',
-                            value: "digital"
-                        },
-                        {
-                            text: 'analog',
-                            value: "analog"
-                        }]
+                    analogPins: {
+                        items: this.ANALOG_PINS_MENU
+                    },
+                    level: {
+                        acceptReporters: true,
+                        items: this.LEVEL_MENU
+                    },
+                    pwmPins: {
+                        items: this.PWM_PINS_MENU
+                    }
+                }
+            },
+            {
+                id: 'Serial',
+                name: formatMessage({
+                    default: 'Serial',
+                    description: 'The name of the arduino uno device serial category',
+                    id: 'arduinoUno.category.serial',
+                }),
+                color1: '#9966FF',
+                color2: '#774DCB',
+                color3: '#774DCB',
+
+                blocks: [
+                    {
+                        opcode: 'setSerialBaudrate',
+                        text: formatMessage({
+                            id: 'arduinoUno.serial.setSerialBaudrate',
+                            default: 'set serial baudrate [VALUE]',
+                            description: 'arduinoUno set serial baudrate'
+                        }),
+                        blockType: BlockType.COMMAND,
+                        arguments: {
+                            VALUE: {
+                                type: ArgumentType.NOTE,
+                                menu: 'baudrate',
+                                defaultValue: Buadrate.B9600
+                            }
+                        }
+                    }
+                ],
+                menus: {
+                    baudrate: {
+                        items: this.BAUDTATE_MENU
                     }
                 }
             }
-
         ]
-    }
-
-    whenButtonPressed(args) {
-        console.log(args);
-        return true;
-    };
-
-    arduino_pin_mode(args) {
-        console.log(args);
-        return "test";
-    }
-
-    motorWrite() {
-        console.log('arduinoUno: motorWrite');
-    }
-
-    displayClear() {
-        console.log('arduinoUno: displayClear');
     }
 }
 
