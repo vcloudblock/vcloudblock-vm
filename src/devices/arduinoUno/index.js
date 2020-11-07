@@ -30,6 +30,16 @@ const CONFIG = {
 };
 
 /**
+ * Configuration of build and flash. Used by arduino_debug and avrdude.
+ * @readonly
+ */
+const DIVECE_OPT = {
+    type: 'arduino',
+    board: 'arduino:avr:uno',
+    partno: 'atmega328p'
+}
+
+/**
  * A string to report to the serilport socket when the arduino uno has stopped receiving data.
  * @type {string}
  */
@@ -95,7 +105,7 @@ class ArduinoUno {
      */
     upload(code) {
         var base64Str = Buffer.from(code).toString('base64');
-        this._serialport.upload(base64Str, 'base64');
+        this._serialport.upload(base64Str, DIVECE_OPT, 'base64');
     }
 
     /**
@@ -225,6 +235,29 @@ class ArduinoUno {
     }
 }
 
+const Pins = {
+    D0: '0',
+    D1: '1',
+    D2: '2',
+    D3: '3',
+    D4: '4',
+    D5: '5',
+    D6: '6',
+    D7: '7',
+    D8: '8',
+    D9: '9',
+    D10: '10',
+    D11: '11',
+    D12: '12',
+    D13: '13',
+    A0: 'A0',
+    A1: 'A1',
+    A2: 'A2',
+    A3: 'A3',
+    A4: 'A4',
+    A5: 'A5'
+};
+
 const DigitalPins = {
     D0: '0',
     D1: '1',
@@ -266,9 +299,18 @@ const PwmPins = {
 };
 
 const Buadrate = {
+    B4800: 4800,
     B9600: 9600,
     B19200: 19200,
+    B38400: 38400,
+    B57600: 57600,
     B115200: 115200
+};
+
+const Mode = {
+    Input: 'INPUT',
+    Output: 'OUTPUT',
+    InputPullup: 'INPUT_PULLUP'
 };
 
 /**
@@ -280,6 +322,120 @@ class Scratch3ArduinoUnoDevice {
      */
     static get DEVICE_ID () {
         return 'arduinoUno';
+    }
+
+    get PINS_MENU() {
+        return [
+            {
+                text: '0',
+                value: DigitalPins.D0
+            },
+            {
+                text: '1',
+                value: DigitalPins.D1
+            },
+            {
+                text: '2',
+                value: DigitalPins.D2
+            },
+            {
+                text: '3',
+                value: DigitalPins.D3
+            },
+            {
+                text: '4',
+                value: DigitalPins.D4
+            },
+            {
+                text: '5',
+                value: DigitalPins.D5
+            },
+            {
+                text: '6',
+                value: DigitalPins.D6
+            },
+            {
+                text: '7',
+                value: DigitalPins.D7
+            },
+            {
+                text: '8',
+                value: DigitalPins.D8
+            },
+            {
+                text: '9',
+                value: DigitalPins.D9
+            },
+            {
+                text: '10',
+                value: DigitalPins.D10
+            },
+            {
+                text: '11',
+                value: DigitalPins.D11
+            },
+            {
+                text: '12',
+                value: DigitalPins.D12
+            },
+            {
+                text: '13',
+                value: DigitalPins.D13
+            },
+            {
+                text: 'A0',
+                value: AnaglogPins.A0
+            },
+            {
+                text: 'A1',
+                value: AnaglogPins.A1
+            },
+            {
+                text: 'A2',
+                value: AnaglogPins.A2
+            },
+            {
+                text: 'A3',
+                value: AnaglogPins.A3
+            },
+            {
+                text: 'A4',
+                value: AnaglogPins.A4
+            },
+            {
+                text: 'A5',
+                value: AnaglogPins.A5
+            }
+        ];
+    }
+
+    get MODE_MENU() {
+        return [
+            {
+                text: formatMessage({
+                    id: 'arduinoUno.modeMenu.input',
+                    default: 'Input',
+                    description: 'label for input pin mode'
+                }),
+                value: Mode.Input
+            },
+            {
+                text: formatMessage({
+                    id: 'arduinoUno.modeMenu.output',
+                    default: 'Output',
+                    description: 'label for output pin mode'
+                }),
+                value: Mode.Output
+            },
+            {
+                text: formatMessage({
+                    id: 'arduinoUno.modeMenu.inputPullup',
+                    default: 'Input-pullup',
+                    description: 'label for input-pullup pin mode'
+                }),
+                value: Mode.InputPullup
+            },
+        ];
     }
 
     get DIGITAL_PINS_MENU () {
@@ -377,7 +533,7 @@ class Scratch3ArduinoUnoDevice {
             {
                 text: formatMessage({
                     id: 'arduinoUno.levelMenu.high',
-                    default: 'HIGH',
+                    default: 'High',
                     description: 'label for high level'
                 }),
                 value: Level.High
@@ -385,7 +541,7 @@ class Scratch3ArduinoUnoDevice {
             {
                 text: formatMessage({
                     id: 'arduinoUno.levelMenu.low',
-                    default: 'LOW',
+                    default: 'Low',
                     description: 'label for low level'
                 }),
                 value: Level.Low
@@ -425,12 +581,24 @@ class Scratch3ArduinoUnoDevice {
     get BAUDTATE_MENU() {
         return [
             {
+                text: '4800',
+                value: Buadrate.B4800
+            },
+            {
                 text: '9600',
                 value: Buadrate.B9600
             },
             {
                 text: '19200',
                 value: Buadrate.B19200
+            },
+            {
+                text: '38400',
+                value: Buadrate.B38400
+            },
+            {
+                text: '57600',
+                value: Buadrate.B57600
             },
             {
                 text: '115200',
@@ -472,38 +640,26 @@ class Scratch3ArduinoUnoDevice {
 
                 blocks: [
                     {
-                        opcode: 'readDigitalPin',
+                        opcode: 'setPinMode',
                         text: formatMessage({
-                            id: 'arduinoUno.pins.readDigitalPin',
-                            default: 'read digital pin [PIN]',
-                            description: 'arduinoUno read digital pin'
+                            id: 'arduinoUno.pins.setPinMode',
+                            default: 'set pin [PIN] mode [MODE]',
+                            description: 'arduinoUno set pin mode'
                         }),
-                        blockType: BlockType.BOOLEAN,
+                        blockType: BlockType.COMMAND,
                         arguments: {
                             PIN: {
                                 type: ArgumentType.STRING,
-                                menu: 'digitalPins',
+                                menu: 'pins',
                                 defaultValue: DigitalPins.D0
-                            }
-                        }
-                    },
-                    {
-                        opcode: 'readAnalogPin',
-                        text: formatMessage({
-                            id: 'arduinoUno.pins.readAnalogPin',
-                            default: 'read analog pin [PIN]',
-                            description: 'arduinoUno read analog pin'
-                        }),
-                        blockType: BlockType.REPORTER,
-                        arguments: {
-                            PIN: {
+                            },
+                            MODE: {
                                 type: ArgumentType.STRING,
-                                menu: 'analogPins',
-                                defaultValue: AnaglogPins.A0
+                                menu: 'mode',
+                                defaultValue: Mode.Input
                             }
                         }
                     },
-                    '---',
                     {
                         opcode: 'setDigitalOutput',
                         text: formatMessage({
@@ -548,6 +704,39 @@ class Scratch3ArduinoUnoDevice {
                     },
                     '---',
                     {
+                        opcode: 'readDigitalPin',
+                        text: formatMessage({
+                            id: 'arduinoUno.pins.readDigitalPin',
+                            default: 'read digital pin [PIN]',
+                            description: 'arduinoUno read digital pin'
+                        }),
+                        blockType: BlockType.BOOLEAN,
+                        arguments: {
+                            PIN: {
+                                type: ArgumentType.STRING,
+                                menu: 'digitalPins',
+                                defaultValue: DigitalPins.D0
+                            }
+                        }
+                    },
+                    {
+                        opcode: 'readAnalogPin',
+                        text: formatMessage({
+                            id: 'arduinoUno.pins.readAnalogPin',
+                            default: 'read analog pin [PIN]',
+                            description: 'arduinoUno read analog pin'
+                        }),
+                        blockType: BlockType.REPORTER,
+                        arguments: {
+                            PIN: {
+                                type: ArgumentType.STRING,
+                                menu: 'analogPins',
+                                defaultValue: AnaglogPins.A0
+                            }
+                        }
+                    },
+                    '---',
+                    {
 
                         opcode: 'setServoOutput',
                         text: formatMessage({
@@ -570,6 +759,12 @@ class Scratch3ArduinoUnoDevice {
                     }
                 ],
                 menus: {
+                    pins: {
+                        items: this.PINS_MENU
+                    },
+                    mode: {
+                        items: this.MODE_MENU
+                    },
                     digitalPins: {
                         items: this.DIGITAL_PINS_MENU
                     },
@@ -607,11 +802,48 @@ class Scratch3ArduinoUnoDevice {
                         blockType: BlockType.COMMAND,
                         arguments: {
                             VALUE: {
-                                type: ArgumentType.NOTE,
+                                type: ArgumentType.STRING,
                                 menu: 'baudrate',
                                 defaultValue: Buadrate.B9600
                             }
-                        }
+                        },
+                        programMode: [ProgramModeType.UPLOAD]
+                    },
+                    {
+                        opcode: 'serialPrintString',
+                        text: formatMessage({
+                            id: 'arduinoUno.serial.serialPrintString',
+                            default: 'serial print string [VALUE]',
+                            description: 'arduinoUno serial print string'
+                        }),
+                        blockType: BlockType.COMMAND,
+                        arguments: {
+                            VALUE: {
+                                type: ArgumentType.STRING,
+                                defaultValue: 'hello'
+                            }
+                        },
+                        programMode: [ProgramModeType.UPLOAD]
+                    },
+                    {
+                        opcode: 'serialRecivedDataLength',
+                        text: formatMessage({
+                            id: 'arduinoUno.serial.serialRecivedDataLength',
+                            default: 'serial recived data length',
+                            description: 'arduinoUno serial recived data length'
+                        }),
+                        blockType: BlockType.REPORTER,
+                        programMode: [ProgramModeType.UPLOAD]
+                    },
+                    {
+                        opcode: 'serialReadAByte',
+                        text: formatMessage({
+                            id: 'arduinoUno.serial.serialReadAByte',
+                            default: 'serial read a byte',
+                            description: 'arduinoUno serial read a byte'
+                        }),
+                        blockType: BlockType.REPORTER,
+                        programMode: [ProgramModeType.UPLOAD]
                     }
                 ],
                 menus: {

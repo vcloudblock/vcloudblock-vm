@@ -31,6 +31,17 @@ const CONFIG = {
 };
 
 /**
+ * Configuration of build and flash. Used by arduino_debug and avrdude.
+ * @readonly
+ */
+const DIVECE_OPT = {
+    type: 'arduino',
+    board: 'arduino:avr:nano',
+    partno: 'atmega328p'
+}
+
+
+/**
  * Manage communication with a Arduino Nano peripheral over a Scrath Link client socket.
  */
 class ArduinoNano {
@@ -67,7 +78,7 @@ class ArduinoNano {
      */
     upload(code) {
         var base64Str = Buffer.from(code).toString('base64');
-        this._serialport.upload(base64Str, 'base64');
+        this._serialport.upload(base64Str, DIVECE_OPT, 'base64');
     }
 
     /**
@@ -81,7 +92,7 @@ class ArduinoNano {
             filters: {
                 pnpid: PNPID_LIST,
             }
-        }, this._onConnect);
+        });
     }
 
     /**

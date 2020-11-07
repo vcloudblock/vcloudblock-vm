@@ -61,7 +61,9 @@ class Serialport extends JSONRPC {
             .then(() => {
                 this._connected = true;
                 this._runtime.emit(this._runtime.constructor.PERIPHERAL_CONNECTED);
-                this._connectCallback();
+                if (this._connectCallback) {
+                    this._connectCallback();
+                }
             })
             .catch(e => {
                 this._handleRequestError(e);
@@ -132,8 +134,8 @@ class Serialport extends JSONRPC {
      * @param {string} encoding - the message encoding type.
      * @return {Promise} - a promise from the remote send request.
      */
-    upload(message, encoding = null) {
-        const params = {message};
+    upload(message, config, encoding = null) {
+        const params = {message, config};
         if (encoding) {
             params.encoding = encoding;
         }
