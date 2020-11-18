@@ -211,6 +211,7 @@ class ExtensionManager {
                 return Promise.resolve();
             }
 
+            this.runtime.setDevice(deviceURL);
             const device = builtinDevices[deviceURL]();
             const deviceInstance = new device(this.runtime);
             const serviceName = this._registerInternalDevice(deviceInstance);
@@ -226,6 +227,10 @@ class ExtensionManager {
             this.pendingExtensions.push({deviceURL, resolve, reject});
             dispatch.addWorker(new ExtensionWorker());
         });
+    }
+
+    loadDeviceExtension() {
+
     }
 
     /**
@@ -414,6 +419,7 @@ class ExtensionManager {
             if (!/^[a-z0-9]+$/i.test(deviceInfo.id)) {
                 throw new Error('Invalid extension id');
             }
+            deviceInfo.id = 'device_' + deviceInfo.id;
             deviceInfo.name = deviceInfo.name || deviceInfo.id;
             deviceInfo.blocks = deviceInfo.blocks || [];
             deviceInfo.targetTypes = deviceInfo.targetTypes || [];

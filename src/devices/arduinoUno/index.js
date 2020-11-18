@@ -781,7 +781,7 @@ class Scratch3ArduinoUnoDevice {
                 }
             },
             {
-                id: 'Serial',
+                id: 'serial',
                 name: formatMessage({
                     default: 'Serial',
                     description: 'The name of the arduino uno device serial category',

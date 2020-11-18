@@ -284,7 +284,7 @@ const getExtensionIdForOpcode = function (opcode) {
     const index = opcode.indexOf('_');
     const forbiddenSymbols = /[^\w-]/g;
     const prefix = opcode.substring(0, index).replace(forbiddenSymbols, '-');
-    if (CORE_EXTENSIONS.indexOf(prefix) === -1) {
+    if (CORE_EXTENSIONS.indexOf(prefix) === -1  && prefix !== 'device') {
         if (prefix !== '') return prefix;
     }
 };
@@ -553,6 +553,8 @@ const serialize = function (runtime, targetId) {
     obj.targets = serializedTargets;
 
     obj.monitors = serializeMonitors(runtime.getMonitorState());
+
+    obj.device = runtime.getCurrentDevice();
 
     // Assemble extension list
     obj.extensions = Array.from(extensions);

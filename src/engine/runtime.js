@@ -222,6 +222,15 @@ class Runtime extends EventEmitter {
         this._editingTarget = null;
 
         /**
+         * Currently selected device.
+         * @type {?Device}
+         */
+        this._device = null;
+
+        // TODO for next
+        this._deviceExtensions = [];
+
+        /**
          * Map to look up a block primitive's implementation function by its opcode.
          * This is a two-step lookup: package name first, then primitive name.
          * @type {Object.<string, Function>}
@@ -941,7 +950,10 @@ class Runtime extends EventEmitter {
             categoryInfoArray.push(categoryInfo);
         });
 
-        this.emit(Runtime.DEVICE_ADDED, categoryInfoArray);
+        this.emit(Runtime.DEVICE_ADDED, {
+            device: this._device,
+            categoryInfoArray: categoryInfoArray
+        });
     }
 
     /**
@@ -2262,6 +2274,22 @@ class Runtime extends EventEmitter {
             this._steppingInterval = null;
             this.start();
         }
+    }
+
+    /**
+     * Set the current selected device known by the runtime.
+     * @param {!Device} current device.
+     */
+    setDevice(device) {
+        this._device = device;
+    }
+
+    /**
+     * Get the current selected device.
+     * @return {?Device} current selected device known by the runtime.
+     */
+    getCurrentDevice() {
+        return this._device;
     }
 
     /**

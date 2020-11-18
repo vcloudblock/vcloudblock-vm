@@ -118,8 +118,8 @@ class VirtualMachine extends EventEmitter {
         this.runtime.on(Runtime.EXTENSION_FIELD_ADDED, (fieldName, fieldImplementation) => {
             this.emit(Runtime.EXTENSION_FIELD_ADDED, fieldName, fieldImplementation);
         });
-        this.runtime.on(Runtime.DEVICE_ADDED, categoryInfoArray => {
-            this.emit(Runtime.DEVICE_ADDED, categoryInfoArray);
+        this.runtime.on(Runtime.DEVICE_ADDED, (device, categoryInfoArray) => {
+            this.emit(Runtime.DEVICE_ADDED, device, categoryInfoArray);
         });
         this.runtime.on(Runtime.DEVICE_FIELD_ADDED, (fieldName, fieldImplementation) => {
             this.emit(Runtime.DEVICE_FIELD_ADDED, fieldName, fieldImplementation);
@@ -517,7 +517,20 @@ class VirtualMachine extends EventEmitter {
         };
         return deserializePromise()
             .then(({targets, extensions}) =>
-                this.installTargets(targets, extensions, true));
+                this.installTargets(targets, extensions, true))
+            .then(
+                this.installDevice(projectJSON.device))
+    }
+
+    /**
+     * Install `deserialize` results: null or device.
+     * @param {!device} device - the device to be installed
+     * @returns {Promise} resolved device installed
+     */
+    installDevice (device) {
+        if (device) {
+            return this.extensionManager.loadDeviceURL(device);
+        }
     }
 
     /**
