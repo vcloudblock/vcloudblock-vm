@@ -627,6 +627,14 @@ class Runtime extends EventEmitter {
     }
 
     /**
+     * Event name for reporting that an deivce extension was added.
+     * @const {string}
+     */
+    static get DEVICE_EXTENSION_ADDED() {
+        return 'DEVICE_EXTENSION_ADDED';
+    }
+
+    /**
      * Event name for updating the available set of peripheral devices.
      * This causes the peripheral connection modal to update a list of
      * available peripherals.

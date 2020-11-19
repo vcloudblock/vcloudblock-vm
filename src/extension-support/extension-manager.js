@@ -1,8 +1,15 @@
+const fetch = require('node-fetch');
+
 const dispatch = require('../dispatch/central-dispatch');
 const log = require('../util/log');
 const maybeFormatMessage = require('../util/maybe-format-message');
 
 const BlockType = require('./block-type');
+
+// Local device extension server address
+const localDeviceExtensionsUrl = 'http://127.0.0.1:20120/';
+// Remote device extension server address
+const remoteDeviceExtensionsUrl = 'http://127.0.0.1:20121/';
 
 // These extensions are currently built into the VM repository but should not be loaded at startup.
 // TODO: move these out into a separate repository?
@@ -102,6 +109,30 @@ class ExtensionManager {
         this._loadedDevice = new Map();
 
         /**
+         * Map of local extensions.
+         * @type {Array.<DeviceExtensions>}
+         */
+        this._localDeviceExtensions = [];
+
+        /**
+         * Map of remote extensions.
+         * @type {Array.<DeviceExtensions>}
+         */
+        this._remoteDeviceExtensions = [];
+
+        /**
+         * Map of local and remote extensions.
+         * @type {Array.<DeviceExtensions>}
+         */
+        this._deviceExtensions = [];
+
+        /**
+         * Map of loaded extensions.
+         * @type {Array.<DeviceExtensions>}
+         */
+        this._loadedDeviceExtensions = [];
+
+        /**
          * Keep a reference to the runtime so we can construct internal extension objects.
          * TODO: remove this in favor of extensions accessing the runtime as a service.
          * @type {Runtime}
@@ -190,15 +221,6 @@ class ExtensionManager {
     }
 
     /**
-     * Unload an extension by URL or internal extension ID
-     * @param {string} extensionURL - the URL for the extension to load OR the ID of an internal extension
-     * @returns {Promise} resolved once the extension is unloaded and reset or rejected on failure
-     */
-    unloadExtensionURL(extensionURL) {
-
-    }
-
-    /**
      * Load an device by URL or internal device ID
      * @param {string} deviceURL - the URL for the device to load OR the ID of an internal device
      * @returns {Promise} resolved once the device is loaded and initialized or rejected on failure
@@ -229,8 +251,98 @@ class ExtensionManager {
         });
     }
 
-    loadDeviceExtension() {
+    /**
+     * Get device extensions list from local server.
+     * @returns {Promise} resolved extension list has been fetched or rejected on failure
+     */
+    getLocalDeviceExtensionsList() {
+        return new Promise((resolve, reject) => {
+            fetch(localDeviceExtensionsUrl)
+                .then(response => response.json())
+                .then(localExtension => {
+                    localExtension = localExtension.map(extension => {
+                        extension.iconURL = localDeviceExtensionsUrl + extension.iconURL;
+                        return extension;
+                    });
 
+                    this._localDeviceExtensions = localExtension;
+                    this._deviceExtensions = localExtension.concat(this._remoteDeviceExtensions);
+                    return resolve(this._deviceExtensions);
+                }, err => {
+                    return reject(`Error while fetch local extension server: ${err}`);
+                })
+        });
+    }
+
+    /**
+     * Get device extensions list from remote server.
+     * @returns {Promise} resolved extension list has been fetched or rejected on failure
+     */
+    getRemoteDeviceExtensionsList() {
+        return new Promise((resolve, reject) => {
+            fetch(remoteDeviceExtensionsUrl)
+                .then(response => response.json())
+                .then(remoteExtension => {
+                    remoteExtension = remoteExtension.map(extension => {
+                        extension.iconURL = remoteDeviceExtensionsUrl + extension.iconURL;
+                        return extension;
+                    });
+
+                    this._remoteDeviceExtensions = remoteExtension;
+                    this._deviceExtensions = this._remoteDeviceExtensions.concat(this._localDeviceExtensions);
+                    return resolve(this._deviceExtensions);
+                }, err => {
+                    return reject(`Error while fetch remote extension server: ${err}`);
+                })
+        });
+    }
+
+    /**
+     * Check whether an device extension is loaded.
+     * @param {string} deviceExtensionId - the ID of the device extension.
+     * @returns {boolean} - true if loaded, false otherwise.
+     */
+    isDeviceExtensionLoaded (deviceExtensionId) {
+        return this._loadedDeviceExtensions.includes(deviceExtensionId);
+    }
+
+    /**
+     * Load an device extension by device extension ID
+     * @param {string} deviceExtensionId - the ID of an device extension
+     * @returns {Promise} resolved once the device extension is loaded or rejected on failure
+     */
+    loadDeviceExtension(deviceExtensionId) {
+        return new Promise((resolve, reject) => {
+
+            const deviceExtension = this._deviceExtensions.find((ext) => {
+                return ext.extensionId === deviceExtensionId;
+            })
+
+            const url = deviceExtension.location === 'remote' ? remoteDeviceExtensionsUrl : localDeviceExtensionsUrl;
+            const toolboxUrl = url + deviceExtension.toolbox;
+            const blockUrl = url + deviceExtension.blocks;
+            const generatorUrl = url + deviceExtension.generator;
+
+            fetch(toolboxUrl)
+                .then(response => response.text())
+                .then(toolboxXML => {
+                    this._loadedDeviceExtensions.push(deviceExtensionId);
+                    // maybe use emit?
+                    this.runtime.emit(this.runtime.constructor.DEVICE_EXTENSION_ADDED, {deviceExtensionId, toolboxXML, blockUrl, generatorUrl})
+                    // resolve({ deviceExtensionId, toolboxXML, blockUrl, generatorUrl });
+                    resolve();
+                }, err => {
+                    return reject(`Error while fetch extension ${deviceExtension.extensionId} toolbox: ${err}`);
+                });
+        });
+    }
+
+    /**
+     * Unload an device extension by device extension ID
+     * @param {string} deviceExtensionId - the ID of an device extension
+     * @returns {Promise} resolved once the device extension is unloaded or rejected on failure
+     */
+    unloadDeviceExtension(deviceExtensionId) {
     }
 
     /**
