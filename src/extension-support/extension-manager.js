@@ -127,12 +127,6 @@ class ExtensionManager {
         this._deviceExtensions = [];
 
         /**
-         * Map of loaded extensions.
-         * @type {Array.<DeviceExtensions>}
-         */
-        this._loadedDeviceExtensions = [];
-
-        /**
          * Keep a reference to the runtime so we can construct internal extension objects.
          * TODO: remove this in favor of extensions accessing the runtime as a service.
          * @type {Runtime}
@@ -262,9 +256,11 @@ class ExtensionManager {
                 .then(localExtension => {
                     localExtension = localExtension.map(extension => {
                         extension.iconURL = localDeviceExtensionsUrl + extension.iconURL;
+                        if (this.isDeviceExtensionLoaded(extension.extensionId)) {
+                            extension.isLoaded = true;
+                        }
                         return extension;
                     });
-
                     this._localDeviceExtensions = localExtension;
                     this._deviceExtensions = localExtension.concat(this._remoteDeviceExtensions);
                     return resolve(this._deviceExtensions);
@@ -285,6 +281,9 @@ class ExtensionManager {
                 .then(remoteExtension => {
                     remoteExtension = remoteExtension.map(extension => {
                         extension.iconURL = remoteDeviceExtensionsUrl + extension.iconURL;
+                        if (this.isDeviceExtensionLoaded(extension.extensionId)) {
+                            extension.isLoaded = true;
+                        }
                         return extension;
                     });
 
@@ -303,7 +302,7 @@ class ExtensionManager {
      * @returns {boolean} - true if loaded, false otherwise.
      */
     isDeviceExtensionLoaded (deviceExtensionId) {
-        return this._loadedDeviceExtensions.includes(deviceExtensionId);
+        return this.runtime.isDeviceExtensionLoaded(deviceExtensionId);
     }
 
     /**
@@ -313,7 +312,6 @@ class ExtensionManager {
      */
     loadDeviceExtension(deviceExtensionId) {
         return new Promise((resolve, reject) => {
-
             const deviceExtension = this._deviceExtensions.find((ext) => {
                 return ext.extensionId === deviceExtensionId;
             })
@@ -326,10 +324,8 @@ class ExtensionManager {
             fetch(toolboxUrl)
                 .then(response => response.text())
                 .then(toolboxXML => {
-                    this._loadedDeviceExtensions.push(deviceExtensionId);
-                    // maybe use emit?
-                    this.runtime.emit(this.runtime.constructor.DEVICE_EXTENSION_ADDED, {deviceExtensionId, toolboxXML, blockUrl, generatorUrl})
-                    // resolve({ deviceExtensionId, toolboxXML, blockUrl, generatorUrl });
+                    this.runtime.addDeviceExtension(deviceExtensionId, toolboxXML);
+                    this.runtime.emit(this.runtime.constructor.DEVICE_EXTENSION_ADDED, {blockUrl, generatorUrl})
                     resolve();
                 }, err => {
                     return reject(`Error while fetch extension ${deviceExtension.extensionId} toolbox: ${err}`);
@@ -343,6 +339,11 @@ class ExtensionManager {
      * @returns {Promise} resolved once the device extension is unloaded or rejected on failure
      */
     unloadDeviceExtension(deviceExtensionId) {
+        return new Promise((resolve, reject) => {
+            this.runtime.removeDeviceExtension(deviceExtensionId);
+            this.runtime.emit(this.runtime.constructor.DEVICE_EXTENSION_REMOVED, deviceExtensionId);
+            resolve();
+        });
     }
 
     /**

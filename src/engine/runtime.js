@@ -227,8 +227,11 @@ class Runtime extends EventEmitter {
          */
         this._device = null;
 
-        // TODO for next
-        this._deviceExtensions = [];
+        /**
+         * Map of loaded device extensions.
+         * @type {Set.<string>}
+         */
+        this._loadedDeviceExtensions = new Map();
 
         /**
          * Map to look up a block primitive's implementation function by its opcode.
@@ -632,6 +635,14 @@ class Runtime extends EventEmitter {
      */
     static get DEVICE_EXTENSION_ADDED() {
         return 'DEVICE_EXTENSION_ADDED';
+    }
+
+    /**
+     * Event name for reporting that an deivce extension was removed.
+     * @const {string}
+     */
+    static get DEVICE_EXTENSION_REMOVED() {
+        return 'DEVICE_EXTENSION_REMOVED';
     }
 
     /**
@@ -1490,7 +1501,12 @@ class Runtime extends EventEmitter {
      * @property {string} id - the category / extension ID
      * @property {string} xml - the XML text for this category, starting with `<category>` and ending with `</category>`
      */
-    getBlocksXML (target, programmode) {
+    getBlocksXML(target, programmode) {
+        let _loadedDeviceExtensionsXML = [];
+        this._loadedDeviceExtensions.forEach((xml, id) => {
+            _loadedDeviceExtensionsXML.push({id: id, xml: xml});
+        })
+
         return this._blockInfo.map(categoryInfo => {
             const {name, color1, color2} = categoryInfo;
             // Filter out blocks that aren't supposed to be shown on this target, as determined by the block info's
@@ -1546,7 +1562,7 @@ class Runtime extends EventEmitter {
                 xml: `<category name="${name}" id="${categoryInfo.id}" ${statusButtonXML} ${colorXML} ${menuIconXML}>${
                     blocksWithDisableProp.map(block => block.xml).join('')}</category>`
             };
-        });
+        }).concat(_loadedDeviceExtensionsXML);
     }
 
     /**
@@ -2298,6 +2314,32 @@ class Runtime extends EventEmitter {
      */
     getCurrentDevice() {
         return this._device;
+    }
+
+    /**
+     * Add a device extension to the _loadedDeviceExtensions.
+     * @param {string} id id of this device extension.
+     * @param {string} xml toolbox xml of this device extension.
+     */
+    addDeviceExtension(id, xml) {
+        this._loadedDeviceExtensions.set(id, xml);
+    }
+
+    /**
+     * Remove a device extension from the _loadedDeviceExtensions.
+     * @param {string} id id of this device extension.
+     */
+    removeDeviceExtension(id) {
+        this._loadedDeviceExtensions.delete(id);
+    }
+
+    /**
+     * Check whether an device extension is loaded.
+     * @param {string} id id of this device extension.
+     * @returns {boolean} - true if loaded, false otherwise.
+     */
+    isDeviceExtensionLoaded (id) {
+        return this._loadedDeviceExtensions.has(id);
     }
 
     /**
