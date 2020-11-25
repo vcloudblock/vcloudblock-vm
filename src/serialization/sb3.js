@@ -559,6 +559,9 @@ const serialize = function (runtime, targetId) {
     // Assemble extension list
     obj.extensions = Array.from(extensions);
 
+    // Assemble device extension list
+    obj.deviceExtensions = runtime.getCurrentDeviceExtensionLoaded();
+
     // Assemble metadata
     const meta = Object.create(null);
     meta.semver = '3.0.0';

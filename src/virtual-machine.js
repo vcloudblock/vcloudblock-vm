@@ -526,6 +526,8 @@ class VirtualMachine extends EventEmitter {
                 this.installTargets(targets, extensions, true))
             .then(
                 this.installDevice(projectJSON.device))
+            .then(
+                this.installDeviceExtension(projectJSON.deviceExtensions))
     }
 
     /**
@@ -536,6 +538,39 @@ class VirtualMachine extends EventEmitter {
     installDevice (device) {
         if (device) {
             return this.extensionManager.loadDeviceURL(device);
+        }
+    }
+
+    /**
+     * Install `deserialize` results: null or deviceExtensions.
+     * @param {Array.deviceExtensions} deviceExtensions - the array of device extensions id to be installed
+     * @returns {Promise} resolved deviceExtensions installed
+     */
+    installDeviceExtension(deviceExtensions) {
+        const deviceExtensionFetchPromises = [];
+        const deviceExtensionLoadPromises = [];
+
+        if (deviceExtensions) {
+            deviceExtensionFetchPromises.push(this.extensionManager.getLocalDeviceExtensionsList())
+            deviceExtensionFetchPromises.push(this.extensionManager.getRemoteDeviceExtensionsList())
+
+            Promise.all(deviceExtensionFetchPromises).then(() => {
+                console.log('deviceExtensions=' + deviceExtensions)
+
+                deviceExtension.forEach(deviceExtensionID => {
+                    deviceExtensionLoadPromises.push(this.extensionManager.loadDeviceExtension(deviceExtensionID));
+                })
+                return Promise.all(deviceExtensionLoadPromises);
+            }).catch(() => {
+                console.log('error.deviceExtensions=' + deviceExtensions)
+
+                deviceExtensions.forEach(deviceExtensionID => {
+                    deviceExtensionLoadPromises.push(this.extensionManager.loadDeviceExtension(deviceExtensionID));
+                })
+                return Promise.all(deviceExtensionLoadPromises);
+            });
+        } else {
+            return;
         }
     }
 

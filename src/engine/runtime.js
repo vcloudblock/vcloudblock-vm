@@ -2343,6 +2343,18 @@ class Runtime extends EventEmitter {
     }
 
     /**
+     * Get the current Loaded device extension.
+     * @return {Array.id} array of current loaded device extension ids.
+     */
+    getCurrentDeviceExtensionLoaded() {
+        let ids = [];
+        this._loadedDeviceExtensions.forEach((xml, id) => {
+            ids.push(id);
+        })
+        return ids;
+    }
+
+    /**
      * Emit glows/glow clears for scripts after a single tick.
      * Looks at `this.threads` and notices which have turned on/off new glows.
      * @param {Array.<Thread>=} optExtraThreads Optional list of inactive threads.
