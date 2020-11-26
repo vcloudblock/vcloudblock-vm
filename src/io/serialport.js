@@ -128,7 +128,7 @@ class Serialport extends JSONRPC {
                 this.handleDisconnectError(e);
             });
     }
-/**
+    /**
      * Upload code to the peripheral.
      * @param {string} message - the code to upload.
      * @param {string} encoding - the message encoding type.
