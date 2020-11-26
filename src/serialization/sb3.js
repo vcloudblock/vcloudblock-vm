@@ -557,7 +557,7 @@ const serialize = function (runtime, targetId) {
     obj.device = runtime.getCurrentDevice();
 
     // Assemble extension list
-    obj.extensions = Array.from(extensions);
+    obj.extensions = runtime.getCurrentExtensionLoaded();
 
     // Assemble device extension list
     obj.deviceExtensions = runtime.getCurrentDeviceExtensionLoaded();

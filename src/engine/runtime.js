@@ -234,6 +234,12 @@ class Runtime extends EventEmitter {
         this._loadedDeviceExtensions = new Map();
 
         /**
+         * Map of loaded extensions.
+         * @type {Array.<string>}
+         */
+        this._loadedExtensions = [];
+
+        /**
          * Map to look up a block primitive's implementation function by its opcode.
          * This is a two-step lookup: package name first, then primitive name.
          * @type {Object.<string, Function>}
@@ -2352,6 +2358,23 @@ class Runtime extends EventEmitter {
             ids.push(id);
         })
         return ids;
+    }
+
+    /**
+     * Add a extension to the _loadedExtensions.
+     * @param {string} id id of this extension.
+     */
+    addExtension(id) {
+        console.log('addExtension=' + id)
+        this._loadedExtensions.push(id);
+    }
+
+    /**
+     * Get the current Loaded extension.
+     * @return {Array.id} array of current loaded extension ids.
+     */
+    getCurrentExtensionLoaded() {
+        return this._loadedExtensions;
     }
 
     /**

@@ -124,8 +124,8 @@ class VirtualMachine extends EventEmitter {
         this.runtime.on(Runtime.DEVICE_FIELD_ADDED, (fieldName, fieldImplementation) => {
             this.emit(Runtime.DEVICE_FIELD_ADDED, fieldName, fieldImplementation);
         });
-        this.runtime.on(Runtime.DEVICE_EXTENSION_ADDED, data => {
-            this.emit(Runtime.DEVICE_EXTENSION_ADDED, data);
+        this.runtime.on(Runtime.DEVICE_EXTENSION_ADDED, () => {
+            this.emit(Runtime.DEVICE_EXTENSION_ADDED);
         });
         this.runtime.on(Runtime.DEVICE_EXTENSION_REMOVED, data => {
             this.emit(Runtime.DEVICE_EXTENSION_REMOVED, data);
@@ -522,23 +522,8 @@ class VirtualMachine extends EventEmitter {
             return Promise.reject('Unable to verify Scratch Project version.');
         };
         return deserializePromise()
-            .then(({targets, extensions}) =>
-                this.installTargets(targets, extensions, true))
-            .then(
-                this.installDevice(projectJSON.device))
-            .then(
-                this.installDeviceExtension(projectJSON.deviceExtensions))
-    }
-
-    /**
-     * Install `deserialize` results: null or device.
-     * @param {!device} device - the device to be installed
-     * @returns {Promise} resolved device installed
-     */
-    installDevice (device) {
-        if (device) {
-            return this.extensionManager.loadDeviceURL(device);
-        }
+            .then(({targets}) =>
+                this.installTargets(targets, projectJSON.device, projectJSON.extensions, projectJSON.deviceExtensions, true))
     }
 
     /**
@@ -547,31 +532,38 @@ class VirtualMachine extends EventEmitter {
      * @returns {Promise} resolved deviceExtensions installed
      */
     installDeviceExtension(deviceExtensions) {
-        const deviceExtensionFetchPromises = [];
-        const deviceExtensionLoadPromises = [];
+        return new Promise((resolve, reject) => {
+            const deviceExtensionFetchPromises = [];
+            const deviceExtensionLoadPromises = [];
 
-        if (deviceExtensions) {
-            deviceExtensionFetchPromises.push(this.extensionManager.getLocalDeviceExtensionsList())
-            deviceExtensionFetchPromises.push(this.extensionManager.getRemoteDeviceExtensionsList())
+            if (deviceExtensions) {
+                deviceExtensionFetchPromises.push(this.extensionManager.getLocalDeviceExtensionsList())
+                deviceExtensionFetchPromises.push(this.extensionManager.getRemoteDeviceExtensionsList())
 
-            Promise.all(deviceExtensionFetchPromises).then(() => {
-                console.log('deviceExtensions=' + deviceExtensions)
-
-                deviceExtension.forEach(deviceExtensionID => {
-                    deviceExtensionLoadPromises.push(this.extensionManager.loadDeviceExtension(deviceExtensionID));
-                })
-                return Promise.all(deviceExtensionLoadPromises);
-            }).catch(() => {
-                console.log('error.deviceExtensions=' + deviceExtensions)
-
-                deviceExtensions.forEach(deviceExtensionID => {
-                    deviceExtensionLoadPromises.push(this.extensionManager.loadDeviceExtension(deviceExtensionID));
-                })
-                return Promise.all(deviceExtensionLoadPromises);
-            });
-        } else {
-            return;
-        }
+                return Promise.all(deviceExtensionFetchPromises).then(() => {
+                    deviceExtension.forEach(deviceExtensionID => {
+                        deviceExtensionLoadPromises.push(this.extensionManager.loadDeviceExtension(deviceExtensionID));
+                    })
+                    Promise.all(deviceExtensionLoadPromises).then(() => {
+                        resolve();
+                    }).catch((e) => {
+                        reject(e)
+                    });
+                }).catch(() => {
+                    // Remote fetch may failed
+                    deviceExtensions.forEach(deviceExtensionID => {
+                        deviceExtensionLoadPromises.push(this.extensionManager.loadDeviceExtension(deviceExtensionID));
+                    })
+                    Promise.all(deviceExtensionLoadPromises).then(() => {
+                        resolve();
+                    }).catch((e) => {
+                        reject(e)
+                    });
+                });
+            } else {
+                resolve();
+            }
+        })
     }
 
     /**
@@ -581,19 +573,27 @@ class VirtualMachine extends EventEmitter {
      * @param {boolean} wholeProject - set to true if installing a whole project, as opposed to a single sprite.
      * @returns {Promise} resolved once targets have been installed
      */
-    installTargets (targets, extensions, wholeProject) {
-        const extensionPromises = [];
+    installTargets (targets, device, extensions, deviceExtensions, wholeProject) {
+        const allPromises = [];
 
-        extensions.extensionIDs.forEach(extensionID => {
-            if (!this.extensionManager.isExtensionLoaded(extensionID)) {
-                const extensionURL = extensions.extensionURLs.get(extensionID) || extensionID;
-                extensionPromises.push(this.extensionManager.loadExtensionURL(extensionURL));
-            }
-        });
+        if (device) {
+            allPromises.push(this.extensionManager.loadDeviceURL(device));
+        }
+
+        if (extensions) {
+            extensions.forEach(extensionID => {
+                if (!this.extensionManager.isExtensionLoaded(extensionID)) {
+                    const extensionURL = extensions.extensionURLs.get(extensionID) || extensionID;
+                    allPromises.push(this.extensionManager.loadExtensionURL(extensionURL));
+                }
+            });
+        }
+
+        allPromises.push(this.installDeviceExtension(deviceExtensions));
 
         targets = targets.filter(target => !!target);
 
-        return Promise.all(extensionPromises).then(() => {
+        return Promise.all(allPromises).then(() => {
             targets.forEach(target => {
                 this.runtime.addTarget(target);
                 (/** @type RenderedTarget */ target).updateAllDrawableProperties();
@@ -1430,7 +1430,7 @@ class VirtualMachine extends EventEmitter {
                     }
                 }
             }
-        }
+        }{}
         // Anything left in messageIds is not referenced by a block, so delete it.
         for (let i = 0; i < messageIds.length; i++) {
             const id = messageIds[i];

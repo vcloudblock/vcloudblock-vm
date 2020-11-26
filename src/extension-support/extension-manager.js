@@ -1,4 +1,5 @@
 const fetch = require('node-fetch');
+const loadjs = require('loadjs');
 
 const dispatch = require('../dispatch/central-dispatch');
 const log = require('../util/log');
@@ -182,6 +183,7 @@ class ExtensionManager {
         const extensionInstance = new extension(this.runtime);
         const serviceName = this._registerInternalExtension(extensionInstance);
         this._loadedExtensions.set(extensionId, serviceName);
+        this.runtime.addExtension(extensionId);
     }
 
     /**
@@ -202,6 +204,7 @@ class ExtensionManager {
             const extensionInstance = new extension(this.runtime);
             const serviceName = this._registerInternalExtension(extensionInstance);
             this._loadedExtensions.set(extensionURL, serviceName);
+            this.runtime.addExtension(extensionURL);
             return Promise.resolve();
         }
 
@@ -315,6 +318,9 @@ class ExtensionManager {
             const deviceExtension = this._deviceExtensions.find((ext) => {
                 return ext.extensionId === deviceExtensionId;
             })
+            if (deviceExtension == null) {
+                return reject(`Error while loadDeviceExtension device extension can not find device extension ${deviceExtensionId}`);
+            }
 
             const url = deviceExtension.location === 'remote' ? remoteDeviceExtensionsUrl : localDeviceExtensionsUrl;
             const toolboxUrl = url + deviceExtension.toolbox;
@@ -324,11 +330,17 @@ class ExtensionManager {
             fetch(toolboxUrl)
                 .then(response => response.text())
                 .then(toolboxXML => {
-                    this.runtime.addDeviceExtension(deviceExtensionId, toolboxXML);
-                    this.runtime.emit(this.runtime.constructor.DEVICE_EXTENSION_ADDED, {blockUrl, generatorUrl})
-                    resolve();
+                    loadjs([blockUrl, generatorUrl], { returnPromise: true })
+                        .then(() => {
+                            this.runtime.addDeviceExtension(deviceExtensionId, toolboxXML);
+                            this.runtime.emit(this.runtime.constructor.DEVICE_EXTENSION_ADDED)
+                            return resolve();
+                        })
+                        .catch(err => {
+                            return reject(`Error while load device extension ${deviceExtension.extensionId}\'s js file: ${err}`);
+                        });
                 }, err => {
-                    return reject(`Error while fetch extension ${deviceExtension.extensionId} toolbox: ${err}`);
+                    return reject(`Error while fetch device extension ${deviceExtension.extensionId}\'s toolbox: ${err}`);
                 });
         });
     }
@@ -342,7 +354,7 @@ class ExtensionManager {
         return new Promise((resolve, reject) => {
             this.runtime.removeDeviceExtension(deviceExtensionId);
             this.runtime.emit(this.runtime.constructor.DEVICE_EXTENSION_REMOVED, deviceExtensionId);
-            resolve();
+            return resolve();
         });
     }
 
