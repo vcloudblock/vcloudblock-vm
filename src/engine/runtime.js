@@ -2332,11 +2332,18 @@ class Runtime extends EventEmitter {
     }
 
     /**
-     * Remove a device extension from the _loadedDeviceExtensions.
+     * Remove a device extension of the _loadedDeviceExtensions.
      * @param {string} id id of this device extension.
      */
     removeDeviceExtension(id) {
         this._loadedDeviceExtensions.delete(id);
+    }
+
+    /**
+     * Clear all device extensions of the _loadedDeviceExtensions.
+     */
+    clearCurrentDeviceExtension() {
+        this._loadedDeviceExtensions.clear();
     }
 
     /**
@@ -2365,9 +2372,16 @@ class Runtime extends EventEmitter {
      * @param {string} id id of this extension.
      */
     addExtension(id) {
-        console.log('addExtension=' + id)
         this._loadedExtensions.push(id);
     }
+
+    /**
+     * Clear all extensions of the _loadedExtensions.
+     */
+    clearCurrentDeviceExtension() {
+        this._loadedExtensions = [];
+    }
+
 
     /**
      * Get the current Loaded extension.

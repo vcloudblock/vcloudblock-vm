@@ -371,6 +371,10 @@ class VirtualMachine extends EventEmitter {
                 return Promise.reject(error);
             });
 
+        // Clear current extentions.
+        this.runtime.clearCurrentDeviceExtension();
+        this.runtime.clearCurrentDeviceExtension();
+
         return validationPromise
             .then(validatedInput => this.deserializeProject(validatedInput[0], validatedInput[1]))
             .then(() => this.runtime.emitProjectLoaded())
@@ -583,7 +587,8 @@ class VirtualMachine extends EventEmitter {
         if (extensions) {
             extensions.forEach(extensionID => {
                 if (!this.extensionManager.isExtensionLoaded(extensionID)) {
-                    const extensionURL = extensions.extensionURLs.get(extensionID) || extensionID;
+                    // const extensionURL = extensions.extensionURLs.get(extensionID) || extensionID;
+                    const extensionURL = extensionID;
                     allPromises.push(this.extensionManager.loadExtensionURL(extensionURL));
                 }
             });
