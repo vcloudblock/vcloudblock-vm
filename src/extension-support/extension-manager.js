@@ -544,7 +544,6 @@ class ExtensionManager {
             if (!/^[a-z0-9]+$/i.test(deviceInfo.id)) {
                 throw new Error('Invalid extension id');
             }
-            deviceInfo.id = 'device_' + deviceInfo.id;
             deviceInfo.name = deviceInfo.name || deviceInfo.id;
             deviceInfo.blocks = deviceInfo.blocks || [];
             deviceInfo.targetTypes = deviceInfo.targetTypes || [];
