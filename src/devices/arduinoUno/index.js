@@ -5,6 +5,8 @@ const Serialport = require('../../io/serialport');
 const Base64Util = require('../../util/base64-util');
 const formatMessage = require('format-message');
 
+const Firmata = require('../../lib/firmata/firmata');
+
 /**
  * The list of USB device filters.
  * @readonly
@@ -40,21 +42,21 @@ const DIVECE_OPT = {
 }
 
 /**
- * A string to report to the serilport socket when the arduino uno has stopped receiving data.
+ * A string to report connect firmata timeout.
  * @type {string}
  */
-const SerialportDataStoppedError = 'Arduino UNO extension stopped receiving data';
+const ConnectFirmataTimeout = 'Arduino UNO extension connect firmata timeout';
 
 /**
  * A time interval to wait (in milliseconds) before reporting to the serialport socket
  * that data has stopped coming from the peripheral.
  */
-const SerialportTimeout = 4500;
+const SerialportTimeout = 5000;
 
 /**
  * Manage communication with a Arduino Uno peripheral over a Scrath Link client socket.
  */
-class ArduinoUno {
+class ArduinoUno{
 
     /**
      * Construct a Arduino communication object.
@@ -62,7 +64,6 @@ class ArduinoUno {
      * @param {string} deviceId - the id of the extension
      */
     constructor (runtime, deviceId) {
-
         /**
          * The Scratch 3.0 runtime used to trigger the green flag button.
          * @type {Runtime}
@@ -84,6 +85,13 @@ class ArduinoUno {
         this._deviceId = deviceId;
 
         /**
+         * Interval ID for data reading timeout.
+         * @type {number}
+         * @private
+         */
+        this._timeoutID = null;
+
+        /**
          * A flag that is true while we are busy sending data to the serialport socket.
          * @type {boolean}
          * @private
@@ -96,8 +104,19 @@ class ArduinoUno {
          */
         this._busyTimeoutID = null;
 
+        /**
+        * Pending data list. If busy is set when send, the data will push into this array to
+        * waitting to be sended.
+        */
+        this._pendingData = [];
+
         this._onConnect = this._onConnect.bind(this);
         this._onMessage = this._onMessage.bind(this);
+
+        /**
+         * Firmata connection.
+         */
+        this._firmata = null;
     }
 
     /**
@@ -158,9 +177,14 @@ class ArduinoUno {
      * @param {number} command - the Serialport command hex.
      * @param {Uint8Array} message - the message to write
      */
-    send (command, message) {
+    send (message) {
         if (!this.isConnected()) return;
-        if (this._busy) return;
+
+        // If busy push this data to _pendingData.
+        if (this._busy) {
+            this._pendingData.push(message.toString());
+            return;
+        }
 
         // Set a busy flag so that while we are sending a message and waiting for
         // the response, additional messages are ignored.
@@ -174,19 +198,17 @@ class ArduinoUno {
             this._busy = false;
         }, 5000);
 
-        const output = new Uint8Array(message.length + 1);
-        output[0] = command; // attach command to beginning of message
-        for (let i = 0; i < message.length; i++) {
-            output[i + 1] = message[i];
-        }
-        const data = Base64Util.uint8ArrayToBase64(output);
+        const data = Base64Util.uint8ArrayToBase64(message);
 
-        this._serialport.write(data, 'base64').then(
-            () => {
-                this._busy = false;
+        this._serialport.write(data, 'base64').then(() => {
+            this._busy = false;
+
+            // If _pendingData is not empty call this func to send _pendingData.
+            if (this._pendingData.length !== 0) {
+                this.send(this._pendingData.shift().split(','));
                 window.clearTimeout(this._busyTimeoutID);
             }
-        );
+        });
     }
 
     /**
@@ -195,10 +217,17 @@ class ArduinoUno {
      */
     _onConnect () {
         this._serialport.read(this._onMessage);
-        // this._timeoutID = window.setTimeout(
-        //     () => this._ble.handleDisconnectError(SerialportDataStoppedError),
-        //     SerialportTimeout
-        // );
+        this._firmata = new Firmata(this.send.bind(this));
+
+        this._timeoutID = window.setTimeout(
+            () => this._serialport.handleDisconnectError(ConnectFirmataTimeout),
+            SerialportTimeout
+        );
+
+        // If time out means failed to connect firmata.
+        this._firmata.on("ready", function () {
+            window.clearTimeout(this._timeoutID);
+        }.bind(this));
     }
 
     /**
@@ -209,29 +238,7 @@ class ArduinoUno {
     _onMessage(base64) {
         // parse data
         const data = Base64Util.base64ToUint8Array(base64);
-        console.log(data);
-
-        // this._sensors.tiltX = data[1] | (data[0] << 8);
-        // if (this._sensors.tiltX > (1 << 15)) this._sensors.tiltX -= (1 << 16);
-        // this._sensors.tiltY = data[3] | (data[2] << 8);
-        // if (this._sensors.tiltY > (1 << 15)) this._sensors.tiltY -= (1 << 16);
-
-        // this._sensors.buttonA = data[4];
-        // this._sensors.buttonB = data[5];
-
-        // this._sensors.touchPins[0] = data[6];
-        // this._sensors.touchPins[1] = data[7];
-        // this._sensors.touchPins[2] = data[8];
-
-        // this._sensors.gestureState = data[9];
-
-        // cancel disconnect timeout and start a new one
-
-        window.clearTimeout(this._timeoutID);
-        // this._timeoutID = window.setTimeout(
-        //     () => this._serialport.handleDisconnectError(SerialportDataStoppedError),
-        //     SerialportTimeout
-        // );
+        this._firmata.onReciveData(data);
     }
 }
 
@@ -854,6 +861,45 @@ class Scratch3ArduinoUnoDevice {
             }
         ]
     }
+
+    setPinMode(args) {
+        const pin = parseInt(args.PIN);
+        var mode = 0;
+
+        switch (args.MODE) {
+            case Mode.Input:
+                mode = this._peripheral._firmata.MODES.INPUT;
+                break;
+            case Mode.Output:
+                mode = this._peripheral._firmata.MODES.OUTPUT;
+                break;
+            case Mode.InputPullup:
+                mode = this._peripheral._firmata.MODES.PULLUP;
+                break;
+        }
+        this._peripheral._firmata.pinMode(pin, mode);
+    }
+
+    setDigitalOutput(args) {
+        const pin = parseInt(args.PIN);
+        var level = 0;
+        switch (args.LEVEL) {
+            case Level.Low:
+                level = 0;
+                break;
+            case Level.High:
+                level = 1;
+                break;
+        }
+        this._peripheral._firmata.digitalWrite(pin, level);
+    }
+
+    setPwmOutput(args) {
+        const pin = parseInt(args.PIN);
+        const out = parseInt(args.OUT);
+        // this._peripheral._firmata.digitalWrite(2, 0);
+    }
+
 }
 
 module.exports = Scratch3ArduinoUnoDevice;
