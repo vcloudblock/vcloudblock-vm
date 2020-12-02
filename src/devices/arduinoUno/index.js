@@ -26,7 +26,7 @@ const PNPID_LIST = [
  * @readonly
  */
 const CONFIG = {
-    baudRate: 115200,
+    baudRate: 57600,
     dataBits: 8,
     stopBits: 1
 };
@@ -52,6 +52,12 @@ const ConnectFirmataTimeout = 'Arduino UNO extension connect firmata timeout';
  * that data has stopped coming from the peripheral.
  */
 const SerialportTimeout = 5000;
+
+/**
+ * A time interval to wait (in milliseconds) while a block that sends a serialport message is running.
+ * @type {number}
+ */
+const SerialportSendInterval = 5;
 
 /**
  * Manage communication with a Arduino Uno peripheral over a Scrath Link client socket.
@@ -240,69 +246,118 @@ class ArduinoUno{
         const data = Base64Util.base64ToUint8Array(base64);
         this._firmata.onReciveData(data);
     }
+
+    /**
+     * @param {PIN} pin - the pin to set.
+     * @param {MODE} mode - the pin mode to set.
+     * @return {Promise} - a Promise that resolves when writing to peripheral.
+     */
+    setPinMode(pin, mode) {
+        switch (mode) {
+            case Mode.Input:
+                mode = this._firmata.MODES.INPUT;
+                break;
+            case Mode.Output:
+                mode = this._firmata.MODES.OUTPUT;
+                break;
+            case Mode.InputPullup:
+                mode = this._firmata.MODES.PULLUP;
+                break;
+        }
+        return this._firmata.pinMode(pin, mode);
+    }
+
+    /**
+     * @param {PIN} pin - the pin to set.
+     * @param {LEVEL} level - the pin level to set.
+     * @return {Promise} - a Promise that resolves when writing to peripheral.
+     */
+    setDigitalOutput(pin, level) {
+        return this._firmata.digitalWrite(pin, level);
+    }
+
+    /**
+     * @param {PIN} pin - the pin to set.
+     * @param {VALUE} level - the pin level to set.
+     * @return {Promise} - a Promise that resolves when writing to peripheral.
+     */
+    setPwmOutput(pin, value) {
+        if (value < 0) {
+            value = 0;
+        }
+        if (value > 255) {
+            value = 255;
+        }
+        this._firmata.pinMode(pin, this._firmata.MODES.PWM);
+        return this._firmata.pwmWrite(pin, value);
+    }
+
+    /**
+     * @param {PIN} pin - the pin to read.
+     * @return {Promise} - a Promise that resolves when read from peripheral.
+     */
+    readDigitalPin(pin) {
+        return new Promise(resolve => {
+            this._firmata.digitalRead(pin, (value) => {
+                resolve(value);
+            });
+        });
+    }
+
+    /**
+     * @param {PIN} pin - the pin to read.
+     * @return {Promise} - a Promise that resolves when read from peripheral.
+     */
+    readAnalogPin(pin) {
+        // Shifting to analog pin number.
+        pin = pin - 14;
+        this._firmata.pinMode(pin, this._firmata.MODES.ANALOG);
+        return new Promise(resolve => {
+            this._firmata.analogRead(pin, (value) => {
+                resolve(value);
+            });
+        });
+    }
 }
 
-const Pins = {
-    D0: '0',
-    D1: '1',
-    D2: '2',
-    D3: '3',
-    D4: '4',
-    D5: '5',
-    D6: '6',
-    D7: '7',
-    D8: '8',
-    D9: '9',
-    D10: '10',
-    D11: '11',
-    D12: '12',
-    D13: '13',
-    A0: 'A0',
-    A1: 'A1',
-    A2: 'A2',
-    A3: 'A3',
-    A4: 'A4',
-    A5: 'A5'
-};
-
 const DigitalPins = {
-    D0: '0',
-    D1: '1',
-    D2: '2',
-    D3: '3',
-    D4: '4',
-    D5: '5',
-    D6: '6',
-    D7: '7',
-    D8: '8',
-    D9: '9',
-    D10: '10',
-    D11: '11',
-    D12: '12',
-    D13: '13'
+    D0: 0,
+    D1: 1,
+    D2: 2,
+    D3: 3,
+    D4: 4,
+    D5: 5,
+    D6: 6,
+    D7: 7,
+    D8: 8,
+    D9: 9,
+    D10: 10,
+    D11: 11,
+    D12: 12,
+    D13: 13
 };
 
 const AnaglogPins = {
-    A0: 'A0',
-    A1: 'A1',
-    A2: 'A2',
-    A3: 'A3',
-    A4: 'A4',
-    A5: 'A5'
+    A0: 14,
+    A1: 15,
+    A2: 16,
+    A3: 17,
+    A4: 18,
+    A5: 19
 };
 
 const Level = {
-    High: 'HIGH',
-    Low: 'LOW'
+    High: 1,
+    Low: 0
 };
 
 const PwmPins = {
-    D3: '3',
-    D5: '5',
-    D6: '6',
-    D9: '9',
-    D10: '10',
-    D11: '11'
+    D3: 3,
+    D5: 5,
+    D6: 6,
+    D9: 9,
+    D10: 10,
+    D11: 11
 };
 
 const Buadrate = {
@@ -678,7 +733,7 @@ class Scratch3ArduinoUnoDevice {
                         arguments: {
                             PIN: {
                                 type: ArgumentType.STRING,
-                                menu: 'digitalPins',
+                                menu: 'pins',
                                 defaultValue: DigitalPins.D0
                             },
                             LEVEL: {
@@ -721,7 +776,7 @@ class Scratch3ArduinoUnoDevice {
                         arguments: {
                             PIN: {
                                 type: ArgumentType.STRING,
-                                menu: 'digitalPins',
+                                menu: 'pins',
                                 defaultValue: DigitalPins.D0
                             }
                         }
@@ -862,44 +917,65 @@ class Scratch3ArduinoUnoDevice {
         ]
     }
 
+    /**
+     * Set pin mode.
+     * @param {object} args - the block's arguments.
+     * @return {Promise} - a Promise that resolves after the set pin mode is done.
+     */
     setPinMode(args) {
-        const pin = parseInt(args.PIN);
-        var mode = 0;
-
-        switch (args.MODE) {
-            case Mode.Input:
-                mode = this._peripheral._firmata.MODES.INPUT;
-                break;
-            case Mode.Output:
-                mode = this._peripheral._firmata.MODES.OUTPUT;
-                break;
-            case Mode.InputPullup:
-                mode = this._peripheral._firmata.MODES.PULLUP;
-                break;
-        }
-        this._peripheral._firmata.pinMode(pin, mode);
+        this._peripheral.setPinMode(args.PIN, args.MODE);
+        return new Promise(resolve => {
+            setTimeout(() => {
+                resolve();
+            }, SerialportSendInterval);
+        });
     }
 
+    /**
+     * Set pin digital out level.
+     * @param {object} args - the block's arguments.
+     * @return {Promise} - a Promise that resolves after the set pin digital out level is done.
+     */
     setDigitalOutput(args) {
-        const pin = parseInt(args.PIN);
-        var level = 0;
-        switch (args.LEVEL) {
-            case Level.Low:
-                level = 0;
-                break;
-            case Level.High:
-                level = 1;
-                break;
-        }
-        this._peripheral._firmata.digitalWrite(pin, level);
+        this._peripheral.setDigitalOutput(args.PIN, args.LEVEL);
+        return new Promise(resolve => {
+            setTimeout(() => {
+                resolve();
+            }, SerialportSendInterval);
+        });
     }
 
+    /**
+     * Set pin pwm out value.
+     * @param {object} args - the block's arguments.
+     * @return {Promise} - a Promise that resolves after the set pin pwm out value is done.
+     */
     setPwmOutput(args) {
-        const pin = parseInt(args.PIN);
-        const out = parseInt(args.OUT);
-        // this._peripheral._firmata.digitalWrite(2, 0);
+        this._peripheral.setPwmOutput(args.PIN, args.OUT);
+        return new Promise(resolve => {
+            setTimeout(() => {
+                resolve();
+            }, SerialportSendInterval);
+        });
     }
 
+    /**
+     * Read pin digital level.
+     * @param {object} args - the block's arguments.
+     * @return {boolean} - true if read high level, false if read low level.
+     */
+    readDigitalPin(args) {
+        return this._peripheral.readDigitalPin(args.PIN);
+    }
+
+    /**
+     * Read analog pin.
+     * @param {object} args - the block's arguments.
+     * @return {number} - analog value fo the pin.
+     */
+    readAnalogPin(args) {
+        return this._peripheral.readAnalogPin(args.PIN);
+    }
 }
 
 module.exports = Scratch3ArduinoUnoDevice;
