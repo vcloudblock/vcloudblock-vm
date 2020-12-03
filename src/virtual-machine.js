@@ -112,6 +112,9 @@ class VirtualMachine extends EventEmitter {
         this.runtime.on(Runtime.BLOCK_DRAG_END, (blocks, topBlockId) => {
             this.emit(Runtime.BLOCK_DRAG_END, blocks, topBlockId);
         });
+        this.runtime.on(Runtime.PROGRAM_MODE_UPDATE, data => {
+            this.emit(Runtime.PROGRAM_MODE_UPDATE, data);
+        });
         this.runtime.on(Runtime.EXTENSION_ADDED, categoryInfo => {
             this.emit(Runtime.EXTENSION_ADDED, categoryInfo);
         });
@@ -153,6 +156,12 @@ class VirtualMachine extends EventEmitter {
         );
         this.runtime.on(Runtime.PERIPHERAL_CONNECTION_LOST_ERROR, data =>
             this.emit(Runtime.PERIPHERAL_CONNECTION_LOST_ERROR, data)
+        );
+        this.runtime.on(Runtime.PERIPHERAL_REALTIME_CONNECTION_LOST_ERROR, data =>
+            this.emit(Runtime.PERIPHERAL_REALTIME_CONNECTION_LOST_ERROR, data)
+        );
+        this.runtime.on(Runtime.PERIPHERAL_REALTIME_CONNECT_SUCCESS, data =>
+            this.emit(Runtime.PERIPHERAL_REALTIME_CONNECT_SUCCESS, data)
         );
         this.runtime.on(Runtime.PERIPHERAL_SCAN_TIMEOUT, () =>
             this.emit(Runtime.PERIPHERAL_SCAN_TIMEOUT)

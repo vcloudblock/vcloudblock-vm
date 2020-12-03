@@ -204,8 +204,6 @@ class Serialport extends JSONRPC {
      * reset callback, call it. Finally, emit an error to the runtime.
      */
     handleDisconnectError (/* e */) {
-        // log.error(`BLE error: ${JSON.stringify(e)}`);
-
         if (!this._connected) return;
 
         this.disconnect();
@@ -220,9 +218,20 @@ class Serialport extends JSONRPC {
         });
     }
 
-    _handleRequestError (/* e */) {
-        // log.error(`BLE error: ${JSON.stringify(e)}`);
+    /**
+     * Handle an error resulting from losing connection to a peripheral realtime protocal.
+     *
+     * This could be due to:
+     * - peripheral didn't running the realtime protocal like firmata.
+     */
+    handleRealtimeDisconnectError (e) {
+        this._runtime.emit(this._runtime.constructor.PERIPHERAL_REALTIME_CONNECTION_LOST_ERROR, {
+            message: e,
+            extensionId: this._extensionId
+        });
+    }
 
+    _handleRequestError (/* e */) {
         this._runtime.emit(this._runtime.constructor.PERIPHERAL_REQUEST_ERROR, {
             message: `Scratch lost connection to`,
             extensionId: this._extensionId
@@ -234,6 +243,13 @@ class Serialport extends JSONRPC {
             window.clearTimeout(this._discoverTimeoutID);
         }
         this._runtime.emit(this._runtime.constructor.PERIPHERAL_SCAN_TIMEOUT);
+    }
+
+    handleRealtimeConnectSucess(e) {
+        this._runtime.emit(this._runtime.constructor.PERIPHERAL_REALTIME_CONNECT_SUCCESS, {
+            message: e,
+            extensionId: this._extensionId
+        });
     }
 }
 

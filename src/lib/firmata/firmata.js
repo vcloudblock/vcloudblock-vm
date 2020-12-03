@@ -731,7 +731,6 @@ class Firmata extends Emitter {
      * Asks the arduino to tell us its version.
      * @param {function} callback A function to be called when the arduino has reported its version.
      */
-
     reportVersion(callback) {
         this.once("reportversion", callback);
         writeToTransport(this, [REPORT_VERSION]);
@@ -741,7 +740,6 @@ class Firmata extends Emitter {
      * Asks the arduino to tell us its firmware version.
      * @param {function} callback A function to be called when the arduino has reported its firmware version.
      */
-
     queryFirmware(callback) {
         this.once("queryfirmware", callback);
         writeToTransport(this, [

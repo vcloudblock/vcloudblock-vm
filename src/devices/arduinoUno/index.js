@@ -43,21 +43,40 @@ const DIVECE_OPT = {
 
 /**
  * A string to report connect firmata timeout.
- * @type {string}
+ * @type {formatMessage}
  */
-const ConnectFirmataTimeout = 'Arduino UNO extension connect firmata timeout';
+const ConnectFirmataTimeout = formatMessage({
+    id: 'arduinoUno.connection.connectFirmataTimeout',
+    default: 'Timeout when try to connect firmata, please download the firmware first.',
+    description: 'label for connect firmata timeout'
+});
 
 /**
- * A time interval to wait (in milliseconds) before reporting to the serialport socket
- * that data has stopped coming from the peripheral.
+ * A string to report connect firmata success.
+ * @type {formatMessage}
  */
-const SerialportTimeout = 5000;
+const ConnectFirmataSuccess = formatMessage({
+    id: 'arduinoUno.connection.connectFirmataSuccess',
+    default: 'Success to connect firmata.',
+    description: 'label for connect firmata success'
+});
 
 /**
  * A time interval to wait (in milliseconds) while a block that sends a serialport message is running.
  * @type {number}
  */
 const SerialportSendInterval = 5;
+
+/**
+ * A time interval to send firmata hartbeat(in milliseconds).
+ */
+const FrimataHartbeatInterval = 2000;
+
+/**
+ * A time interval to wait (in milliseconds) before reporting to the serialport socket
+ * that heartbeat has stopped coming from the peripheral.
+ */
+const FrimataHartbeatTimeout = 5000;
 
 /**
  * Manage communication with a Arduino Uno peripheral over a Scrath Link client socket.
@@ -91,13 +110,6 @@ class ArduinoUno{
         this._deviceId = deviceId;
 
         /**
-         * Interval ID for data reading timeout.
-         * @type {number}
-         * @private
-         */
-        this._timeoutID = null;
-
-        /**
          * A flag that is true while we are busy sending data to the serialport socket.
          * @type {boolean}
          * @private
@@ -121,8 +133,31 @@ class ArduinoUno{
 
         /**
          * Firmata connection.
+         * @type {?Firmata}
+         * @private
          */
         this._firmata = null;
+
+        /**
+         * Timeout ID for firmata get hartbeat timeout.
+         * @type {number}
+         * @private
+         */
+        this._firmataTimeoutID = null;
+
+        /**
+         * Interval ID for firmata send hartbeat.
+         * @type {number}
+         * @private
+         */
+        this._firmataIntervelID = null;
+
+        /**
+         * A flag that is true while firmata is conncted.
+         * @type {boolean}
+         * @private
+         */
+        this._isFirmataConnected = false;
     }
 
     /**
@@ -164,6 +199,23 @@ class ArduinoUno{
         if (this._serialport) {
             this._serialport.disconnect();
         }
+
+        this.reset();
+    }
+
+    /**
+     * Reset all the state and timeout/interval ids.
+     */
+    reset () {
+        if (this._firmataTimeoutID) {
+            window.clearTimeout(this._firmataTimeoutID);
+            this._firmataTimeoutID = null;
+        }
+        if (this._firmataIntervelID) {
+            window.clearInterval(this._firmataIntervelID);
+            this._firmataIntervelID = null;
+        }
+        this._isFirmataConnected = false;
     }
 
     /**
@@ -221,18 +273,35 @@ class ArduinoUno{
      * Starts reading data from peripheral after BLE has connected to it.
      * @private
      */
-    _onConnect () {
+    _onConnect() {
         this._serialport.read(this._onMessage);
         this._firmata = new Firmata(this.send.bind(this));
 
-        this._timeoutID = window.setTimeout(
-            () => this._serialport.handleDisconnectError(ConnectFirmataTimeout),
-            SerialportTimeout
-        );
+        // Send reportVersion request as hartbeat.
+        this._firmataIntervelID = window.setInterval(() => this._firmata.reportVersion(() => { }), FrimataHartbeatInterval);
+        this._firmataTimeoutID = window.setTimeout(() => {
+            this._isFirmataConnected = false;
+            if (this._runtime.getCurrentIsRealtimeMode()) {
+                this._serialport.handleRealtimeDisconnectError(ConnectFirmataTimeout);
+            }
+        }, FrimataHartbeatTimeout);
 
         // If time out means failed to connect firmata.
-        this._firmata.on("ready", function () {
-            window.clearTimeout(this._timeoutID);
+        this._firmata.on("reportversion", function () {
+            if (!this._isFirmataConnected) {
+                this._isFirmataConnected = true;
+                if (this._runtime.getCurrentIsRealtimeMode()) {
+                    this._serialport.handleRealtimeConnectSucess(ConnectFirmataSuccess);
+                }
+            }
+
+            window.clearTimeout(this._firmataTimeoutID);
+            this._firmataTimeoutID = window.setTimeout(() => {
+                this._isFirmataConnected = false;
+                if (this._runtime.getCurrentIsRealtimeMode()) {
+                    this._serialport.handleRealtimeDisconnectError(ConnectFirmataTimeout);
+                }
+            }, FrimataHartbeatTimeout);
         }.bind(this));
     }
 

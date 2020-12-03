@@ -222,6 +222,12 @@ class Runtime extends EventEmitter {
         this._editingTarget = null;
 
         /**
+         * Currently program mode.
+         * @type {bool}
+         */
+        this._isRealtimeMode = true;
+
+        /**
          * Currently selected device.
          * @type {?Device}
          */
@@ -572,6 +578,14 @@ class Runtime extends EventEmitter {
     }
 
     /**
+     * Event name for program mode update report.
+     * @const {string}
+     */
+    static get PROGRAM_MODE_UPDATE () {
+        return 'PROGRAM_MODE_UPDATE';
+    }
+
+    /**
      * Event name for monitors update.
      * @const {string}
      */
@@ -695,6 +709,24 @@ class Runtime extends EventEmitter {
      */
     static get PERIPHERAL_CONNECTION_LOST_ERROR () {
         return 'PERIPHERAL_CONNECTION_LOST_ERROR';
+    }
+
+    /**
+     * Event name for reporting that a peripheral realtime connection has been lost.
+     * This causes a 'peripheral connection realtime lost' error alert to display.
+     * @const {string}
+     */
+    static get PERIPHERAL_REALTIME_CONNECTION_LOST_ERROR () {
+        return 'PERIPHERAL_REALTIME_CONNECTION_LOST_ERROR';
+    }
+
+    /**
+     * Event name for reporting that a peripheral realtime connection has been success.
+     * This causes a 'peripheral connection realtime success' success alert to display.
+     * @const {string}
+     */
+    static get PERIPHERAL_REALTIME_CONNECT_SUCCESS () {
+        return 'PERIPHERAL_REALTIME_CONNECT_SUCCESS';
     }
 
     /**
@@ -2382,13 +2414,35 @@ class Runtime extends EventEmitter {
         this._loadedExtensions = [];
     }
 
-
     /**
      * Get the current Loaded extension.
      * @return {Array.id} array of current loaded extension ids.
      */
     getCurrentExtensionLoaded() {
         return this._loadedExtensions;
+    }
+
+    /**
+     * Set whether the current program mode is realtime mode.
+     */
+    setRealtimeMode(sta) {
+        this._isRealtimeMode = sta;
+        this.emit(Runtime.PROGRAM_MODE_UPDATE, {isRealtimeMode: this._isRealtimeMode});
+    }
+
+    /**
+     * Set whether the current program mode is upload mode.
+     */
+    setUploadMode(sta) {
+        this._isRealtimeMode = !sta;
+        this.emit(Runtime.PROGRAM_MODE_UPDATE, {isRealtimeMode: this._isRealtimeMode});
+    }
+
+    /**
+     * Get whether the current program mode is realtime mode.
+     */
+    getCurrentIsRealtimeMode() {
+        return this._isRealtimeMode;
     }
 
     /**
