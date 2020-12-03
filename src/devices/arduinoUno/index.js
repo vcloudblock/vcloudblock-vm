@@ -289,6 +289,12 @@ class ArduinoUno{
         this._runtime.on(this._runtime.constructor.PROGRAM_MODE_UPDATE, data => {
             if (data.isRealtimeMode) {
                 this._firmataIntervelID = window.setInterval(() => this._firmata.reportVersion(() => { }), FrimataHartbeatInterval);
+                this._firmataTimeoutID = window.setTimeout(() => {
+                    this._isFirmataConnected = false;
+                    if (this._runtime.getCurrentIsRealtimeMode()) {
+                        this._serialport.handleRealtimeDisconnectError(ConnectFirmataTimeout);
+                    }
+                }, FrimataHartbeatTimeout);
                 this._isFirmataConnected = false;
             } else {
                 window.clearInterval(this._firmataIntervelID);
