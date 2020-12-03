@@ -286,6 +286,15 @@ class ArduinoUno{
             }
         }, FrimataHartbeatTimeout);
 
+        this._runtime.on(this._runtime.constructor.PROGRAM_MODE_UPDATE, data => {
+            if (data.isRealtimeMode) {
+                this._firmataIntervelID = window.setInterval(() => this._firmata.reportVersion(() => { }), FrimataHartbeatInterval);
+                this._isFirmataConnected = false;
+            } else {
+                window.clearInterval(this._firmataIntervelID);
+            }
+        });
+
         // If time out means failed to connect firmata.
         this._firmata.on("reportversion", function () {
             if (!this._isFirmataConnected) {
