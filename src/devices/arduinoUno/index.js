@@ -332,11 +332,25 @@ class ArduinoUno{
     }
 
     /**
+     * @param {PIN} pin - the pin string to parse.
+     * @return {number} - the pin number.
+     */
+    parsePin(pin) {
+        if (pin.charAt(0) === 'A') {
+            return parseInt(pin) + 13;
+        } else {
+            return parseInt(pin);
+        }
+
+    }
+
+    /**
      * @param {PIN} pin - the pin to set.
      * @param {MODE} mode - the pin mode to set.
      * @return {Promise} - a Promise that resolves when writing to peripheral.
      */
     setPinMode(pin, mode) {
+        pin = parsePin(pin);
         switch (mode) {
             case Mode.Input:
                 mode = this._firmata.MODES.INPUT;
@@ -357,6 +371,8 @@ class ArduinoUno{
      * @return {Promise} - a Promise that resolves when writing to peripheral.
      */
     setDigitalOutput(pin, level) {
+        pin = parsePin(pin);
+        level = parseInt(level);
         return this._firmata.digitalWrite(pin, level);
     }
 
@@ -366,6 +382,7 @@ class ArduinoUno{
      * @return {Promise} - a Promise that resolves when writing to peripheral.
      */
     setPwmOutput(pin, value) {
+        pin = parsePin(pin);
         if (value < 0) {
             value = 0;
         }
@@ -381,6 +398,7 @@ class ArduinoUno{
      * @return {Promise} - a Promise that resolves when read from peripheral.
      */
     readDigitalPin(pin) {
+        pin = parsePin(pin);
         return new Promise(resolve => {
             this._firmata.digitalRead(pin, (value) => {
                 resolve(value);
@@ -393,6 +411,7 @@ class ArduinoUno{
      * @return {Promise} - a Promise that resolves when read from peripheral.
      */
     readAnalogPin(pin) {
+        pin = parsePin(pin);
         // Shifting to analog pin number.
         pin = pin - 14;
         this._firmata.pinMode(pin, this._firmata.MODES.ANALOG);
@@ -405,52 +424,52 @@ class ArduinoUno{
 }
 
 const DigitalPins = {
-    D0: 0,
-    D1: 1,
-    D2: 2,
-    D3: 3,
-    D4: 4,
-    D5: 5,
-    D6: 6,
-    D7: 7,
-    D8: 8,
-    D9: 9,
-    D10: 10,
-    D11: 11,
-    D12: 12,
-    D13: 13
+    D0: '0',
+    D1: '1',
+    D2: '2',
+    D3: '3',
+    D4: '4',
+    D5: '5',
+    D6: '6',
+    D7: '7',
+    D8: '8',
+    D9: '9',
+    D10: '10',
+    D11: '11',
+    D12: '12',
+    D13: '13'
 };
 
 const AnaglogPins = {
-    A0: 14,
-    A1: 15,
-    A2: 16,
-    A3: 17,
-    A4: 18,
-    A5: 19
+    A0: 'A0',
+    A1: 'A1',
+    A2: 'A2',
+    A3: 'A3',
+    A4: 'A4',
+    A5: 'A5'
 };
 
 const Level = {
-    High: 1,
-    Low: 0
+    High: '1',
+    Low: '0'
 };
 
 const PwmPins = {
-    D3: 3,
-    D5: 5,
-    D6: 6,
-    D9: 9,
-    D10: 10,
-    D11: 11
+    D3: '3',
+    D5: '5',
+    D6: '6',
+    D9: '9',
+    D10: '10',
+    D11: '11'
 };
 
 const Buadrate = {
-    B4800: 4800,
-    B9600: 9600,
-    B19200: 19200,
-    B38400: 38400,
-    B57600: 57600,
-    B115200: 115200
+    B4800: '4800',
+    B9600: '9600',
+    B19200: '19200',
+    B38400: '38400',
+    B57600: '57600',
+    B115200: '115200'
 };
 
 const Mode = {
@@ -776,9 +795,9 @@ class Scratch3ArduinoUnoDevice {
             {
                 id: 'pin',
                 name: formatMessage({
-                    default: 'Pins',
-                    description: 'The name of the arduino uno device pin category',
                     id: 'arduinoUno.category.pins',
+                    default: 'Pins',
+                    description: 'The name of the arduino uno device pin category'
                 }),
                 color1: '#4C97FF',
                 color2: '#3373CC',
@@ -928,10 +947,10 @@ class Scratch3ArduinoUnoDevice {
             },
             {
                 id: 'serial',
-                name: formatMessage({
+                name:  formatMessage({
+                    id: 'arduinoUno.category.serial',
                     default: 'Serial',
                     description: 'The name of the arduino uno device serial category',
-                    id: 'arduinoUno.category.serial',
                 }),
                 color1: '#9966FF',
                 color2: '#774DCB',
