@@ -47,7 +47,7 @@ const DIVECE_OPT = {
  */
 const ConnectFirmataTimeout = formatMessage({
     id: 'arduinoUno.connection.connectFirmataTimeout',
-    default: 'Timeout when try to connect firmata, please download the firmware first.',
+    default: 'Timeout when try to connect firmata, please download the firmware first',
     description: 'label for connect firmata timeout'
 });
 
@@ -57,7 +57,7 @@ const ConnectFirmataTimeout = formatMessage({
  */
 const ConnectFirmataSuccess = formatMessage({
     id: 'arduinoUno.connection.connectFirmataSuccess',
-    default: 'Success to connect firmata.',
+    default: 'Success to connect firmata',
     description: 'label for connect firmata success'
 });
 
