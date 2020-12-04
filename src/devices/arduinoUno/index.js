@@ -337,11 +337,10 @@ class ArduinoUno{
      */
     parsePin(pin) {
         if (pin.charAt(0) === 'A') {
-            return parseInt(pin) + 13;
+            return parseInt(pin.slice(1)) + 14;
         } else {
             return parseInt(pin);
         }
-
     }
 
     /**
@@ -350,7 +349,7 @@ class ArduinoUno{
      * @return {Promise} - a Promise that resolves when writing to peripheral.
      */
     setPinMode(pin, mode) {
-        pin = parsePin(pin);
+        pin = this.parsePin(pin);
         switch (mode) {
             case Mode.Input:
                 mode = this._firmata.MODES.INPUT;
@@ -371,7 +370,7 @@ class ArduinoUno{
      * @return {Promise} - a Promise that resolves when writing to peripheral.
      */
     setDigitalOutput(pin, level) {
-        pin = parsePin(pin);
+        pin = this.parsePin(pin);
         level = parseInt(level);
         return this._firmata.digitalWrite(pin, level);
     }
@@ -382,7 +381,7 @@ class ArduinoUno{
      * @return {Promise} - a Promise that resolves when writing to peripheral.
      */
     setPwmOutput(pin, value) {
-        pin = parsePin(pin);
+        pin = this.parsePin(pin);
         if (value < 0) {
             value = 0;
         }
@@ -398,7 +397,7 @@ class ArduinoUno{
      * @return {Promise} - a Promise that resolves when read from peripheral.
      */
     readDigitalPin(pin) {
-        pin = parsePin(pin);
+        pin = this.parsePin(pin);
         return new Promise(resolve => {
             this._firmata.digitalRead(pin, (value) => {
                 resolve(value);
@@ -411,7 +410,7 @@ class ArduinoUno{
      * @return {Promise} - a Promise that resolves when read from peripheral.
      */
     readAnalogPin(pin) {
-        pin = parsePin(pin);
+        pin = this.parsePin(pin);
         // Shifting to analog pin number.
         pin = pin - 14;
         this._firmata.pinMode(pin, this._firmata.MODES.ANALOG);
