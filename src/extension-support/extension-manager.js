@@ -326,11 +326,12 @@ class ExtensionManager {
             const toolboxUrl = url + deviceExtension.toolbox;
             const blockUrl = url + deviceExtension.blocks;
             const generatorUrl = url + deviceExtension.generator;
+            const msgUrl =  url + deviceExtension.msg;
 
             fetch(toolboxUrl)
                 .then(response => response.text())
                 .then(toolboxXML => {
-                    loadjs([blockUrl, generatorUrl], { returnPromise: true })
+                    loadjs([blockUrl, generatorUrl, msgUrl], { returnPromise: true })
                         .then(() => {
                             this.runtime.addDeviceExtension(deviceExtensionId, toolboxXML);
                             this.runtime.emit(this.runtime.constructor.DEVICE_EXTENSION_ADDED)
