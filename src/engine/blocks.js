@@ -506,6 +506,8 @@ class Blocks {
             }
             break;
         }
+
+        this.runtime.requestCodeUpdate();
     }
 
     // ---------------------------------------------------------------------

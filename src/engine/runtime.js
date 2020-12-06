@@ -806,6 +806,14 @@ class Runtime extends EventEmitter {
     }
 
     /**
+     * Event name for report that a block was updated and needs to update code.
+     * @const {string}
+     */
+    static get CODE_NEED_UPDATE () {
+        return 'CODE_NEED_UPDATE';
+    }
+
+    /**
      * How rapidly we try to step threads by default, in ms.
      */
     static get THREAD_STEP_INTERVAL () {
@@ -2570,6 +2578,13 @@ class Runtime extends EventEmitter {
      */
     emitToolboxUploadFinish () {
         this.emit(Runtime.TOOLBOX_UPLOAD_FINISH);
+    }
+
+    /**
+     * Emit an event that indicates that the code need updating.
+     */
+    requestCodeUpdate () {
+        this.emit(Runtime.CODE_NEED_UPDATE);
     }
 
     /**
