@@ -328,20 +328,15 @@ class ExtensionManager {
             const generatorUrl = url + deviceExtension.generator;
             const msgUrl =  url + deviceExtension.msg;
 
-            fetch(toolboxUrl)
-                .then(response => response.text())
-                .then(toolboxXML => {
-                    loadjs([blockUrl, generatorUrl, msgUrl], { returnPromise: true })
-                        .then(() => {
-                            this.runtime.addDeviceExtension(deviceExtensionId, toolboxXML);
-                            this.runtime.emit(this.runtime.constructor.DEVICE_EXTENSION_ADDED)
-                            return resolve();
-                        })
-                        .catch(err => {
-                            return reject(`Error while load device extension ${deviceExtension.extensionId}\'s js file: ${err}`);
-                        });
-                }, err => {
-                    return reject(`Error while fetch device extension ${deviceExtension.extensionId}\'s toolbox: ${err}`);
+            loadjs([toolboxUrl, blockUrl, generatorUrl, msgUrl], { returnPromise: true })
+                .then(() => {
+                    const toolboxXML = addToolbox();
+                    this.runtime.addDeviceExtension(deviceExtensionId, toolboxXML);
+                    this.runtime.emit(this.runtime.constructor.DEVICE_EXTENSION_ADDED)
+                    return resolve();
+                })
+                .catch(err => {
+                    return reject(`Error while load device extension ${deviceExtension.extensionId}\'s js file: ${err}`);
                 });
         });
     }
