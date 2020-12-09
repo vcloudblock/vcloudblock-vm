@@ -1,4 +1,4 @@
-# scratch-vm
+# scratchhw-vm
 
 ## Instructions
 
