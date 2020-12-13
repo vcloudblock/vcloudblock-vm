@@ -329,6 +329,7 @@ class VirtualMachine extends EventEmitter {
      * Upload code to the extension's specified peripheral.
      * @param {string} extensionId - the id of the extension.
      * @param {string} code - the code to upload.
+     * @return {Function} Returns a function to restore upload code to peripheral.
      */
     uploadToPeripheral (extensionId, code) {
         return this.runtime.uploadToPeripheral(extensionId, code);
@@ -384,7 +385,7 @@ class VirtualMachine extends EventEmitter {
             });
 
         // Clear current extentions.
-        this.runtime.clearCurrentDeviceExtension();
+        this.runtime.clearCurrentExtension();
         this.runtime.clearCurrentDeviceExtension();
 
         return validationPromise
@@ -539,7 +540,8 @@ class VirtualMachine extends EventEmitter {
         };
         return deserializePromise()
             .then(({targets}) =>
-                this.installTargets(targets, projectJSON.device, projectJSON.extensions, projectJSON.deviceExtensions, true))
+                this.installTargets(targets, projectJSON.device,
+                    projectJSON.extensions, projectJSON.deviceExtensions, true));
     }
 
     /**
@@ -547,45 +549,51 @@ class VirtualMachine extends EventEmitter {
      * @param {Array.deviceExtensions} deviceExtensions - the array of device extensions id to be installed
      * @returns {Promise} resolved deviceExtensions installed
      */
-    installDeviceExtension(deviceExtensions) {
+    installDeviceExtension (deviceExtensions) {
         return new Promise((resolve, reject) => {
             const deviceExtensionFetchPromises = [];
             const deviceExtensionLoadPromises = [];
 
             if (deviceExtensions) {
-                deviceExtensionFetchPromises.push(this.extensionManager.getLocalDeviceExtensionsList())
-                deviceExtensionFetchPromises.push(this.extensionManager.getRemoteDeviceExtensionsList())
+                deviceExtensionFetchPromises.push(this.extensionManager.getLocalDeviceExtensionsList());
+                deviceExtensionFetchPromises.push(this.extensionManager.getRemoteDeviceExtensionsList());
 
                 return Promise.all(deviceExtensionFetchPromises).then(() => {
-                    deviceExtension.forEach(deviceExtensionID => {
-                        deviceExtensionLoadPromises.push(this.extensionManager.loadDeviceExtension(deviceExtensionID));
-                    })
-                    Promise.all(deviceExtensionLoadPromises).then(() => {
-                        resolve();
-                    }).catch((e) => {
-                        reject(e)
-                    });
-                }).catch(() => {
-                    // Remote fetch may failed
                     deviceExtensions.forEach(deviceExtensionID => {
                         deviceExtensionLoadPromises.push(this.extensionManager.loadDeviceExtension(deviceExtensionID));
-                    })
+                    });
                     Promise.all(deviceExtensionLoadPromises).then(() => {
                         resolve();
-                    }).catch((e) => {
-                        reject(e)
+                    })
+                        .catch(e => {
+                            reject(e);
+                        });
+                })
+                    .catch(() => {
+                    // Remote fetch may failed
+                        deviceExtensions.forEach(deviceExtensionID => {
+                            deviceExtensionLoadPromises.push(
+                                this.extensionManager.loadDeviceExtension(deviceExtensionID));
+                        });
+                        Promise.all(deviceExtensionLoadPromises).then(() => {
+                            resolve();
+                        })
+                            .catch(e => {
+                                reject(e);
+                            });
                     });
-                });
-            } else {
-                resolve();
             }
-        })
+            resolve();
+
+        });
     }
 
     /**
      * Install `deserialize` results: zero or more targets after the extensions (if any) used by those targets.
      * @param {Array.<Target>} targets - the targets to be installed
+     * @param {Device} device - the deivce to be installed
      * @param {ImportedExtensionsInfo} extensions - metadata about extensions used by these targets
+     * @param {Array.<DeviceExtension>} deviceExtensions - the deivce extensions to be installed
      * @param {boolean} wholeProject - set to true if installing a whole project, as opposed to a single sprite.
      * @returns {Promise} resolved once targets have been installed
      */
@@ -1447,7 +1455,7 @@ class VirtualMachine extends EventEmitter {
                     }
                 }
             }
-        }{}
+        }
         // Anything left in messageIds is not referenced by a block, so delete it.
         for (let i = 0; i < messageIds.length; i++) {
             const id = messageIds[i];

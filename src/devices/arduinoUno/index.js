@@ -1,9 +1,11 @@
+const formatMessage = require('format-message');
+const Buffer = require('buffer').Buffer;
+
 const ArgumentType = require('../../extension-support/argument-type');
 const BlockType = require('../../extension-support/block-type');
 const ProgramModeType = require('../../extension-support/program-mode-type');
 const Serialport = require('../../io/serialport');
 const Base64Util = require('../../util/base64-util');
-const formatMessage = require('format-message');
 
 const Firmata = require('../../lib/firmata/firmata');
 
@@ -12,7 +14,7 @@ const Firmata = require('../../lib/firmata/firmata');
  * @readonly
  */
 const PNPID_LIST = [
-    //https://github.com/arduino/Arduino/blob/1.8.0/hardware/arduino/avr/boards.txt#L51-L58
+    // https://github.com/arduino/Arduino/blob/1.8.0/hardware/arduino/avr/boards.txt#L51-L58
     'USB\\VID_2341&PID_0043',
     'USB\\VID_2341&PID_0001',
     'USB\\VID_2A03&PID_0043',
@@ -39,7 +41,7 @@ const DIVECE_OPT = {
     type: 'arduino',
     board: 'arduino:avr:uno',
     partno: 'atmega328p'
-}
+};
 
 /**
  * A string to report connect firmata timeout.
@@ -77,6 +79,61 @@ const FrimataHartbeatInterval = 2000;
  * that heartbeat has stopped coming from the peripheral.
  */
 const FrimataHartbeatTimeout = 5000;
+
+const DigitalPins = {
+    D0: '0',
+    D1: '1',
+    D2: '2',
+    D3: '3',
+    D4: '4',
+    D5: '5',
+    D6: '6',
+    D7: '7',
+    D8: '8',
+    D9: '9',
+    D10: '10',
+    D11: '11',
+    D12: '12',
+    D13: '13'
+};
+
+const AnaglogPins = {
+    A0: 'A0',
+    A1: 'A1',
+    A2: 'A2',
+    A3: 'A3',
+    A4: 'A4',
+    A5: 'A5'
+};
+
+const Level = {
+    High: '1',
+    Low: '0'
+};
+
+const PwmPins = {
+    D3: '3',
+    D5: '5',
+    D6: '6',
+    D9: '9',
+    D10: '10',
+    D11: '11'
+};
+
+const Buadrate = {
+    B4800: '4800',
+    B9600: '9600',
+    B19200: '19200',
+    B38400: '38400',
+    B57600: '57600',
+    B115200: '115200'
+};
+
+const Mode = {
+    Input: 'INPUT',
+    Output: 'OUTPUT',
+    InputPullup: 'INPUT_PULLUP'
+};
 
 /**
  * Manage communication with a Arduino Uno peripheral over a Scrath Link client socket.
@@ -162,9 +219,10 @@ class ArduinoUno{
 
     /**
      * Called by the runtime when user wants to upload code to a peripheral.
+     * @param {string} code - the code want to upload.
      */
-    upload(code) {
-        var base64Str = Buffer.from(code).toString('base64');
+    upload (code) {
+        const base64Str = Buffer.from(code).toString('base64');
         this._serialport.upload(base64Str, DIVECE_OPT, 'base64');
     }
 
@@ -177,7 +235,7 @@ class ArduinoUno{
         }
         this._serialport = new Serialport(this._runtime, this._deviceId, {
             filters: {
-                pnpid: PNPID_LIST,
+                pnpid: PNPID_LIST
             }
         }, this._onConnect);
     }
@@ -186,9 +244,9 @@ class ArduinoUno{
      * Called by the runtime when user wants to connect to a certain peripheral.
      * @param {number} id - the id of the peripheral to connect to.
      */
-    connect(id) {
+    connect (id) {
         if (this._serialport) {
-            this._serialport.connectPeripheral(id, { config: CONFIG });
+            this._serialport.connectPeripheral(id, {config: CONFIG});
         }
     }
 
@@ -232,7 +290,6 @@ class ArduinoUno{
 
     /**
      * Send a message to the peripheral Serialport socket.
-     * @param {number} command - the Serialport command hex.
      * @param {Uint8Array} message - the message to write
      */
     send (message) {
@@ -273,12 +330,13 @@ class ArduinoUno{
      * Starts reading data from peripheral after BLE has connected to it.
      * @private
      */
-    _onConnect() {
+    _onConnect () {
         this._serialport.read(this._onMessage);
         this._firmata = new Firmata(this.send.bind(this));
 
         // Send reportVersion request as hartbeat.
-        this._firmataIntervelID = window.setInterval(() => this._firmata.reportVersion(() => { }), FrimataHartbeatInterval);
+        this._firmataIntervelID = window.setInterval(
+            () => this._firmata.reportVersion(() => { }), FrimataHartbeatInterval);
         this._firmataTimeoutID = window.setTimeout(() => {
             this._isFirmataConnected = false;
             if (this._runtime.getCurrentIsRealtimeMode()) {
@@ -288,7 +346,8 @@ class ArduinoUno{
 
         this._runtime.on(this._runtime.constructor.PROGRAM_MODE_UPDATE, data => {
             if (data.isRealtimeMode) {
-                this._firmataIntervelID = window.setInterval(() => this._firmata.reportVersion(() => { }), FrimataHartbeatInterval);
+                this._firmataIntervelID = window.setInterval(
+                    () => this._firmata.reportVersion(() => { }), FrimataHartbeatInterval);
                 this._firmataTimeoutID = window.setTimeout(() => {
                     this._isFirmataConnected = false;
                     if (this._runtime.getCurrentIsRealtimeMode()) {
@@ -302,7 +361,7 @@ class ArduinoUno{
         });
 
         // If time out means failed to connect firmata.
-        this._firmata.on("reportversion", function () {
+        this._firmata.on('reportversion', () => {
             if (!this._isFirmataConnected) {
                 this._isFirmataConnected = true;
                 if (this._runtime.getCurrentIsRealtimeMode()) {
@@ -317,15 +376,15 @@ class ArduinoUno{
                     this._serialport.handleRealtimeDisconnectError(ConnectFirmataTimeout);
                 }
             }, FrimataHartbeatTimeout);
-        }.bind(this));
+        });
     }
 
     /**
-     * Process the sensor data from the incoming BLE characteristic.
-     * @param {object} data - the incoming BLE data.
+     * Process the sensor data from the incoming serialport characteristic.
+     * @param {object} base64 - the incoming serialport data.
      * @private
      */
-    _onMessage(base64) {
+    _onMessage (base64) {
         // parse data
         const data = Base64Util.base64ToUint8Array(base64);
         this._firmata.onReciveData(data);
@@ -335,12 +394,12 @@ class ArduinoUno{
      * @param {PIN} pin - the pin string to parse.
      * @return {number} - the pin number.
      */
-    parsePin(pin) {
+    parsePin (pin) {
         if (pin.charAt(0) === 'A') {
-            return parseInt(pin.slice(1)) + 14;
-        } else {
-            return parseInt(pin);
+            return parseInt(pin.slice(1), 10) + 14;
         }
+        return parseInt(pin, 10);
+
     }
 
     /**
@@ -348,18 +407,18 @@ class ArduinoUno{
      * @param {MODE} mode - the pin mode to set.
      * @return {Promise} - a Promise that resolves when writing to peripheral.
      */
-    setPinMode(pin, mode) {
+    setPinMode (pin, mode) {
         pin = this.parsePin(pin);
         switch (mode) {
-            case Mode.Input:
-                mode = this._firmata.MODES.INPUT;
-                break;
-            case Mode.Output:
-                mode = this._firmata.MODES.OUTPUT;
-                break;
-            case Mode.InputPullup:
-                mode = this._firmata.MODES.PULLUP;
-                break;
+        case Mode.Input:
+            mode = this._firmata.MODES.INPUT;
+            break;
+        case Mode.Output:
+            mode = this._firmata.MODES.OUTPUT;
+            break;
+        case Mode.InputPullup:
+            mode = this._firmata.MODES.PULLUP;
+            break;
         }
         return this._firmata.pinMode(pin, mode);
     }
@@ -369,18 +428,18 @@ class ArduinoUno{
      * @param {LEVEL} level - the pin level to set.
      * @return {Promise} - a Promise that resolves when writing to peripheral.
      */
-    setDigitalOutput(pin, level) {
+    setDigitalOutput (pin, level) {
         pin = this.parsePin(pin);
-        level = parseInt(level);
+        level = parseInt(level, 10);
         return this._firmata.digitalWrite(pin, level);
     }
 
     /**
      * @param {PIN} pin - the pin to set.
-     * @param {VALUE} level - the pin level to set.
+     * @param {VALUE} value - the pwm value to set.
      * @return {Promise} - a Promise that resolves when writing to peripheral.
      */
-    setPwmOutput(pin, value) {
+    setPwmOutput (pin, value) {
         pin = this.parsePin(pin);
         if (value < 0) {
             value = 0;
@@ -396,10 +455,10 @@ class ArduinoUno{
      * @param {PIN} pin - the pin to read.
      * @return {Promise} - a Promise that resolves when read from peripheral.
      */
-    readDigitalPin(pin) {
+    readDigitalPin (pin) {
         pin = this.parsePin(pin);
         return new Promise(resolve => {
-            this._firmata.digitalRead(pin, (value) => {
+            this._firmata.digitalRead(pin, value => {
                 resolve(value);
             });
         });
@@ -409,73 +468,18 @@ class ArduinoUno{
      * @param {PIN} pin - the pin to read.
      * @return {Promise} - a Promise that resolves when read from peripheral.
      */
-    readAnalogPin(pin) {
+    readAnalogPin (pin) {
         pin = this.parsePin(pin);
         // Shifting to analog pin number.
         pin = pin - 14;
         this._firmata.pinMode(pin, this._firmata.MODES.ANALOG);
         return new Promise(resolve => {
-            this._firmata.analogRead(pin, (value) => {
+            this._firmata.analogRead(pin, value => {
                 resolve(value);
             });
         });
     }
 }
-
-const DigitalPins = {
-    D0: '0',
-    D1: '1',
-    D2: '2',
-    D3: '3',
-    D4: '4',
-    D5: '5',
-    D6: '6',
-    D7: '7',
-    D8: '8',
-    D9: '9',
-    D10: '10',
-    D11: '11',
-    D12: '12',
-    D13: '13'
-};
-
-const AnaglogPins = {
-    A0: 'A0',
-    A1: 'A1',
-    A2: 'A2',
-    A3: 'A3',
-    A4: 'A4',
-    A5: 'A5'
-};
-
-const Level = {
-    High: '1',
-    Low: '0'
-};
-
-const PwmPins = {
-    D3: '3',
-    D5: '5',
-    D6: '6',
-    D9: '9',
-    D10: '10',
-    D11: '11'
-};
-
-const Buadrate = {
-    B4800: '4800',
-    B9600: '9600',
-    B19200: '19200',
-    B38400: '38400',
-    B57600: '57600',
-    B115200: '115200'
-};
-
-const Mode = {
-    Input: 'INPUT',
-    Output: 'OUTPUT',
-    InputPullup: 'INPUT_PULLUP'
-};
 
 /**
  * Scratch 3.0 blocks to interact with a Arduino Uno peripheral.
@@ -488,7 +492,7 @@ class Scratch3ArduinoUnoDevice {
         return 'arduinoUno';
     }
 
-    get PINS_MENU() {
+    get PINS_MENU () {
         return [
             {
                 text: '0',
@@ -573,7 +577,7 @@ class Scratch3ArduinoUnoDevice {
         ];
     }
 
-    get MODE_MENU() {
+    get MODE_MENU () {
         return [
             {
                 text: formatMessage({
@@ -598,7 +602,7 @@ class Scratch3ArduinoUnoDevice {
                     description: 'label for input-pullup pin mode'
                 }),
                 value: Mode.InputPullup
-            },
+            }
         ];
     }
 
@@ -692,7 +696,7 @@ class Scratch3ArduinoUnoDevice {
         ];
     }
 
-    get LEVEL_MENU() {
+    get LEVEL_MENU () {
         return [
             {
                 text: formatMessage({
@@ -709,11 +713,11 @@ class Scratch3ArduinoUnoDevice {
                     description: 'label for low level'
                 }),
                 value: Level.Low
-            },
+            }
         ];
     }
 
-    get PWM_PINS_MENU() {
+    get PWM_PINS_MENU () {
         return [
             {
                 text: '3',
@@ -742,7 +746,7 @@ class Scratch3ArduinoUnoDevice {
         ];
     }
 
-    get BAUDTATE_MENU() {
+    get BAUDTATE_MENU () {
         return [
             {
                 text: '4800',
@@ -946,10 +950,10 @@ class Scratch3ArduinoUnoDevice {
             },
             {
                 id: 'serial',
-                name:  formatMessage({
+                name: formatMessage({
                     id: 'arduinoUno.category.serial',
                     default: 'Serial',
-                    description: 'The name of the arduino uno device serial category',
+                    description: 'The name of the arduino uno device serial category'
                 }),
                 color1: '#9966FF',
                 color2: '#774DCB',
@@ -1016,7 +1020,7 @@ class Scratch3ArduinoUnoDevice {
                     }
                 }
             }
-        ]
+        ];
     }
 
     /**
@@ -1024,7 +1028,7 @@ class Scratch3ArduinoUnoDevice {
      * @param {object} args - the block's arguments.
      * @return {Promise} - a Promise that resolves after the set pin mode is done.
      */
-    setPinMode(args) {
+    setPinMode (args) {
         this._peripheral.setPinMode(args.PIN, args.MODE);
         return new Promise(resolve => {
             setTimeout(() => {
@@ -1038,7 +1042,7 @@ class Scratch3ArduinoUnoDevice {
      * @param {object} args - the block's arguments.
      * @return {Promise} - a Promise that resolves after the set pin digital out level is done.
      */
-    setDigitalOutput(args) {
+    setDigitalOutput (args) {
         this._peripheral.setDigitalOutput(args.PIN, args.LEVEL);
         return new Promise(resolve => {
             setTimeout(() => {
@@ -1052,7 +1056,7 @@ class Scratch3ArduinoUnoDevice {
      * @param {object} args - the block's arguments.
      * @return {Promise} - a Promise that resolves after the set pin pwm out value is done.
      */
-    setPwmOutput(args) {
+    setPwmOutput (args) {
         this._peripheral.setPwmOutput(args.PIN, args.OUT);
         return new Promise(resolve => {
             setTimeout(() => {
@@ -1066,7 +1070,7 @@ class Scratch3ArduinoUnoDevice {
      * @param {object} args - the block's arguments.
      * @return {boolean} - true if read high level, false if read low level.
      */
-    readDigitalPin(args) {
+    readDigitalPin (args) {
         return this._peripheral.readDigitalPin(args.PIN);
     }
 
@@ -1075,7 +1079,7 @@ class Scratch3ArduinoUnoDevice {
      * @param {object} args - the block's arguments.
      * @return {number} - analog value fo the pin.
      */
-    readAnalogPin(args) {
+    readAnalogPin (args) {
         return this._peripheral.readAnalogPin(args.PIN);
     }
 }

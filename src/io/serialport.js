@@ -55,6 +55,7 @@ class Serialport extends JSONRPC {
      * Try connecting to the input peripheral id, and then call the connect
      * callback if connection is successful.
      * @param {number} id - the id of the peripheral to connect to
+     * @param {object} config - communacation configuration of peripheral
      */
     connectPeripheral (id, config) {
         this.sendRemoteRequest('connect', {peripheralId: id, peripheralConfig: config})
@@ -102,7 +103,7 @@ class Serialport extends JSONRPC {
      * @param {object} onMessage - callback for characteristic change notifications.
      * @return {Promise} - a promise from the remote read request.
      */
-    read(onMessage = null) {
+    read (onMessage = null) {
         if (onMessage) {
             this._onMessage = onMessage;
         }
@@ -131,10 +132,11 @@ class Serialport extends JSONRPC {
     /**
      * Upload code to the peripheral.
      * @param {string} message - the code to upload.
+     * @param {object} config - the configuration of upload process.
      * @param {string} encoding - the message encoding type.
      * @return {Promise} - a promise from the remote send request.
      */
-    upload(message, config, encoding = null) {
+    upload (message, config, encoding = null) {
         const params = {message, config};
         if (encoding) {
             params.encoding = encoding;
@@ -153,33 +155,33 @@ class Serialport extends JSONRPC {
      */
     didReceiveCall (method, params) {
         switch (method) {
-            case 'didDiscoverPeripheral':
-                this._availablePeripherals[params.peripheralId] = params;
-                this._runtime.emit(
-                    this._runtime.constructor.PERIPHERAL_LIST_UPDATE,
-                    this._availablePeripherals
-                );
-                if (this._discoverTimeoutID) {
-                    window.clearTimeout(this._discoverTimeoutID);
-                }
-                break;
-            case 'peripheralUnplug':
-                this.handleDisconnectError();
-                break;
-            case 'onMessage':
-                if (this._onMessage) {
-                    this._onMessage(params.message);
-                }
-                break;
-            case 'uploadStdout':
-                this._runtime.emit(
-                    this._runtime.constructor.PERIPHERAL_UPLOAD_STDOUT, {
+        case 'didDiscoverPeripheral':
+            this._availablePeripherals[params.peripheralId] = params;
+            this._runtime.emit(
+                this._runtime.constructor.PERIPHERAL_LIST_UPDATE,
+                this._availablePeripherals
+            );
+            if (this._discoverTimeoutID) {
+                window.clearTimeout(this._discoverTimeoutID);
+            }
+            break;
+        case 'peripheralUnplug':
+            this.handleDisconnectError();
+            break;
+        case 'onMessage':
+            if (this._onMessage) {
+                this._onMessage(params.message);
+            }
+            break;
+        case 'uploadStdout':
+            this._runtime.emit(
+                this._runtime.constructor.PERIPHERAL_UPLOAD_STDOUT, {
                     message: params.message
                 });
-                break;
-            case 'uploadError':
-                this._runtime.emit(
-                    this._runtime.constructor.PERIPHERAL_UPLOAD_ERROR, {
+            break;
+        case 'uploadError':
+            this._runtime.emit(
+                this._runtime.constructor.PERIPHERAL_UPLOAD_ERROR, {
                     message: params.message
                 });
             break;
@@ -223,6 +225,8 @@ class Serialport extends JSONRPC {
      *
      * This could be due to:
      * - peripheral didn't running the realtime protocal like firmata.
+     * - peripheral is not running.
+     * @param {string} e - error message.
      */
     handleRealtimeDisconnectError (e) {
         this._runtime.emit(this._runtime.constructor.PERIPHERAL_REALTIME_CONNECTION_LOST_ERROR, {
@@ -245,7 +249,7 @@ class Serialport extends JSONRPC {
         this._runtime.emit(this._runtime.constructor.PERIPHERAL_SCAN_TIMEOUT);
     }
 
-    handleRealtimeConnectSucess(e) {
+    handleRealtimeConnectSucess (e) {
         this._runtime.emit(this._runtime.constructor.PERIPHERAL_REALTIME_CONNECT_SUCCESS, {
             message: e,
             extensionId: this._extensionId

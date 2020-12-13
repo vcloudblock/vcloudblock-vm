@@ -653,7 +653,7 @@ class Runtime extends EventEmitter {
      * Event name for reporting that an deivce extension was added.
      * @const {string}
      */
-    static get DEVICE_EXTENSION_ADDED() {
+    static get DEVICE_EXTENSION_ADDED () {
         return 'DEVICE_EXTENSION_ADDED';
     }
 
@@ -661,7 +661,7 @@ class Runtime extends EventEmitter {
      * Event name for reporting that an deivce extension was removed.
      * @const {string}
      */
-    static get DEVICE_EXTENSION_REMOVED() {
+    static get DEVICE_EXTENSION_REMOVED () {
         return 'DEVICE_EXTENSION_REMOVED';
     }
 
@@ -971,13 +971,13 @@ class Runtime extends EventEmitter {
 
     /**
      * Register the primitives provided by an device.
-     * @param [DeviceMetadata] deviceInfos - information array about the device (id, blocks, etc.)
+     * @param {Array.<object>} deviceInfos - information array about the device (id, blocks, etc.)
      * @private
      */
-    _registerDevicePrimitives(deviceInfos) {
+    _registerDevicePrimitives (deviceInfos) {
         this._blockInfo = [];
-        let categoryInfoArray = [];
-        deviceInfos.forEach((info) => {
+        const categoryInfoArray = [];
+        deviceInfos.forEach(info => {
             const categoryInfo = {
                 id: info.id,
                 name: maybeFormatMessage(info.name),
@@ -1544,14 +1544,15 @@ class Runtime extends EventEmitter {
     /**
      * @returns {Array.<object>} scratch-blocks XML for each category of extension blocks, in category order.
      * @param {?Target} [target] - the active editing target (optional)
+     * @param {string} programmode - the program mode of scratch.
      * @property {string} id - the category / extension ID
      * @property {string} xml - the XML text for this category, starting with `<category>` and ending with `</category>`
      */
-    getBlocksXML(target, programmode) {
-        let _loadedDeviceExtensionsXML = [];
+    getBlocksXML (target) {
+        const _loadedDeviceExtensionsXML = [];
         this._loadedDeviceExtensions.forEach((xml, id) => {
             _loadedDeviceExtensionsXML.push({id: id, xml: xml});
-        })
+        });
 
         return this._blockInfo.map(categoryInfo => {
             const {name, color1, color2} = categoryInfo;
@@ -1571,15 +1572,15 @@ class Runtime extends EventEmitter {
             });
 
             const blocksWithDisableProp = paletteBlocks.map(block => {
-                let blockCopy = JSON.parse(JSON.stringify(block));
+                const blockCopy = JSON.parse(JSON.stringify(block));
 
                 if (blockCopy.info.programMode) {
-                    let blockFilterIncludesMode = blockCopy.info.programMode.includes(
-                        programmode == 'realtime' ? ProgramModeType.REALTIME : ProgramModeType.UPLOAD
+                    const blockFilterIncludesMode = blockCopy.info.programMode.includes(
+                        this._isRealtimeMode ? ProgramModeType.REALTIME : ProgramModeType.UPLOAD
                     );
                     if (!blockFilterIncludesMode) {
                         const index = blockCopy.xml.indexOf('>');
-                        blockCopy.xml = blockCopy.xml.slice(0, index) + ' disabled=\"true\"' + blockCopy.xml.slice(index);
+                        blockCopy.xml = `${blockCopy.xml.slice(0, index)} disabled="true"${blockCopy.xml.slice(index)}`;
                     }
                 }
                 return blockCopy;
@@ -1706,7 +1707,7 @@ class Runtime extends EventEmitter {
      * @param {string} extensionId - the id of the extension.
      * @param {string} code - the code to upload.
      */
-    uploadToPeripheral(extensionId, code) {
+    uploadToPeripheral (extensionId, code) {
         if (this.peripheralExtensions[extensionId]) {
             this.peripheralExtensions[extensionId].upload(code);
         }
@@ -2348,9 +2349,9 @@ class Runtime extends EventEmitter {
 
     /**
      * Set the current selected device known by the runtime.
-     * @param {!Device} current device.
+     * @param {!Device} device of current.
      */
-    setDevice(device) {
+    setDevice (device) {
         this._device = device;
     }
 
@@ -2358,7 +2359,7 @@ class Runtime extends EventEmitter {
      * Get the current selected device.
      * @return {?Device} current selected device known by the runtime.
      */
-    getCurrentDevice() {
+    getCurrentDevice () {
         return this._device;
     }
 
@@ -2367,7 +2368,7 @@ class Runtime extends EventEmitter {
      * @param {string} id id of this device extension.
      * @param {string} xml toolbox xml of this device extension.
      */
-    addDeviceExtension(id, xml) {
+    addDeviceExtension (id, xml) {
         this._loadedDeviceExtensions.set(id, xml);
     }
 
@@ -2375,14 +2376,14 @@ class Runtime extends EventEmitter {
      * Remove a device extension of the _loadedDeviceExtensions.
      * @param {string} id id of this device extension.
      */
-    removeDeviceExtension(id) {
+    removeDeviceExtension (id) {
         this._loadedDeviceExtensions.delete(id);
     }
 
     /**
      * Clear all device extensions of the _loadedDeviceExtensions.
      */
-    clearCurrentDeviceExtension() {
+    clearCurrentDeviceExtension () {
         this._loadedDeviceExtensions.clear();
     }
 
@@ -2399,11 +2400,11 @@ class Runtime extends EventEmitter {
      * Get the current Loaded device extension.
      * @return {Array.id} array of current loaded device extension ids.
      */
-    getCurrentDeviceExtensionLoaded() {
-        let ids = [];
+    getCurrentDeviceExtensionLoaded () {
+        const ids = [];
         this._loadedDeviceExtensions.forEach((xml, id) => {
             ids.push(id);
-        })
+        });
         return ids;
     }
 
@@ -2411,14 +2412,14 @@ class Runtime extends EventEmitter {
      * Add a extension to the _loadedExtensions.
      * @param {string} id id of this extension.
      */
-    addExtension(id) {
+    addExtension (id) {
         this._loadedExtensions.push(id);
     }
 
     /**
      * Clear all extensions of the _loadedExtensions.
      */
-    clearCurrentDeviceExtension() {
+    clearCurrentExtension () {
         this._loadedExtensions = [];
     }
 
@@ -2426,30 +2427,24 @@ class Runtime extends EventEmitter {
      * Get the current Loaded extension.
      * @return {Array.id} array of current loaded extension ids.
      */
-    getCurrentExtensionLoaded() {
+    getCurrentExtensionLoaded () {
         return this._loadedExtensions;
     }
 
     /**
      * Set whether the current program mode is realtime mode.
+     * @param {string} sta state of current program mode to set.
      */
-    setRealtimeMode(sta) {
+    setRealtimeMode (sta) {
         this._isRealtimeMode = sta;
         this.emit(Runtime.PROGRAM_MODE_UPDATE, {isRealtimeMode: this._isRealtimeMode});
     }
 
     /**
-     * Set whether the current program mode is upload mode.
-     */
-    setUploadMode(sta) {
-        this._isRealtimeMode = !sta;
-        this.emit(Runtime.PROGRAM_MODE_UPDATE, {isRealtimeMode: this._isRealtimeMode});
-    }
-
-    /**
      * Get whether the current program mode is realtime mode.
+     * @return {boolean} whether the current program mode is realtime mode.
      */
-    getCurrentIsRealtimeMode() {
+    getCurrentIsRealtimeMode () {
         return this._isRealtimeMode;
     }
 

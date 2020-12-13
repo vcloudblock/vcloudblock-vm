@@ -30,8 +30,8 @@ const builtinExtensions = {
 };
 
 const builtinDevices = {
-    arduinoUno: () => require('../devices/arduinoUno'),
-    arduinoNano: () => require('../devices/arduinoNano'),
+    arduinoUno: () => require('../devices/arduinoUno')
+    // arduinoNano: () => require('../devices/arduinoNano')
 
     // todo transform these to device extension
     // wedo2: () => require('../extensions/scratch3_wedo2'),
@@ -222,7 +222,7 @@ class ExtensionManager {
      * @param {string} deviceURL - the URL for the device to load OR the ID of an internal device
      * @returns {Promise} resolved once the device is loaded and initialized or rejected on failure
      */
-    loadDeviceURL(deviceURL) {
+    loadDeviceURL (deviceURL) {
         if (builtinDevices.hasOwnProperty(deviceURL)) {
             if (this.isDeviceLoaded(deviceURL)) {
                 const message = `Rejecting attempt to load a device twice with ID ${deviceURL}`;
@@ -252,7 +252,7 @@ class ExtensionManager {
      * Get device extensions list from local server.
      * @returns {Promise} resolved extension list has been fetched or rejected on failure
      */
-    getLocalDeviceExtensionsList() {
+    getLocalDeviceExtensionsList () {
         return new Promise((resolve, reject) => {
             fetch(localDeviceExtensionsUrl)
                 .then(response => response.json())
@@ -267,9 +267,7 @@ class ExtensionManager {
                     this._localDeviceExtensions = localExtension;
                     this._deviceExtensions = localExtension.concat(this._remoteDeviceExtensions);
                     return resolve(this._deviceExtensions);
-                }, err => {
-                    return reject(`Error while fetch local extension server: ${err}`);
-                })
+                }, err => reject(`Error while fetch local extension server: ${err}`));
         });
     }
 
@@ -277,7 +275,7 @@ class ExtensionManager {
      * Get device extensions list from remote server.
      * @returns {Promise} resolved extension list has been fetched or rejected on failure
      */
-    getRemoteDeviceExtensionsList() {
+    getRemoteDeviceExtensionsList () {
         return new Promise((resolve, reject) => {
             fetch(remoteDeviceExtensionsUrl)
                 .then(response => response.json())
@@ -293,9 +291,7 @@ class ExtensionManager {
                     this._remoteDeviceExtensions = remoteExtension;
                     this._deviceExtensions = this._remoteDeviceExtensions.concat(this._localDeviceExtensions);
                     return resolve(this._deviceExtensions);
-                }, err => {
-                    return reject(`Error while fetch remote extension server: ${err}`);
-                })
+                }, err => reject(`Error while fetch remote extension server: ${err}`));
         });
     }
 
@@ -313,31 +309,29 @@ class ExtensionManager {
      * @param {string} deviceExtensionId - the ID of an device extension
      * @returns {Promise} resolved once the device extension is loaded or rejected on failure
      */
-    loadDeviceExtension(deviceExtensionId) {
+    loadDeviceExtension (deviceExtensionId) {
         return new Promise((resolve, reject) => {
-            const deviceExtension = this._deviceExtensions.find((ext) => {
-                return ext.extensionId === deviceExtensionId;
-            })
-            if (deviceExtension == null) {
-                return reject(`Error while loadDeviceExtension device extension can not find device extension ${deviceExtensionId}`);
+            const deviceExtension = this._deviceExtensions.find(ext => ext.extensionId === deviceExtensionId);
+            if (deviceExtension === null) {
+                return reject(`Error while loadDeviceExtension device extension ` +
+                    `can not find device extension ${deviceExtensionId}`);
             }
 
             const url = deviceExtension.location === 'remote' ? remoteDeviceExtensionsUrl : localDeviceExtensionsUrl;
             const toolboxUrl = url + deviceExtension.toolbox;
             const blockUrl = url + deviceExtension.blocks;
             const generatorUrl = url + deviceExtension.generator;
-            const msgUrl =  url + deviceExtension.msg;
+            const msgUrl = url + deviceExtension.msg;
 
-            loadjs([toolboxUrl, blockUrl, generatorUrl, msgUrl], { returnPromise: true })
+            loadjs([toolboxUrl, blockUrl, generatorUrl, msgUrl], {returnPromise: true})
                 .then(() => {
-                    const toolboxXML = addToolbox();
+                    const toolboxXML = addToolbox(); // eslint-disable-line no-undef
                     this.runtime.addDeviceExtension(deviceExtensionId, toolboxXML);
-                    this.runtime.emit(this.runtime.constructor.DEVICE_EXTENSION_ADDED)
+                    this.runtime.emit(this.runtime.constructor.DEVICE_EXTENSION_ADDED);
                     return resolve();
                 })
-                .catch(err => {
-                    return reject(`Error while load device extension ${deviceExtension.extensionId}\'s js file: ${err}`);
-                });
+                .catch(err => reject(`Error while load device extension ` +
+                    `${deviceExtension.extensionId}'s js file: ${err}`));
         });
     }
 
@@ -346,8 +340,8 @@ class ExtensionManager {
      * @param {string} deviceExtensionId - the ID of an device extension
      * @returns {Promise} resolved once the device extension is unloaded or rejected on failure
      */
-    unloadDeviceExtension(deviceExtensionId) {
-        return new Promise((resolve, reject) => {
+    unloadDeviceExtension (deviceExtensionId) {
+        return new Promise(resolve => {
             this.runtime.removeDeviceExtension(deviceExtensionId);
             this.runtime.emit(this.runtime.constructor.DEVICE_EXTENSION_REMOVED, deviceExtensionId);
             return resolve();
@@ -392,7 +386,7 @@ class ExtensionManager {
      * Synchronously collect device metadata from the specified service and begin the device registration process.
      * @param {string} serviceName - the name of the service hosting the device.
      */
-    registerDeviceServiceSync(serviceName) {
+    registerDeviceServiceSync (serviceName) {
         const infos = dispatch.callSync(serviceName, 'getInfo');
         this._registerDeviceInfo(serviceName, infos);
     }
@@ -466,10 +460,10 @@ class ExtensionManager {
     /**
      * Sanitize device info then register its primitives with the VM.
      * @param {string} serviceName - the name of the service hosting the device
-     * @param [DeviceInfo] deviceInfos - the device's metadatas
+     * @param {Array.DeviceInfo} deviceInfos - the device's metadatas
      * @private
      */
-    _registerDeviceInfo(serviceName, deviceInfos) {
+    _registerDeviceInfo (serviceName, deviceInfos) {
         deviceInfos = this._prepareDeviceInfo(serviceName, deviceInfos);
         dispatch.call('runtime', '_registerDevicePrimitives', deviceInfos).catch(e => {
             log.error(`Failed to register primitives for device on service ${serviceName}:`, e);
@@ -528,13 +522,13 @@ class ExtensionManager {
     /**
      * Apply minor cleanup and defaults for optional device fields.
      * @param {string} serviceName - the name of the service hosting this device block
-     * @param [DeviceInfo] deviceInfos - the device info to be sanitized
-     * @returns [DeviceInfo] - a new device info object with cleaned-up values
+     * @param {Array.DeviceInfo} deviceInfos - the device info to be sanitized
+     * @returns {Array.DeviceInfo} - a new device info object with cleaned-up values
      * @private
      */
-    _prepareDeviceInfo(serviceName, deviceInfos) {
-        let infos = [];
-        let deviceInfosCopy = JSON.parse(JSON.stringify(deviceInfos));
+    _prepareDeviceInfo (serviceName, deviceInfos) {
+        const infos = [];
+        const deviceInfosCopy = JSON.parse(JSON.stringify(deviceInfos));
 
         deviceInfosCopy.forEach(deviceInfo => {
             if (!/^[a-z0-9]+$/i.test(deviceInfo.id)) {
