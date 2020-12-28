@@ -129,6 +129,7 @@ class Serialport extends JSONRPC {
                 this.handleDisconnectError(e);
             });
     }
+
     /**
      * Upload code to the peripheral.
      * @param {string} message - the code to upload.
@@ -142,6 +143,18 @@ class Serialport extends JSONRPC {
             params.encoding = encoding;
         }
         return this.sendRemoteRequest('upload', params)
+            .catch(e => {
+                this.handleDisconnectError(e);
+            });
+    }
+
+    /**
+     * Upload realtime firmware to the peripheral.
+     * @param {object} config - the configuration of upload process.
+     * @return {Promise} - a promise from the remote send request.
+     */
+    uploadFirmware (config) {
+        return this.sendRemoteRequest('uploadFirmware', config)
             .catch(e => {
                 this.handleDisconnectError(e);
             });

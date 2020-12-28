@@ -336,6 +336,15 @@ class VirtualMachine extends EventEmitter {
     }
 
     /**
+     * Upload realtime firware to the extension's specified peripheral.
+     * @param {string} extensionId - the id of the extension.
+     * @return {Function} Returns a function to restore upload  realtime firware to peripheral.
+     */
+    uploadFirmwareToPeripheral (extensionId) {
+        return this.runtime.uploadFirmwareToPeripheral(extensionId);
+    }
+
+    /**
      * Load a Scratch project from a .sb, .sb2, .sb3 or json string.
      * @param {string | object} input A json string, object, or ArrayBuffer representing the project to load.
      * @return {!Promise} Promise that resolves after targets are installed.

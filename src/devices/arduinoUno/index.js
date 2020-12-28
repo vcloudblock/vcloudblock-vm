@@ -227,6 +227,13 @@ class ArduinoUno{
     }
 
     /**
+     * Called by the runtime when user wants to upload realtime firmware to a peripheral.
+     */
+    uploadFirmware () {
+        this._serialport.uploadFirmware(DIVECE_OPT);
+    }
+
+    /**
      * Called by the runtime when user wants to scan for a peripheral.
      */
     scan () {
