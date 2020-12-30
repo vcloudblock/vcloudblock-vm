@@ -14,11 +14,13 @@ const Firmata = require('../../lib/firmata/firmata');
  * @readonly
  */
 const PNPID_LIST = [
-    // https://github.com/arduino/Arduino/blob/1.8.0/hardware/arduino/avr/boards.txt#L51-L58
-    'USB\\VID_2341&PID_0043',
-    'USB\\VID_2341&PID_0001',
-    'USB\\VID_2A03&PID_0043',
-    'USB\\VID_2341&PID_0243',
+    // https://github.com/arduino/Arduino/blob/1.8.0/hardware/arduino/avr/boards.txt#L175-L186
+    'USB\\VID_2341&PID_0010',
+    'USB\\VID_2341&PID_0042',
+    'USB\\VID_2A03&PID_0010',
+    'USB\\VID_2A03&PID_0042',
+    'USB\\VID_2341&PID_0210',
+    'USB\\VID_2341&PID_0242',
     // For chinese clones that use CH340
     'USB\\VID_1A86&PID_7523'
 ];
@@ -39,8 +41,8 @@ const CONFIG = {
  */
 const DIVECE_OPT = {
     type: 'arduino',
-    fqbn: 'arduino:avr:uno',
-    partno: 'atmega328p',
+    fqbn: 'arduino:avr:mega:cpu=atmega2560',
+    partno: 'atmega2560',
     programmerId: 'arduino',
     baudrate: '115200'
 };
@@ -50,7 +52,7 @@ const DIVECE_OPT = {
  * @type {formatMessage}
  */
 const ConnectFirmataTimeout = formatMessage({
-    id: 'arduinoUno.connection.connectFirmataTimeout',
+    id: 'arduinoMega2560.connection.connectFirmataTimeout',
     default: 'Timeout when try to connect firmata, please download the firmware first',
     description: 'label for connect firmata timeout'
 });
@@ -60,7 +62,7 @@ const ConnectFirmataTimeout = formatMessage({
  * @type {formatMessage}
  */
 const ConnectFirmataSuccess = formatMessage({
-    id: 'arduinoUno.connection.connectFirmataSuccess',
+    id: 'arduinoMega2560.connection.connectFirmataSuccess',
     default: 'Success to connect firmata',
     description: 'label for connect firmata success'
 });
@@ -97,12 +99,62 @@ const Pins = {
     D11: '11',
     D12: '12',
     D13: '13',
+    D14: '14',
+    D15: '15',
+    D16: '16',
+    D17: '17',
+    D18: '18',
+    D19: '19',
+    D20: '20',
+    D21: '21',
+    D22: '22',
+    D23: '23',
+    D24: '24',
+    D25: '25',
+    D26: '26',
+    D27: '27',
+    D28: '28',
+    D29: '29',
+    D30: '30',
+    D31: '31',
+    D32: '32',
+    D33: '33',
+    D34: '34',
+    D35: '35',
+    D36: '36',
+    D37: '37',
+    D38: '38',
+    D39: '39',
+    D40: '40',
+    D41: '41',
+    D42: '42',
+    D43: '43',
+    D44: '44',
+    D45: '45',
+    D46: '46',
+    D47: '47',
+    D48: '48',
+    D49: '49',
+    D50: '50',
+    D51: '51',
+    D52: '52',
+    D53: '53',
     A0: 'A0',
     A1: 'A1',
     A2: 'A2',
     A3: 'A3',
     A4: 'A4',
-    A5: 'A5'
+    A5: 'A5',
+    A6: 'A6',
+    A7: 'A7',
+    A8: 'A8',
+    A9: 'A9',
+    A10: 'A10',
+    A11: 'A11',
+    A12: 'A12',
+    A13: 'A13',
+    A14: 'A14',
+    A15: 'A15'
 };
 
 
@@ -118,6 +170,13 @@ const Buadrate = {
     B38400: '38400',
     B57600: '57600',
     B115200: '115200'
+};
+
+const SerialNo = {
+    Serial0: '0',
+    Serial1: '1',
+    Serial2: '2',
+    Serial3: '3'
 };
 
 const Mode = {
@@ -142,7 +201,7 @@ const DataType = {
 /**
  * Manage communication with a Arduino Uno peripheral over a Scrath Link client socket.
  */
-class ArduinoUno{
+class ArduinoMega2560{
 
     /**
      * Construct a Arduino communication object.
@@ -529,12 +588,12 @@ class ArduinoUno{
 /**
  * Scratch 3.0 blocks to interact with a Arduino Uno peripheral.
  */
-class Scratch3ArduinoUnoDevice {
+class Scratch3ArduinoMega2560Device {
     /**
      * @return {string} - the ID of this extension.
      */
     static get DEVICE_ID () {
-        return 'arduinoUno';
+        return 'arduinoMega2560';
     }
 
     get PINS_MENU () {
@@ -596,6 +655,166 @@ class Scratch3ArduinoUnoDevice {
                 value: Pins.D13
             },
             {
+                text: '14',
+                value: Pins.D14
+            },
+            {
+                text: '15',
+                value: Pins.D15
+            },
+            {
+                text: '16',
+                value: Pins.D16
+            },
+            {
+                text: '17',
+                value: Pins.D17
+            },
+            {
+                text: '18',
+                value: Pins.D18
+            },
+            {
+                text: '19',
+                value: Pins.D19
+            },
+            {
+                text: '20',
+                value: Pins.D20
+            },
+            {
+                text: '21',
+                value: Pins.D21
+            },
+            {
+                text: '22',
+                value: Pins.D22
+            },
+            {
+                text: '23',
+                value: Pins.D23
+            },
+            {
+                text: '24',
+                value: Pins.D24
+            },
+            {
+                text: '25',
+                value: Pins.D25
+            },
+            {
+                text: '26',
+                value: Pins.D26
+            },
+            {
+                text: '27',
+                value: Pins.D27
+            },
+            {
+                text: '28',
+                value: Pins.D28
+            },
+            {
+                text: '29',
+                value: Pins.D29
+            },
+            {
+                text: '30',
+                value: Pins.D30
+            },
+            {
+                text: '31',
+                value: Pins.D31
+            },
+            {
+                text: '32',
+                value: Pins.D32
+            },
+            {
+                text: '33',
+                value: Pins.D33
+            },
+            {
+                text: '34',
+                value: Pins.D34
+            },
+            {
+                text: '35',
+                value: Pins.D35
+            },
+            {
+                text: '36',
+                value: Pins.D36
+            },
+            {
+                text: '37',
+                value: Pins.D37
+            },
+            {
+                text: '38',
+                value: Pins.D38
+            },
+            {
+                text: '39',
+                value: Pins.D39
+            },
+            {
+                text: '40',
+                value: Pins.D40
+            },
+            {
+                text: '41',
+                value: Pins.D41
+            },
+            {
+                text: '42',
+                value: Pins.D42
+            },
+            {
+                text: '43',
+                value: Pins.D43
+            },
+            {
+                text: '44',
+                value: Pins.D44
+            },
+            {
+                text: '45',
+                value: Pins.D45
+            },
+            {
+                text: '46',
+                value: Pins.D46
+            },
+            {
+                text: '47',
+                value: Pins.D47
+            },
+            {
+                text: '48',
+                value: Pins.D48
+            },
+            {
+                text: '49',
+                value: Pins.D49
+            },
+            {
+                text: '50',
+                value: Pins.D50
+            },
+            {
+                text: '51',
+                value: Pins.D51
+            },
+            {
+                text: '52',
+                value: Pins.D52
+            },
+            {
+                text: '53',
+                value: Pins.D53
+            },
+            {
                 text: 'A0',
                 value: Pins.A0
             },
@@ -618,6 +837,46 @@ class Scratch3ArduinoUnoDevice {
             {
                 text: 'A5',
                 value: Pins.A5
+            },
+            {
+                text: 'A6',
+                value: Pins.A6
+            },
+            {
+                text: 'A7',
+                value: Pins.A7
+            },
+            {
+                text: 'A8',
+                value: Pins.A8
+            },
+            {
+                text: 'A9',
+                value: Pins.A9
+            },
+            {
+                text: 'A10',
+                value: Pins.A10
+            },
+            {
+                text: 'A11',
+                value: Pins.A11
+            },
+            {
+                text: 'A12',
+                value: Pins.A12
+            },
+            {
+                text: 'A13',
+                value: Pins.A13
+            },
+            {
+                text: 'A14',
+                value: Pins.A14
+            },
+            {
+                text: 'A15',
+                value: Pins.A15
             }
         ];
     }
@@ -626,7 +885,7 @@ class Scratch3ArduinoUnoDevice {
         return [
             {
                 text: formatMessage({
-                    id: 'arduinoUno.modeMenu.input',
+                    id: 'arduinoMega2560.modeMenu.input',
                     default: 'Input',
                     description: 'label for input pin mode'
                 }),
@@ -634,7 +893,7 @@ class Scratch3ArduinoUnoDevice {
             },
             {
                 text: formatMessage({
-                    id: 'arduinoUno.modeMenu.output',
+                    id: 'arduinoMega2560.modeMenu.output',
                     default: 'Output',
                     description: 'label for output pin mode'
                 }),
@@ -642,7 +901,7 @@ class Scratch3ArduinoUnoDevice {
             },
             {
                 text: formatMessage({
-                    id: 'arduinoUno.modeMenu.inputPullup',
+                    id: 'arduinoMega2560.modeMenu.inputPullup',
                     default: 'Input-pullup',
                     description: 'label for input-pullup pin mode'
                 }),
@@ -708,6 +967,166 @@ class Scratch3ArduinoUnoDevice {
             {
                 text: '13',
                 value: Pins.D13
+            },
+            {
+                text: '14',
+                value: Pins.D14
+            },
+            {
+                text: '15',
+                value: Pins.D15
+            },
+            {
+                text: '16',
+                value: Pins.D16
+            },
+            {
+                text: '17',
+                value: Pins.D17
+            },
+            {
+                text: '18',
+                value: Pins.D18
+            },
+            {
+                text: '19',
+                value: Pins.D19
+            },
+            {
+                text: '20',
+                value: Pins.D20
+            },
+            {
+                text: '21',
+                value: Pins.D21
+            },
+            {
+                text: '22',
+                value: Pins.D22
+            },
+            {
+                text: '23',
+                value: Pins.D23
+            },
+            {
+                text: '24',
+                value: Pins.D24
+            },
+            {
+                text: '25',
+                value: Pins.D25
+            },
+            {
+                text: '26',
+                value: Pins.D26
+            },
+            {
+                text: '27',
+                value: Pins.D27
+            },
+            {
+                text: '28',
+                value: Pins.D28
+            },
+            {
+                text: '29',
+                value: Pins.D29
+            },
+            {
+                text: '30',
+                value: Pins.D30
+            },
+            {
+                text: '31',
+                value: Pins.D31
+            },
+            {
+                text: '32',
+                value: Pins.D32
+            },
+            {
+                text: '33',
+                value: Pins.D33
+            },
+            {
+                text: '34',
+                value: Pins.D34
+            },
+            {
+                text: '35',
+                value: Pins.D35
+            },
+            {
+                text: '36',
+                value: Pins.D36
+            },
+            {
+                text: '37',
+                value: Pins.D37
+            },
+            {
+                text: '38',
+                value: Pins.D38
+            },
+            {
+                text: '39',
+                value: Pins.D39
+            },
+            {
+                text: '40',
+                value: Pins.D40
+            },
+            {
+                text: '41',
+                value: Pins.D41
+            },
+            {
+                text: '42',
+                value: Pins.D42
+            },
+            {
+                text: '43',
+                value: Pins.D43
+            },
+            {
+                text: '44',
+                value: Pins.D44
+            },
+            {
+                text: '45',
+                value: Pins.D45
+            },
+            {
+                text: '46',
+                value: Pins.D46
+            },
+            {
+                text: '47',
+                value: Pins.D47
+            },
+            {
+                text: '48',
+                value: Pins.D48
+            },
+            {
+                text: '49',
+                value: Pins.D49
+            },
+            {
+                text: '50',
+                value: Pins.D50
+            },
+            {
+                text: '51',
+                value: Pins.D51
+            },
+            {
+                text: '52',
+                value: Pins.D52
+            },
+            {
+                text: '53',
+                value: Pins.D53
             }
         ];
     }
@@ -737,6 +1156,46 @@ class Scratch3ArduinoUnoDevice {
             {
                 text: 'A5',
                 value: Pins.A5
+            },
+            {
+                text: 'A6',
+                value: Pins.A6
+            },
+            {
+                text: 'A7',
+                value: Pins.A7
+            },
+            {
+                text: 'A8',
+                value: Pins.A8
+            },
+            {
+                text: 'A9',
+                value: Pins.A9
+            },
+            {
+                text: 'A10',
+                value: Pins.A10
+            },
+            {
+                text: 'A11',
+                value: Pins.A11
+            },
+            {
+                text: 'A12',
+                value: Pins.A12
+            },
+            {
+                text: 'A13',
+                value: Pins.A13
+            },
+            {
+                text: 'A14',
+                value: Pins.A14
+            },
+            {
+                text: 'A15',
+                value: Pins.A15
             }
         ];
     }
@@ -745,7 +1204,7 @@ class Scratch3ArduinoUnoDevice {
         return [
             {
                 text: formatMessage({
-                    id: 'arduinoUno.levelMenu.high',
+                    id: 'arduinoMega2560.levelMenu.high',
                     default: 'High',
                     description: 'label for high level'
                 }),
@@ -753,7 +1212,7 @@ class Scratch3ArduinoUnoDevice {
             },
             {
                 text: formatMessage({
-                    id: 'arduinoUno.levelMenu.low',
+                    id: 'arduinoMega2560.levelMenu.low',
                     default: 'Low',
                     description: 'label for low level'
                 }),
@@ -765,8 +1224,16 @@ class Scratch3ArduinoUnoDevice {
     get PWM_PINS_MENU () {
         return [
             {
+                text: '2',
+                value: Pins.D2
+            },
+            {
                 text: '3',
                 value: Pins.D3
+            },
+            {
+                text: '4',
+                value: Pins.D4
             },
             {
                 text: '5',
@@ -775,6 +1242,14 @@ class Scratch3ArduinoUnoDevice {
             {
                 text: '6',
                 value: Pins.D6
+            },
+            {
+                text: '7',
+                value: Pins.D7
+            },
+            {
+                text: '8',
+                value: Pins.D8
             },
             {
                 text: '9',
@@ -787,6 +1262,26 @@ class Scratch3ArduinoUnoDevice {
             {
                 text: '11',
                 value: Pins.D11
+            },
+            {
+                text: '12',
+                value: Pins.D12
+            },
+            {
+                text: '13',
+                value: Pins.D13
+            },
+            {
+                text: '44',
+                value: Pins.D44
+            },
+            {
+                text: '45',
+                value: Pins.D45
+            },
+            {
+                text: '46',
+                value: Pins.D46
             }
         ];
     }
@@ -800,6 +1295,22 @@ class Scratch3ArduinoUnoDevice {
             {
                 text: '3',
                 value: Pins.D3
+            },
+            {
+                text: '18',
+                value: Pins.D18
+            },
+            {
+                text: '19',
+                value: Pins.D19
+            },
+            {
+                text: '20',
+                value: Pins.D20
+            },
+            {
+                text: '21',
+                value: Pins.D21
             }
         ];
     }
@@ -854,11 +1365,32 @@ class Scratch3ArduinoUnoDevice {
         ];
     }
 
+    get SERIAL_NO_MENU () {
+        return [
+            {
+                text: '0',
+                value: SerialNo.Serial0
+            },
+            {
+                text: '1',
+                value: SerialNo.Serial1
+            },
+            {
+                text: '2',
+                value: SerialNo.Serial2
+            },
+            {
+                text: '3',
+                value: SerialNo.Serial3
+            }
+        ];
+    }
+
     get DATA_TYPE_MENU () {
         return [
             {
                 text: formatMessage({
-                    id: 'arduinoUno.dataTypeMenu.wholeNumber',
+                    id: 'arduinoMega2560.dataTypeMenu.wholeNumber',
                     default: 'whole number',
                     description: 'label for whole number'
                 }),
@@ -866,7 +1398,7 @@ class Scratch3ArduinoUnoDevice {
             },
             {
                 text: formatMessage({
-                    id: 'arduinoUno.dataTypeMenu.decimal',
+                    id: 'arduinoMega2560.dataTypeMenu.decimal',
                     default: 'decimal',
                     description: 'label for decimal number'
                 }),
@@ -874,7 +1406,7 @@ class Scratch3ArduinoUnoDevice {
             },
             {
                 text: formatMessage({
-                    id: 'arduinoUno.dataTypeMenu.string',
+                    id: 'arduinoMega2560.dataTypeMenu.string',
                     default: 'string',
                     description: 'label for string'
                 }),
@@ -895,7 +1427,7 @@ class Scratch3ArduinoUnoDevice {
         this.runtime = runtime;
 
         // Create a new Arduino uno peripheral instance
-        this._peripheral = new ArduinoUno(this.runtime, Scratch3ArduinoUnoDevice.DEVICE_ID);
+        this._peripheral = new ArduinoMega2560(this.runtime, Scratch3ArduinoMega2560Device.DEVICE_ID);
     }
 
     /**
@@ -906,7 +1438,7 @@ class Scratch3ArduinoUnoDevice {
             {
                 id: 'pin',
                 name: formatMessage({
-                    id: 'arduinoUno.category.pins',
+                    id: 'arduinoMega2560.category.pins',
                     default: 'Pins',
                     description: 'The name of the arduino uno device pin category'
                 }),
@@ -918,9 +1450,9 @@ class Scratch3ArduinoUnoDevice {
                     {
                         opcode: 'setPinMode',
                         text: formatMessage({
-                            id: 'arduinoUno.pins.setPinMode',
+                            id: 'arduinoMega2560.pins.setPinMode',
                             default: 'set pin [PIN] mode [MODE]',
-                            description: 'arduinoUno set pin mode'
+                            description: 'arduinoMega2560 set pin mode'
                         }),
                         blockType: BlockType.COMMAND,
                         arguments: {
@@ -939,9 +1471,9 @@ class Scratch3ArduinoUnoDevice {
                     {
                         opcode: 'setDigitalOutput',
                         text: formatMessage({
-                            id: 'arduinoUno.pins.setDigitalOutput',
+                            id: 'arduinoMega2560.pins.setDigitalOutput',
                             default: 'set digital pin [PIN] out [LEVEL]',
-                            description: 'arduinoUno set digital pin out'
+                            description: 'arduinoMega2560 set digital pin out'
                         }),
                         blockType: BlockType.COMMAND,
                         arguments: {
@@ -961,9 +1493,9 @@ class Scratch3ArduinoUnoDevice {
 
                         opcode: 'setPwmOutput',
                         text: formatMessage({
-                            id: 'arduinoUno.pins.setPwmOutput',
+                            id: 'arduinoMega2560.pins.setPwmOutput',
                             default: 'set pwm pin [PIN] out [OUT]',
-                            description: 'arduinoUno set pwm pin out'
+                            description: 'arduinoMega2560 set pwm pin out'
                         }),
                         blockType: BlockType.COMMAND,
                         arguments: {
@@ -982,9 +1514,9 @@ class Scratch3ArduinoUnoDevice {
                     {
                         opcode: 'readDigitalPin',
                         text: formatMessage({
-                            id: 'arduinoUno.pins.readDigitalPin',
+                            id: 'arduinoMega2560.pins.readDigitalPin',
                             default: 'read digital pin [PIN]',
-                            description: 'arduinoUno read digital pin'
+                            description: 'arduinoMega2560 read digital pin'
                         }),
                         blockType: BlockType.BOOLEAN,
                         arguments: {
@@ -998,9 +1530,9 @@ class Scratch3ArduinoUnoDevice {
                     {
                         opcode: 'readAnalogPin',
                         text: formatMessage({
-                            id: 'arduinoUno.pins.readAnalogPin',
+                            id: 'arduinoMega2560.pins.readAnalogPin',
                             default: 'read analog pin [PIN]',
-                            description: 'arduinoUno read analog pin'
+                            description: 'arduinoMega2560 read analog pin'
                         }),
                         blockType: BlockType.REPORTER,
                         arguments: {
@@ -1016,9 +1548,9 @@ class Scratch3ArduinoUnoDevice {
 
                         opcode: 'setServoOutput',
                         text: formatMessage({
-                            id: 'arduinoUno.pins.setServoOutput',
+                            id: 'arduinoMega2560.pins.setServoOutput',
                             default: 'set servo pin [PIN] out [OUT]',
-                            description: 'arduinoUno set servo pin out'
+                            description: 'arduinoMega2560 set servo pin out'
                         }),
                         blockType: BlockType.COMMAND,
                         arguments: {
@@ -1038,9 +1570,9 @@ class Scratch3ArduinoUnoDevice {
 
                         opcode: 'attachInterrupt',
                         text: formatMessage({
-                            id: 'arduinoUno.pins.attachInterrupt',
+                            id: 'arduinoMega2560.pins.attachInterrupt',
                             default: 'attach interrupt pin [PIN] mode [MODE] executes',
-                            description: 'arduinoUno attach interrupt'
+                            description: 'arduinoMega2560 attach interrupt'
                         }),
                         blockType: BlockType.CONDITIONAL,
                         arguments: {
@@ -1061,9 +1593,9 @@ class Scratch3ArduinoUnoDevice {
 
                         opcode: 'detachInterrupt',
                         text: formatMessage({
-                            id: 'arduinoUno.pins.detachInterrupt',
+                            id: 'arduinoMega2560.pins.detachInterrupt',
                             default: 'detach interrupt pin [PIN]',
-                            description: 'arduinoUno detach interrupt'
+                            description: 'arduinoMega2560 detach interrupt'
                         }),
                         blockType: BlockType.COMMAND,
                         arguments: {
@@ -1107,7 +1639,7 @@ class Scratch3ArduinoUnoDevice {
             {
                 id: 'serial',
                 name: formatMessage({
-                    id: 'arduinoUno.category.serial',
+                    id: 'arduinoMega2560.category.serial',
                     default: 'Serial',
                     description: 'The name of the arduino uno device serial category'
                 }),
@@ -1117,14 +1649,19 @@ class Scratch3ArduinoUnoDevice {
 
                 blocks: [
                     {
-                        opcode: 'serialBegin',
+                        opcode: 'multiSerialBegin',
                         text: formatMessage({
-                            id: 'arduinoUno.serial.serialBegin',
-                            default: 'serial begin baudrate [VALUE]',
-                            description: 'arduinoUno serial begin'
+                            id: 'arduinoMega2560.serial.multiSerialBegin',
+                            default: 'serial [NO] begin baudrate [VALUE]',
+                            description: 'arduinoMega2560 multi serial begin'
                         }),
                         blockType: BlockType.COMMAND,
                         arguments: {
+                            NO: {
+                                type: ArgumentType.NUMBER,
+                                menu: 'serialNo',
+                                defaultValue: SerialNo.Serial0
+                            },
                             VALUE: {
                                 type: ArgumentType.STRING,
                                 menu: 'baudrate',
@@ -1134,14 +1671,19 @@ class Scratch3ArduinoUnoDevice {
                         programMode: [ProgramModeType.UPLOAD]
                     },
                     {
-                        opcode: 'serialPrint',
+                        opcode: 'multiSerialPrint',
                         text: formatMessage({
-                            id: 'arduinoUno.serial.serialPrint',
-                            default: 'serial print [VALUE]',
-                            description: 'arduinoUno serial print'
+                            id: 'arduinoMega2560.serial.multiSerialPrint',
+                            default: 'serial [NO] print [VALUE]',
+                            description: 'arduinoMega2560 multi serial print'
                         }),
                         blockType: BlockType.COMMAND,
                         arguments: {
+                            NO: {
+                                type: ArgumentType.NUMBER,
+                                menu: 'serialNo',
+                                defaultValue: SerialNo.Serial0
+                            },
                             VALUE: {
                                 type: ArgumentType.STRING,
                                 defaultValue: 'hello'
@@ -1150,22 +1692,36 @@ class Scratch3ArduinoUnoDevice {
                         programMode: [ProgramModeType.UPLOAD]
                     },
                     {
-                        opcode: 'serialAvailable',
+                        opcode: 'multiSerialAvailable',
                         text: formatMessage({
-                            id: 'arduinoUno.serial.serialAvailable',
-                            default: 'serial available data length',
-                            description: 'arduinoUno serial available data length'
+                            id: 'arduinoMega2560.serial.multiSerialAvailable',
+                            default: 'serial [NO] available data length',
+                            description: 'arduinoMega2560 multi serial available data length'
                         }),
+                        arguments: {
+                            NO: {
+                                type: ArgumentType.NUMBER,
+                                menu: 'serialNo',
+                                defaultValue: SerialNo.Serial0
+                            }
+                        },
                         blockType: BlockType.REPORTER,
                         programMode: [ProgramModeType.UPLOAD]
                     },
                     {
-                        opcode: 'serialReadAByte',
+                        opcode: 'multiSerialReadAByte',
                         text: formatMessage({
-                            id: 'arduinoUno.serial.serialReadAByte',
-                            default: 'serial read a byte',
-                            description: 'arduinoUno serial read a byte'
+                            id: 'arduinoMega2560.serial.multiSerialReadAByte',
+                            default: 'serial [NO] read a byte',
+                            description: 'arduinoMega2560 multi serial read a byte'
                         }),
+                        arguments: {
+                            NO: {
+                                type: ArgumentType.NUMBER,
+                                menu: 'serialNo',
+                                defaultValue: SerialNo.Serial0
+                            }
+                        },
                         blockType: BlockType.REPORTER,
                         programMode: [ProgramModeType.UPLOAD]
                     }
@@ -1173,13 +1729,16 @@ class Scratch3ArduinoUnoDevice {
                 menus: {
                     baudrate: {
                         items: this.BAUDTATE_MENU
+                    },
+                    serialNo: {
+                        items: this.SERIAL_NO_MENU
                     }
                 }
             },
             {
                 id: 'data',
                 name: formatMessage({
-                    id: 'arduinoUno.category.data',
+                    id: 'arduinoMega2560.category.data',
                     default: 'Data',
                     description: 'The name of the arduino uno device data category'
                 }),
@@ -1190,9 +1749,9 @@ class Scratch3ArduinoUnoDevice {
                     {
                         opcode: 'dataMap',
                         text: formatMessage({
-                            id: 'arduinoUno.data.dataMap',
+                            id: 'arduinoMega2560.data.dataMap',
                             default: 'map [DATA] from ([ARG0], [ARG1]) to ([ARG2], [ARG3])',
-                            description: 'arduinoUno data map'
+                            description: 'arduinoMega2560 data map'
                         }),
                         blockType: BlockType.REPORTER,
                         arguments: {
@@ -1223,9 +1782,9 @@ class Scratch3ArduinoUnoDevice {
                     {
                         opcode: 'dataConstrain',
                         text: formatMessage({
-                            id: 'arduinoUno.data.dataConstrain',
+                            id: 'arduinoMega2560.data.dataConstrain',
                             default: 'constrain [DATA] between ([ARG0], [ARG1])',
-                            description: 'arduinoUno data constrain'
+                            description: 'arduinoMega2560 data constrain'
                         }),
                         blockType: BlockType.REPORTER,
                         arguments: {
@@ -1247,9 +1806,9 @@ class Scratch3ArduinoUnoDevice {
                     {
                         opcode: 'dataConvert',
                         text: formatMessage({
-                            id: 'arduinoUno.data.dataConvert',
+                            id: 'arduinoMega2560.data.dataConvert',
                             default: 'convert [DATA] to [TYPE]',
-                            description: 'arduinoUno data convert'
+                            description: 'arduinoMega2560 data convert'
                         }),
                         blockType: BlockType.REPORTER,
                         arguments: {
@@ -1268,9 +1827,9 @@ class Scratch3ArduinoUnoDevice {
                     {
                         opcode: 'dataConvertASCIICharacter',
                         text: formatMessage({
-                            id: 'arduinoUno.data.dataConvertASCIICharacter',
+                            id: 'arduinoMega2560.data.dataConvertASCIICharacter',
                             default: 'convert [DATA] to ASCII character',
-                            description: 'arduinoUno data convert to ASCII character'
+                            description: 'arduinoMega2560 data convert to ASCII character'
                         }),
                         blockType: BlockType.REPORTER,
                         arguments: {
@@ -1284,9 +1843,9 @@ class Scratch3ArduinoUnoDevice {
                     {
                         opcode: 'dataConvertASCIINumber',
                         text: formatMessage({
-                            id: 'arduinoUno.data.dataConvertASCIINumber',
+                            id: 'arduinoMega2560.data.dataConvertASCIINumber',
                             default: 'convert [DATA] to ASCII nubmer',
-                            description: 'arduinoUno data convert to ASCII nubmer'
+                            description: 'arduinoMega2560 data convert to ASCII nubmer'
                         }),
                         blockType: BlockType.REPORTER,
                         arguments: {
@@ -1368,4 +1927,4 @@ class Scratch3ArduinoUnoDevice {
     }
 }
 
-module.exports = Scratch3ArduinoUnoDevice;
+module.exports = Scratch3ArduinoMega2560Device;

@@ -30,8 +30,10 @@ const builtinExtensions = {
 };
 
 const builtinDevices = {
-    arduinoUno: () => require('../devices/arduinoUno')
-    // arduinoNano: () => require('../devices/arduinoNano')
+    arduinoUno: () => require('../devices/arduinoUno'),
+    arduinoNano: () => require('../devices/arduinoNano'),
+    arduinoLeonardo: () => require('../devices/arduinoLeonardo'),
+    arduinoMega2560: () => require('../devices/arduinoMega2560')
 
     // todo transform these to device extension
     // wedo2: () => require('../extensions/scratch3_wedo2'),
