@@ -43,7 +43,7 @@ const DIVECE_OPT = {
     type: 'arduino',
     fqbn: 'arduino:avr:mega:cpu=atmega2560',
     partno: 'atmega2560',
-    programmerId: 'arduino',
+    programmerId: 'wiring',
     baudrate: '115200'
 };
 
