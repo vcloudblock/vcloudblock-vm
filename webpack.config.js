@@ -44,8 +44,8 @@ module.exports = [
     defaultsDeep({}, base, {
         target: 'web',
         entry: {
-            'scratchhw-vm': './src/index.js',
-            'scratchhw-vm.min': './src/index.js'
+            'openblock-vm': './src/index.js',
+            'openblock-vm.min': './src/index.js'
         },
         output: {
             libraryTarget: 'umd',
@@ -64,7 +64,7 @@ module.exports = [
     defaultsDeep({}, base, {
         target: 'node',
         entry: {
-            'scratchhw-vm': './src/index.js'
+            'openblock-vm': './src/index.js'
         },
         output: {
             libraryTarget: 'commonjs2',
@@ -109,7 +109,7 @@ module.exports = [
                     loader: 'script-loader'
                 },
                 {
-                    test: require.resolve('scratchhw-blocks/dist/vertical.js'),
+                    test: require.resolve('openblock-blocks/dist/vertical.js'),
                     loader: 'expose-loader?Blockly'
                 },
                 {
@@ -131,7 +131,7 @@ module.exports = [
         },
         plugins: base.plugins.concat([
             new CopyWebpackPlugin([{
-                from: 'node_modules/scratchhw-blocks/media',
+                from: 'node_modules/openblock-blocks/media',
                 to: 'media'
             }, {
                 from: 'node_modules/scratch-storage/dist/web'

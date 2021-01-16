@@ -1,5 +1,5 @@
-# scratchhw-vm
-![](https://img.shields.io/travis/com/ScratchHW/scratch-vm) ![](https://img.shields.io/github/license/ScratchHW/scratch-vm)
+# openblock-vm
+![](https://img.shields.io/travis/com/openblockcc/openblock-vm) ![](https://img.shields.io/github/license/openblockcc/openblock-vm)
 
 ## Instructions
 

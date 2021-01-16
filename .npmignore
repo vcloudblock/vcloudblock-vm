@@ -16,4 +16,4 @@
 /coverage
 
 # Exclude already built packages from testing with npm pack
-/scratchhw-vm-*.{tar,tgz}
+/openblock-vm-*.{tar,tgz}
