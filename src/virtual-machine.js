@@ -549,8 +549,8 @@ class VirtualMachine extends EventEmitter {
         };
         return deserializePromise()
             .then(({targets}) =>
-                this.installTargets(targets, projectJSON.device,
-                    projectJSON.extensions, projectJSON.deviceExtensions, true));
+                this.installTargets(targets, projectJSON.extensions, true,
+                    projectJSON.device, projectJSON.deviceExtensions));
     }
 
     /**
@@ -600,13 +600,13 @@ class VirtualMachine extends EventEmitter {
     /**
      * Install `deserialize` results: zero or more targets after the extensions (if any) used by those targets.
      * @param {Array.<Target>} targets - the targets to be installed
-     * @param {Device} device - the deivce to be installed
      * @param {ImportedExtensionsInfo} extensions - metadata about extensions used by these targets
-     * @param {Array.<DeviceExtension>} deviceExtensions - the deivce extensions to be installed
      * @param {boolean} wholeProject - set to true if installing a whole project, as opposed to a single sprite.
+     * @param {Device} device - the deivce to be installed
+     * @param {Array.<DeviceExtension>} deviceExtensions - the deivce extensions to be installed
      * @returns {Promise} resolved once targets have been installed
      */
-    installTargets (targets, device, extensions, deviceExtensions, wholeProject) {
+    installTargets (targets, extensions, wholeProject, device = null, deviceExtensions = null) {
         const allPromises = [];
 
         if (device) {
@@ -614,13 +614,22 @@ class VirtualMachine extends EventEmitter {
         }
 
         if (extensions) {
-            extensions.forEach(extensionID => {
-                if (!this.extensionManager.isExtensionLoaded(extensionID)) {
-                    // const extensionURL = extensions.extensionURLs.get(extensionID) || extensionID;
-                    const extensionURL = extensionID;
-                    allPromises.push(this.extensionManager.loadExtensionURL(extensionURL));
-                }
-            });
+            if (extensions.extensionIDs) {
+                extensions.extensionIDs.forEach(extensionID => {
+                    if (!this.extensionManager.isExtensionLoaded(extensionID)) {
+                        const extensionURL = extensions.extensionURLs.get(extensionID) || extensionID;
+                        allPromises.push(this.extensionManager.loadExtensionURL(extensionURL));
+                    }
+                });
+            } else {
+                extensions.forEach(extensionID => {
+                    if (!this.extensionManager.isExtensionLoaded(extensionID)) {
+                        // const extensionURL = extensions.extensionURLs.get(extensionID) || extensionID;
+                        const extensionURL = extensionID;
+                        allPromises.push(this.extensionManager.loadExtensionURL(extensionURL));
+                    }
+                });
+            }
         }
 
         allPromises.push(this.installDeviceExtension(deviceExtensions));
