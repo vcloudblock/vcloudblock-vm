@@ -910,7 +910,8 @@ class Runtime extends EventEmitter {
      * @private
      */
     _makeExtensionMenuId (menuName, extensionId) {
-        return `${extensionId}_menu_${xmlEscape(menuName)}`;
+        const deviceType = this.getCurrentDeviceType();
+        return `${deviceType}${extensionId}_menu_${xmlEscape(menuName)}`;
     }
 
     /**
@@ -1231,7 +1232,8 @@ class Runtime extends EventEmitter {
      * @private
      */
     _convertBlockForScratchBlocks (blockInfo, categoryInfo) {
-        const extendedOpcode = `${categoryInfo.id}_${blockInfo.opcode}`;
+        const deviceType = this.getCurrentDeviceType();
+        const extendedOpcode = `${deviceType}${categoryInfo.id}_${blockInfo.opcode}`;
 
         const blockJSON = {
             type: extendedOpcode,
@@ -2371,6 +2373,21 @@ class Runtime extends EventEmitter {
      */
     getCurrentDevice () {
         return this._device;
+    }
+
+    /**
+     * Get the current selected device type.
+     * @return {?DeviceType} current selected device type known by the runtime.
+     */
+    getCurrentDeviceType () {
+        if (this._device) {
+            // if device include "arduino" , set it as arduino.
+            if (this._device.search('arduino') !== -1) {
+                return 'arduino_';
+            }
+            return `${this._device}_`;
+        }
+        return null;
     }
 
     /**
