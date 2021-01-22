@@ -12,6 +12,7 @@ const Base64Util = require('../../util/base64-util');
 * @readonly
 */
 const PNPID_LIST = [
+    'USB\\VID_0D28&PID_0204',
     '*'
 ];
 
@@ -19,10 +20,18 @@ const PNPID_LIST = [
 * Configuration of serialport
 * @readonly
 */
-const CONFIG = {
-    baudRate: 57600,
+const SERIAL_CONFIG = {
+    baudRate: 115200,
     dataBits: 8,
     stopBits: 1
+};
+
+/**
+ * Configuration of build and flash. Used by arduino_debug and avrdude.
+ * @readonly
+ */
+const DIVECE_OPT = {
+    type: 'microbit'
 };
 
 const Pins = {
@@ -88,44 +97,6 @@ class Microbit{
         this.reset = this.reset.bind(this);
         this._onConnect = this._onConnect.bind(this);
         this._onMessage = this._onMessage.bind(this);
-
-        /**
-         * Firmata connection.
-         * @type {?Firmata}
-         * @private
-         */
-        this._firmata = null;
-
-        /**
-         * Timeout ID for firmata get hartbeat timeout.
-         * @type {number}
-         * @private
-         */
-        this._firmataTimeoutID = null;
-
-        /**
-         * Interval ID for firmata send hartbeat.
-         * @type {number}
-         * @private
-         */
-        this._firmataIntervelID = null;
-
-        /**
-         * A flag that is true while firmata is conncted.
-         * @type {boolean}
-         * @private
-         */
-        this._isFirmataConnected = false;
-
-        /**
-         * A flag that is true while hartbeat event listener is created.
-         * @type {boolean}
-         * @private
-         */
-        this._eventListener = false;
-
-        this._startHartbeat = this._startHartbeat.bind(this);
-        this._stopHartbeat = this._startHartbeat.bind(this);
     }
 
     /**
@@ -141,8 +112,6 @@ class Microbit{
      * Called by the runtime when user wants to upload realtime firmware to a peripheral.
      */
     uploadFirmware () {
-        this._stopHartbeat();
-        this._serialport.uploadFirmware(DIVECE_OPT);
     }
 
     /**
@@ -165,7 +134,7 @@ class Microbit{
      */
     connect (id) {
         if (this._serialport) {
-            this._serialport.connectPeripheral(id, {config: CONFIG});
+            this._serialport.connectPeripheral(id, {config: SERIAL_CONFIG});
         }
     }
 
@@ -184,15 +153,6 @@ class Microbit{
      * Reset all the state and timeout/interval ids.
      */
     reset () {
-        if (this._firmataTimeoutID) {
-            window.clearTimeout(this._firmataTimeoutID);
-            this._firmataTimeoutID = null;
-        }
-        if (this._firmataIntervelID) {
-            window.clearInterval(this._firmataIntervelID);
-            this._firmataIntervelID = null;
-        }
-        this._isFirmataConnected = false;
     }
 
     /**
@@ -211,69 +171,7 @@ class Microbit{
      * Send a message to the peripheral Serialport socket.
      * @param {Uint8Array} message - the message to write
      */
-    send (message) {
-        if (!this.isConnected()) return;
-
-        // If busy push this data to _pendingData.
-        if (this._busy) {
-            this._pendingData.push(message.toString());
-            return;
-        }
-
-        // Set a busy flag so that while we are sending a message and waiting for
-        // the response, additional messages are ignored.
-        this._busy = true;
-
-        // Set a timeout after which to reset the busy flag. This is used in case
-        // a BLE message was sent for which we never received a response, because
-        // e.g. the peripheral was turned off after the message was sent. We reset
-        // the busy flag after a while so that it is possible to try again later.
-        this._busyTimeoutID = window.setTimeout(() => {
-            this._busy = false;
-        }, 5000);
-
-        const data = Base64Util.uint8ArrayToBase64(message);
-
-        this._serialport.write(data, 'base64').then(() => {
-            this._busy = false;
-
-            // If _pendingData is not empty call this func to send _pendingData.
-            if (this._pendingData.length !== 0) {
-                this.send(this._pendingData.shift().split(','));
-                window.clearTimeout(this._busyTimeoutID);
-            }
-        });
-    }
-
-    /**
-     * Start send/recive hartbeat timer.
-     * @private
-     */
-    _startHartbeat () {
-        this._firmataIntervelID = window.setInterval(
-            () => {
-                if (this._runtime.getCurrentIsRealtimeMode()) {
-                    // Send reportVersion request as hartbeat.
-                    this._firmata.reportVersion(() => { });
-                }
-            }, FrimataHartbeatInterval);
-        this._firmataTimeoutID = window.setTimeout(() => {
-            this._isFirmataConnected = false;
-            if (this._runtime.getCurrentIsRealtimeMode()) {
-                this._serialport.handleRealtimeDisconnectError(ConnectFirmataTimeout);
-            }
-        }, FrimataHartbeatTimeout);
-    }
-
-    /**
-     * Stop send/recive hartbeat timer.
-     * @private
-     */
-    _stopHartbeat () {
-        window.clearInterval(this._firmataIntervelID);
-        this._firmataIntervelID = null;
-        window.clearInterval(this._firmataTimeoutID);
-        this._firmataTimeoutID = null;
+    send () {
     }
 
     /**
@@ -281,43 +179,6 @@ class Microbit{
      * @private
      */
     _onConnect () {
-        this._serialport.read(this._onMessage);
-        this._firmata = new Firmata(this.send.bind(this));
-
-        if (this._runtime.getCurrentIsRealtimeMode()) {
-            this._startHartbeat();
-        }
-
-        if (!this._eventListener) {
-            this._eventListener = true;
-            this._runtime.on(this._runtime.constructor.PROGRAM_MODE_UPDATE, data => {
-                if (data.isRealtimeMode) {
-                    this._startHartbeat();
-                    this._isFirmataConnected = false;
-                } else {
-                    this._stopHartbeat();
-                }
-            });
-
-            // If time out means failed to connect firmata.
-            this._firmata.on('reportversion', () => {
-                if (!this._isFirmataConnected) {
-                    this._isFirmataConnected = true;
-                    if (this._runtime.getCurrentIsRealtimeMode()) {
-                        this._serialport.handleRealtimeConnectSucess(ConnectFirmataSuccess);
-                    }
-                }
-
-                window.clearTimeout(this._firmataTimeoutID);
-                this._firmataTimeoutID = window.setTimeout(() => {
-                    this._isFirmataConnected = false;
-                    if (this._runtime.getCurrentIsRealtimeMode()) {
-                        this._serialport.handleRealtimeDisconnectError(ConnectFirmataTimeout);
-                    }
-                }, FrimataHartbeatTimeout);
-            });
-
-        }
     }
 
     /**
@@ -325,10 +186,7 @@ class Microbit{
      * @param {object} base64 - the incoming serialport data.
      * @private
      */
-    _onMessage (base64) {
-        // parse data
-        const data = Base64Util.base64ToUint8Array(base64);
-        this._firmata.onReciveData(data);
+    _onMessage () {
     }
 
     /**

@@ -25,7 +25,7 @@ const PNPID_LIST = [
  * Configuration of serialport
  * @readonly
  */
-const CONFIG = {
+const SERIAL_CONFIG = {
     baudRate: 57600,
     dataBits: 8,
     stopBits: 1
@@ -267,7 +267,7 @@ class ArduinoLeonardo{
      */
     connect (id) {
         if (this._serialport) {
-            this._serialport.connectPeripheral(id, {config: CONFIG});
+            this._serialport.connectPeripheral(id, {config: SERIAL_CONFIG});
         }
     }
 
@@ -327,7 +327,7 @@ class ArduinoLeonardo{
         this._busy = true;
 
         // Set a timeout after which to reset the busy flag. This is used in case
-        // a BLE message was sent for which we never received a response, because
+        // a message was sent for which we never received a response, because
         // e.g. the peripheral was turned off after the message was sent. We reset
         // the busy flag after a while so that it is possible to try again later.
         this._busyTimeoutID = window.setTimeout(() => {
