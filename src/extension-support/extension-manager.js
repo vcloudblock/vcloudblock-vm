@@ -34,7 +34,7 @@ const builtinDevices = {
     arduinoNano: () => require('../devices/arduinoNano'),
     arduinoLeonardo: () => require('../devices/arduinoLeonardo'),
     arduinoMega2560: () => require('../devices/arduinoMega2560'),
-    microbit: () => require('../devices/microbit'),
+    microbit: () => require('../devices/microbit')
 
     // todo transform these to device extension
     // wedo2: () => require('../extensions/scratch3_wedo2'),
@@ -320,7 +320,8 @@ class ExtensionManager {
                     `can not find device extension ${deviceExtensionId}`);
             }
 
-            const url = deviceExtension.location === 'remote' ? remoteDeviceExtensionsUrl : localDeviceExtensionsUrl;
+            // const url = deviceExtension.location === 'remote' ? remoteDeviceExtensionsUrl : localDeviceExtensionsUrl;
+            const url = localDeviceExtensionsUrl;
             const toolboxUrl = url + deviceExtension.toolbox;
             const blockUrl = url + deviceExtension.blocks;
             const generatorUrl = url + deviceExtension.generator;
@@ -330,7 +331,10 @@ class ExtensionManager {
                 .then(() => {
                     const toolboxXML = addToolbox(); // eslint-disable-line no-undef
                     this.runtime.addDeviceExtension(deviceExtensionId, toolboxXML);
-                    this.runtime.emit(this.runtime.constructor.DEVICE_EXTENSION_ADDED);
+
+                    const addExts = {addBlocks, addGenerator, addMsg};// eslint-disable-line no-undef
+
+                    this.runtime.emit(this.runtime.constructor.DEVICE_EXTENSION_ADDED, addExts);
                     return resolve();
                 })
                 .catch(err => reject(`Error while load device extension ` +

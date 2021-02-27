@@ -34,14 +34,59 @@ const DIVECE_OPT = {
     type: 'microbit'
 };
 
-const Pins = {
-    D0: '0',
-    D1: '1'
+const LedState = {
+    On: 'on',
+    Off: 'off'
 };
 
-const Mode = {
-    Input: 'INPUT',
-    Output: 'OUTPUT'
+const Key = {
+    A: 'A',
+    B: 'B'
+};
+
+const Gestrue = {
+    Shake: 'shake',
+    Up: 'up',
+    Down: 'down',
+    Left: 'left',
+    Right: 'right',
+    Faceup: 'faceup',
+    Facedown: 'facedown',
+    Freefall: 'freefall',
+    G3: '3g',
+    G6: '6g',
+    G8: '8g'
+};
+
+const Axis = {
+    X: 'x',
+    Y: 'y',
+    Z: 'z'
+};
+
+const Pins = {
+    P0: '0',
+    P1: '1',
+    P2: '2',
+    P3: '3',
+    P4: '4',
+    P5: '5',
+    P6: '6',
+    P7: '7',
+    P8: '8',
+    P9: '9',
+    P10: '10',
+    P11: '11',
+    P12: '12',
+    P13: '13',
+    P14: '14',
+    P15: '15',
+    P16: '16'
+};
+
+const Level = {
+    High: '1',
+    Low: '0'
 };
 
 /**
@@ -200,27 +245,6 @@ class Microbit{
         return parseInt(pin, 10);
 
     }
-
-    /**
-     * @param {PIN} pin - the pin to set.
-     * @param {MODE} mode - the pin mode to set.
-     * @return {Promise} - a Promise that resolves when writing to peripheral.
-     */
-    setPinMode (pin, mode) {
-        pin = this.parsePin(pin);
-        switch (mode) {
-        case Mode.Input:
-            mode = this._firmata.MODES.INPUT;
-            break;
-        case Mode.Output:
-            mode = this._firmata.MODES.OUTPUT;
-            break;
-        case Mode.InputPullup:
-            mode = this._firmata.MODES.PULLUP;
-            break;
-        }
-        return this._firmata.pinMode(pin, mode);
-    }
 }
 
 /**
@@ -234,38 +258,303 @@ class Scratch3MicrobitDevice {
         return 'microbit';
     }
 
-    get PINS_MENU () {
+    get LEDSTATE_MENU () {
         return [
             {
-                text: '0',
-                value: Pins.D0
+                text: formatMessage({
+                    id: 'microbit.ledState.on',
+                    default: 'on',
+                    description: 'label for led state on'
+                }),
+                value: LedState.On
             },
             {
-                text: '1',
-                value: Pins.D1
+                text: formatMessage({
+                    id: 'microbit.ledState.off',
+                    default: 'off',
+                    description: 'label for led state off'
+                }),
+                value: LedState.Off
             }
         ];
     }
 
-    get MODE_MENU () {
+    get LEDBRT_MENU () {
+        return [
+            {
+                text: '0',
+                value: '0'
+            },
+            {
+                text: '1',
+                value: '1'
+            },
+            {
+                text: '2',
+                value: '2'
+            },
+            {
+                text: '3',
+                value: '3'
+            },
+            {
+                text: '4',
+                value: '4'
+            },
+            {
+                text: '5',
+                value: '5'
+            },
+            {
+                text: '6',
+                value: '6'
+            },
+            {
+                text: '7',
+                value: '7'
+            },
+            {
+                text: '8',
+                value: '8'
+            },
+            {
+                text: '9',
+                value: '9'
+            }
+        ];
+    }
+
+    get KEYS_MENU () {
+        return [
+            {
+                text: 'A',
+                value: Key.A
+            },
+            {
+                text: 'B',
+                value: Key.B
+            }
+        ];
+    }
+
+    get GESTRUES_MENU () {
+        return [
+            {
+                text: 'shaken',
+                value: Gestrue.Shake
+            },
+            {
+                text: 'tilted upward',
+                value: Gestrue.Up
+            },
+            {
+                text: 'tilted downward',
+                value: Gestrue.Down
+            },
+            {
+                text: 'tilted leftward',
+                value: Gestrue.Left
+            },
+            {
+                text: 'tilted rightward',
+                value: Gestrue.Right
+            },
+            {
+                text: 'face up',
+                value: Gestrue.Faceup
+            },
+            {
+                text: 'face down',
+                value: Gestrue.Facedown
+            },
+            {
+                text: 'freefall',
+                value: Gestrue.Freefall
+            },
+            {
+                text: '3g',
+                value: Gestrue.G3
+            },
+            {
+                text: '6g',
+                value: Gestrue.G6
+            },
+            {
+                text: '8g',
+                value: Gestrue.G8
+            }
+        ];
+    }
+
+    get AXIS_MENU () {
+        return [
+            {
+                text: 'x-axis',
+                value: Axis.X
+            },
+            {
+                text: 'y-axis',
+                value: Axis.Y
+            },
+            {
+                text: 'z-axis',
+                value: Axis.Z
+            }
+        ];
+    }
+
+    get PINS_MENU () {
+        return [
+            {
+                text: 'P0',
+                value: Pins.P0
+            },
+            {
+                text: 'P1',
+                value: Pins.P1
+            },
+            {
+                text: 'P2',
+                value: Pins.P2
+            },
+            {
+                text: 'P3',
+                value: Pins.P3
+            },
+            {
+                text: 'P4',
+                value: Pins.P4
+            },
+            {
+                text: 'P5',
+                value: Pins.P5
+            },
+            {
+                text: 'P6',
+                value: Pins.P6
+            },
+            {
+                text: 'P7',
+                value: Pins.P7
+            },
+            {
+                text: 'P8',
+                value: Pins.P8
+            },
+            {
+                text: 'P9',
+                value: Pins.P9
+            },
+            {
+                text: 'P10',
+                value: Pins.P10
+            },
+            {
+                text: 'P11',
+                value: Pins.P11
+            },
+            {
+                text: 'P12',
+                value: Pins.P12
+            },
+            {
+                text: 'P13',
+                value: Pins.P13
+            },
+            {
+                text: 'P14',
+                value: Pins.P14
+            },
+            {
+                text: 'P15',
+                value: Pins.P15
+            },
+            {
+                text: 'P16',
+                value: Pins.P16
+            }
+
+        ];
+    }
+
+    get LEVEL_MENU () {
         return [
             {
                 text: formatMessage({
-                    id: 'arduinoUno.modeMenu.input',
-                    default: 'Input',
-                    description: 'label for input pin mode'
+                    id: 'microbit.levelMenu.high',
+                    default: 'High',
+                    description: 'label for high level'
                 }),
-                value: Mode.Input
+                value: Level.High
             },
             {
                 text: formatMessage({
-                    id: 'arduinoUno.modeMenu.output',
-                    default: 'Output',
-                    description: 'label for output pin mode'
+                    id: 'microbit.levelMenu.low',
+                    default: 'Low',
+                    description: 'label for low level'
                 }),
-                value: Mode.Output
+                value: Level.Low
             }
         ];
+    }
+
+    get ANALOG_PINS_MENU () {
+        return [
+            {
+                text: 'P0',
+                value: Pins.P0
+            },
+            {
+                text: 'P1',
+                value: Pins.P1
+            },
+            {
+                text: 'P2',
+                value: Pins.P2
+            },
+            {
+                text: 'P3',
+                value: Pins.P3
+            },
+            {
+                text: 'P4',
+                value: Pins.P4
+            },
+            {
+                text: 'P10',
+                value: Pins.P10
+            }
+        ];
+    }
+
+    get TOUCH_PINS_MENU () {
+        return [
+            {
+                text: 'P0',
+                value: Pins.P0
+            },
+            {
+                text: 'P1',
+                value: Pins.P1
+            },
+            {
+                text: 'P2',
+                value: Pins.P2
+            }
+        ];
+    }
+
+    get CHANNEL_MENU () {
+        const channel = [];
+
+        for (let i = 0; i < 84; i++) {
+            channel.push(
+                {
+                    text: `${i}`,
+                    value: `${i}`
+                });
+        }
+        return channel;
     }
 
     /**
@@ -288,15 +577,158 @@ class Scratch3MicrobitDevice {
      */
     getInfo () {
         return [{
+            id: 'pin',
+            name: formatMessage({
+                id: 'microbit.category.pins',
+                default: 'Pins',
+                description: 'The name of the microbit device pin category'
+            }),
+            color1: '#4C97FF',
+            color2: '#3373CC',
+            color3: '#3373CC',
+
+            blocks: [
+                {
+                    opcode: 'setDigitalOutput',
+                    text: formatMessage({
+                        id: 'microbit.pins.setDigitalOutput',
+                        default: 'set digital pin [PIN] out [LEVEL]',
+                        description: 'microbit set digital pin out'
+                    }),
+                    blockType: BlockType.COMMAND,
+                    arguments: {
+                        PIN: {
+                            type: ArgumentType.STRING,
+                            menu: 'pins',
+                            defaultValue: Pins.P0
+                        },
+                        LEVEL: {
+                            type: ArgumentType.STRING,
+                            menu: 'level',
+                            defaultValue: Level.High
+                        }
+                    }
+                },
+                {
+                    opcode: 'setPwmOutput',
+                    text: formatMessage({
+                        id: 'microbit.pins.setPwmOutput',
+                        default: 'set pwm pin [PIN] out [OUT]',
+                        description: 'microbit set pwm pin out'
+                    }),
+                    blockType: BlockType.COMMAND,
+                    arguments: {
+                        PIN: {
+                            type: ArgumentType.STRING,
+                            menu: 'pins',
+                            defaultValue: Pins.P0
+                        },
+                        OUT: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '1024'
+                        }
+                    }
+                },
+                '---',
+                {
+                    opcode: 'readDigitalPin',
+                    text: formatMessage({
+                        id: 'microbit.pins.readDigitalPin',
+                        default: 'read digital pin [PIN]',
+                        description: 'microbit read digital pin'
+                    }),
+                    blockType: BlockType.BOOLEAN,
+                    arguments: {
+                        PIN: {
+                            type: ArgumentType.STRING,
+                            menu: 'pins',
+                            defaultValue: Pins.P0
+                        }
+                    }
+                },
+                {
+                    opcode: 'readAnalogPin',
+                    text: formatMessage({
+                        id: 'microbit.pins.readAnalogPin',
+                        default: 'read analog pin [PIN]',
+                        description: 'microbit read analog pin'
+                    }),
+                    blockType: BlockType.REPORTER,
+                    arguments: {
+                        PIN: {
+                            type: ArgumentType.STRING,
+                            menu: 'analogPins',
+                            defaultValue: Pins.P0
+                        }
+                    }
+                },
+                '---',
+                {
+                    opcode: 'pinTouched',
+                    text: formatMessage({
+                        id: 'microbit.pins.pinIsTouched',
+                        default: 'pin [PIN] is touched',
+                        description: 'microbit pin is touched'
+                    }),
+                    blockType: BlockType.REPORTER,
+                    arguments: {
+                        PIN: {
+                            type: ArgumentType.STRING,
+                            menu: 'touchPins',
+                            defaultValue: Pins.P0
+                        }
+                    }
+                },
+                '---',
+                {
+
+                    opcode: 'setServoOutput',
+                    text: formatMessage({
+                        id: 'microbit.pins.setServoOutput',
+                        default: 'set servo pin [PIN] out [OUT]',
+                        description: 'microbit set servo pin out'
+                    }),
+                    blockType: BlockType.COMMAND,
+                    arguments: {
+                        PIN: {
+                            type: ArgumentType.STRING,
+                            menu: 'pins',
+                            defaultValue: Pins.P0
+                        },
+                        OUT: {
+                            type: ArgumentType.ANGLE,
+                            defaultValue: '0'
+                        }
+                    }
+                }
+
+            ],
+            menus: {
+                pins: {
+                    items: this.PINS_MENU
+                },
+                level: {
+                    acceptReporters: true,
+                    items: this.LEVEL_MENU
+                },
+                analogPins: {
+                    items: this.ANALOG_PINS_MENU
+                },
+                touchPins: {
+                    items: this.TOUCH_PINS_MENU
+                }
+            }
+        },
+        {
             id: 'display',
             name: formatMessage({
                 id: 'microbit.category.pins',
                 default: 'Display',
                 description: 'The name of the microbit device display category'
             }),
-            color1: '#CF63CF',
-            color2: '#C94FC9',
-            color3: '#BD42BD',
+            color1: '#9966FF',
+            color2: '#774DCB',
+            color3: '#774DCB',
             blocks: [
                 {
                     opcode: 'showImage',
@@ -314,26 +746,268 @@ class Scratch3MicrobitDevice {
                     }
                 },
                 {
-                    opcode: 'showNumber',
+                    opcode: 'show',
                     text: formatMessage({
-                        id: 'microbit.display.showNumber',
-                        default: 'show number [NUM]',
-                        description: 'microbit show number'
+                        id: 'microbit.display.show',
+                        default: 'show [TEXT]',
+                        description: 'microbit show'
                     }),
                     blockType: BlockType.COMMAND,
                     arguments: {
-                        NUM: {
+                        TEXT: {
+                            type: ArgumentType.STRING,
+                            defaultValue: 'hello'
+                        }
+                    }
+                },
+                '---',
+                {
+                    opcode: 'clearDisplay',
+                    text: formatMessage({
+                        id: 'microbit.display.clearDisplay',
+                        default: 'clear screen',
+                        description: 'microbit clear display'
+                    }),
+                    blockType: BlockType.COMMAND
+                },
+                '---',
+                {
+                    opcode: 'lightPixelAt',
+                    text: formatMessage({
+                        id: 'microbit.display.lightPixelAt',
+                        default: 'light [STATE] at the x: [X] axis, y: [Y] axis',
+                        description: 'microbit light pixel at'
+                    }),
+                    blockType: BlockType.COMMAND,
+                    arguments: {
+                        STATE: {
+                            type: ArgumentType.STRING,
+                            menu: 'ledState',
+                            defaultValue: LedState.On
+                        },
+                        X: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '0'
+                        },
+                        Y: {
                             type: ArgumentType.NUMBER,
                             defaultValue: '0'
                         }
                     }
                 },
                 {
-                    opcode: 'showString',
+                    opcode: 'showOnPiexlbrightness',
                     text: formatMessage({
-                        id: 'microbit.display.showString',
-                        default: 'show string [TEXT]',
-                        description: 'microbit show string'
+                        id: 'microbit.display.showOnPiexlbrightness',
+                        default: 'show on the x: [X] axis, y: [Y] axis with brightness [BRT]',
+                        description: 'microbit show on piexl brightness'
+                    }),
+                    blockType: BlockType.COMMAND,
+                    arguments: {
+                        X: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '0'
+                        },
+                        Y: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '0'
+                        },
+                        BRT: {
+                            type: ArgumentType.STRING,
+                            menu: 'ledBrightness',
+                            defaultValue: '9'
+                        }
+                    }
+                }
+            ],
+            menus: {
+                ledState: {
+                    items: this.LEDSTATE_MENU
+                },
+                ledBrightness: {
+                    acceptReporters: true,
+                    items: this.LEDBRT_MENU
+                }
+            }
+        },
+        {
+            id: 'sensor',
+            name: formatMessage({
+                id: 'microbit.category.sensor',
+                default: 'Sensor',
+                description: 'The name of the microbit device sensor category'
+            }),
+            color1: '#4CBFE6',
+            color2: '#2E8EB8',
+            color3: '#2E8EB8',
+
+            blocks: [
+                {
+                    opcode: 'buttonIsPressed',
+                    text: formatMessage({
+                        id: 'microbit.sensor.buttonIsPressed',
+                        default: '[KEY] button is pressed?',
+                        description: 'wether microbit button is pressed'
+                    }),
+                    blockType: BlockType.BOOLEAN,
+                    arguments: {
+                        KEY: {
+                            type: ArgumentType.STRING,
+                            menu: 'keys',
+                            defaultValue: Key.A
+                        }
+                    }
+                },
+                '---',
+                {
+                    opcode: 'gestureIsX',
+                    text: formatMessage({
+                        id: 'microbit.sensor.gestureIsX',
+                        default: 'gestrue is [STA]?',
+                        description: 'microbit gestrue is XXX'
+                    }),
+                    blockType: BlockType.BOOLEAN,
+                    arguments: {
+                        STA: {
+                            type: ArgumentType.STRING,
+                            menu: 'gestrues',
+                            defaultValue: Gestrue.Shake
+                        }
+                    }
+                },
+                {
+                    opcode: 'axisAcceleration',
+                    text: formatMessage({
+                        id: 'microbit.sensor.axisAcceleration',
+                        default: '[AXIS] axis acceleration',
+                        description: 'microbit axis acceleration'
+                    }),
+                    blockType: BlockType.REPORTER,
+                    arguments: {
+                        AXIS: {
+                            type: ArgumentType.STRING,
+                            menu: 'axis',
+                            defaultValue: Axis.X
+                        }
+                    }
+                },
+                '---',
+                {
+                    opcode: 'compassAngle',
+                    text: formatMessage({
+                        id: 'microbit.sensor.compassAngle',
+                        default: 'compass angle',
+                        description: 'microbit compass angle'
+                    }),
+                    blockType: BlockType.REPORTER
+                },
+                {
+                    opcode: 'compassMagneticDensity',
+                    text: formatMessage({
+                        id: 'microbit.sensor.compassMagneticDensity',
+                        default: 'compass magnetic density',
+                        description: 'microbit compass magnetic density'
+                    }),
+                    blockType: BlockType.REPORTER
+                },
+                {
+                    opcode: 'calibrateCompass',
+                    text: formatMessage({
+                        id: 'microbit.sensor.calibrateCompass',
+                        default: 'calibrate compass',
+                        description: 'microbit calibrate compass'
+                    }),
+                    blockType: BlockType.COMMAND
+                },
+                '---',
+                {
+                    opcode: 'lightLevel',
+                    text: formatMessage({
+                        id: 'microbit.sensor.lightLevel',
+                        default: 'light level',
+                        description: 'microbit light level'
+                    }),
+                    blockType: BlockType.REPORTER
+                },
+                '---',
+                {
+                    opcode: 'temperature',
+                    text: formatMessage({
+                        id: 'microbit.sensor.temperature',
+                        default: 'temperature',
+                        description: 'microbit temperature'
+                    }),
+                    blockType: BlockType.REPORTER
+                },
+                '---',
+                {
+                    opcode: 'runningTime',
+                    text: formatMessage({
+                        id: 'microbit.sensor.runningTime',
+                        default: 'running time',
+                        description: 'microbit running time'
+                    }),
+                    blockType: BlockType.REPORTER
+                }
+            ],
+            menus: {
+                keys: {
+                    items: this.KEYS_MENU
+                },
+                gestrues: {
+                    items: this.GESTRUES_MENU
+                },
+                axis: {
+                    items: this.AXIS_MENU
+                }
+            }
+        },
+        {
+            id: 'wireless',
+            name: formatMessage({
+                id: 'microbit.category.wireless',
+                default: 'Wireless',
+                description: 'The name of the microbit device wireless category'
+            }),
+            color1: '#D65CD6',
+            color2: '#BD42BD',
+            color3: '#BD42BD',
+
+            blocks: [
+                {
+                    opcode: 'openWirelessCommunication',
+                    text: formatMessage({
+                        id: 'microbit.wireless.openWirelessCommunication',
+                        default: 'open wireless communication',
+                        description: 'microbit open wireless communication'
+                    }),
+                    blockType: BlockType.COMMAND
+                },
+                {
+                    opcode: 'closeWirelessCommunication',
+                    text: formatMessage({
+                        id: 'microbit.wireless.closeWirelessCommunication',
+                        default: 'close wireless communication',
+                        description: 'microbit close wireless communication'
+                    }),
+                    blockType: BlockType.COMMAND
+                },
+                {
+                    opcode: 'resetWirelessCommunication',
+                    text: formatMessage({
+                        id: 'microbit.wireless.resetWirelessCommunication',
+                        default: 'reset wireless communication',
+                        description: 'microbit reset wireless communication'
+                    }),
+                    blockType: BlockType.COMMAND
+                },
+                '---',
+                {
+                    opcode: 'sendWirelessMessage',
+                    text: formatMessage({
+                        id: 'microbit.wireless.sendWirelessMessage',
+                        default: 'send wireless message [TEXT]',
+                        description: 'microbit send wireless message'
                     }),
                     blockType: BlockType.COMMAND,
                     arguments: {
@@ -344,58 +1018,34 @@ class Scratch3MicrobitDevice {
                     }
                 },
                 {
-                    opcode: 'clearScreen',
+                    opcode: 'receiveWirelessMessage',
                     text: formatMessage({
-                        id: 'microbit.display.clearScreen',
-                        default: 'clear screen',
-                        description: 'microbit clear screen'
+                        id: 'microbit.wireless.receiveWirelessMessage',
+                        default: 'receive wireless message',
+                        description: 'microbit receive wireless message'
                     }),
-                    blockType: BlockType.COMMAND
-                }
-            ],
-            menus: {
-            }
-        },
-        {
-            id: 'pin',
-            name: formatMessage({
-                id: 'arduinoUno.category.pins',
-                default: 'Pins',
-                description: 'The name of the arduino uno device pin category'
-            }),
-            color1: '#4C97FF',
-            color2: '#3373CC',
-            color3: '#3373CC',
-
-            blocks: [
+                    blockType: BlockType.REPORTER
+                },
                 {
-                    opcode: 'setPinMode',
+                    opcode: 'setWirelessCommunicationChannel',
                     text: formatMessage({
-                        id: 'arduinoUno.pins.setPinMode',
-                        default: 'set pin [PIN] mode [MODE]',
-                        description: 'arduinoUno set pin mode'
+                        id: 'microbit.wireless.setWirelessCommunicationChannel',
+                        default: 'set wireless communication channel as [CH]',
+                        description: 'microbit set wireless communication channel'
                     }),
                     blockType: BlockType.COMMAND,
                     arguments: {
-                        PIN: {
+                        CH: {
                             type: ArgumentType.STRING,
-                            menu: 'pins',
-                            defaultValue: Pins.D0
-                        },
-                        MODE: {
-                            type: ArgumentType.STRING,
-                            menu: 'mode',
-                            defaultValue: Mode.Input
+                            menu: 'channel',
+                            defaultValue: '0'
                         }
                     }
                 }
             ],
             menus: {
-                pins: {
-                    items: this.PINS_MENU
-                },
-                mode: {
-                    items: this.MODE_MENU
+                channel: {
+                    items: this.CHANNEL_MENU
                 }
             }
         }

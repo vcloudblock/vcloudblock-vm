@@ -127,8 +127,8 @@ class VirtualMachine extends EventEmitter {
         this.runtime.on(Runtime.DEVICE_FIELD_ADDED, (fieldName, fieldImplementation) => {
             this.emit(Runtime.DEVICE_FIELD_ADDED, fieldName, fieldImplementation);
         });
-        this.runtime.on(Runtime.DEVICE_EXTENSION_ADDED, () => {
-            this.emit(Runtime.DEVICE_EXTENSION_ADDED);
+        this.runtime.on(Runtime.DEVICE_EXTENSION_ADDED, addExts => {
+            this.emit(Runtime.DEVICE_EXTENSION_ADDED, addExts);
         });
         this.runtime.on(Runtime.DEVICE_EXTENSION_REMOVED, data => {
             this.emit(Runtime.DEVICE_EXTENSION_REMOVED, data);
@@ -565,7 +565,7 @@ class VirtualMachine extends EventEmitter {
 
             if (deviceExtensions) {
                 deviceExtensionFetchPromises.push(this.extensionManager.getLocalDeviceExtensionsList());
-                deviceExtensionFetchPromises.push(this.extensionManager.getRemoteDeviceExtensionsList());
+                // deviceExtensionFetchPromises.push(this.extensionManager.getRemoteDeviceExtensionsList());
 
                 return Promise.all(deviceExtensionFetchPromises).then(() => {
                     deviceExtensions.forEach(deviceExtensionID => {
