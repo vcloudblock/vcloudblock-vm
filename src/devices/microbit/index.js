@@ -3,9 +3,7 @@ const Buffer = require('buffer').Buffer;
 
 const ArgumentType = require('../../extension-support/argument-type');
 const BlockType = require('../../extension-support/block-type');
-const ProgramModeType = require('../../extension-support/program-mode-type');
 const Serialport = require('../../io/serialport');
-const Base64Util = require('../../util/base64-util');
 
 /**
 * The list of USB device filters.
