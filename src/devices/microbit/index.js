@@ -720,7 +720,7 @@ class Scratch3MicrobitDevice {
         {
             id: 'display',
             name: formatMessage({
-                id: 'microbit.category.pins',
+                id: 'microbit.category.display',
                 default: 'Display',
                 description: 'The name of the microbit device display category'
             }),

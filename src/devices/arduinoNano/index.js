@@ -21,7 +21,7 @@ const PNPID_LIST = [
     // FT232
     'USB\\VID_0403&PID_6001',
     // CP2102
-    'USB\\VID_10C4&PID_EA61'
+    'USB\\VID_10C4&PID_EA60'
 ];
 
 /**
