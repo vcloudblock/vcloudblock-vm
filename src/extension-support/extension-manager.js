@@ -34,7 +34,10 @@ const builtinDevices = {
     arduinoNano: () => require('../devices/arduinoNano'),
     arduinoLeonardo: () => require('../devices/arduinoLeonardo'),
     arduinoMega2560: () => require('../devices/arduinoMega2560'),
-    microbit: () => require('../devices/microbit')
+    microbit: () => require('../devices/microbit'),
+
+    // Third party
+    ironKit: () => require('../devices/ironKit')
 
     // todo transform these to device extension
     // wedo2: () => require('../extensions/scratch3_wedo2'),
