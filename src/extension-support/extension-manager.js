@@ -243,6 +243,7 @@ class ExtensionManager {
             const serviceName = this._registerInternalDevice(deviceInstance);
             this._loadedDevice.clear();
             this._loadedDevice.set(deviceURL, serviceName);
+            this.unloadAllDeviceExtension();
             return Promise.resolve();
         }
 
@@ -357,6 +358,21 @@ class ExtensionManager {
             this.runtime.emit(this.runtime.constructor.DEVICE_EXTENSION_REMOVED, deviceExtensionId);
             return resolve();
         });
+    }
+
+    /**
+     * Unload all device extensions
+     * @returns {Promise} resolved once all device extensions is unloaded
+     */
+    unloadAllDeviceExtension () {
+        const allPromises = [];
+
+        const loadedDeviceExtensionId = this.runtime.getCurrentDeviceExtensionLoaded();
+        loadedDeviceExtensionId.forEach(id => {
+            allPromises.push(this.unloadDeviceExtension(id));
+        });
+
+        return Promise.all(allPromises);
     }
 
     /**
