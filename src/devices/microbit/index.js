@@ -10,8 +10,7 @@ const Serialport = require('../../io/serialport');
 * @readonly
 */
 const PNPID_LIST = [
-    'USB\\VID_0D28&PID_0204',
-    '*'
+    'USB\\VID_0D28&PID_0204'
 ];
 
 /**
@@ -25,7 +24,7 @@ const SERIAL_CONFIG = {
 };
 
 /**
- * Configuration of build and flash. Used by arduino_debug and avrdude.
+ * Configuration of flash.
  * @readonly
  */
 const DIVECE_OPT = {
@@ -38,8 +37,8 @@ const LedState = {
 };
 
 const Key = {
-    A: 'A',
-    B: 'B'
+    A: 'a',
+    B: 'n'
 };
 
 const Gestrue = {
@@ -88,18 +87,18 @@ const Level = {
 };
 
 /**
- * Manage communication with a Arduino Uno peripheral over a Scrath Link client socket.
+ * Manage communication with a Microbit peripheral over a OpenBlock Link client socket.
  */
 class Microbit{
 
     /**
-     * Construct a Arduino communication object.
-     * @param {Runtime} runtime - the Scratch 3.0 runtime
+     * Construct a Microbit communication object.
+     * @param {Runtime} runtime - the OpenBlock runtime
      * @param {string} deviceId - the id of the extension
      */
     constructor (runtime, deviceId) {
         /**
-         * The Scratch 3.0 runtime used to trigger the green flag button.
+         * The OpenBlock runtime used to trigger the green flag button.
          * @type {Runtime}
          * @private
          */
@@ -246,9 +245,9 @@ class Microbit{
 }
 
 /**
- * Scratch 3.0 blocks to interact with a Arduino Uno peripheral.
+ * OpenBlock blocks to interact with a Microbit peripheral.
  */
-class Scratch3MicrobitDevice {
+class OpenBlockMicrobitDevice {
     /**
      * @return {string} - the ID of this extension.
      */
@@ -556,18 +555,18 @@ class Scratch3MicrobitDevice {
     }
 
     /**
-     * Construct a set of Arduino blocks.
-     * @param {Runtime} runtime - the Scratch 3.0 runtime.
+     * Construct a set of Microbit blocks.
+     * @param {Runtime} runtime - the OpenBlock runtime.
      */
     constructor (runtime) {
         /**
-         * The Scratch 3.0 runtime.
+         * The OpenBlock runtime.
          * @type {Runtime}
          */
         this.runtime = runtime;
 
-        // Create a new Arduino uno peripheral instance
-        this._peripheral = new Microbit(this.runtime, Scratch3MicrobitDevice.DEVICE_ID);
+        // Create a new Microbit peripheral instance
+        this._peripheral = new Microbit(this.runtime, OpenBlockMicrobitDevice.DEVICE_ID);
     }
 
     /**
@@ -676,29 +675,29 @@ class Scratch3MicrobitDevice {
                             defaultValue: Pins.P0
                         }
                     }
-                },
-                '---',
-                {
-
-                    opcode: 'setServoOutput',
-                    text: formatMessage({
-                        id: 'microbit.pins.setServoOutput',
-                        default: 'set servo pin [PIN] out [OUT]',
-                        description: 'microbit set servo pin out'
-                    }),
-                    blockType: BlockType.COMMAND,
-                    arguments: {
-                        PIN: {
-                            type: ArgumentType.STRING,
-                            menu: 'pins',
-                            defaultValue: Pins.P0
-                        },
-                        OUT: {
-                            type: ArgumentType.ANGLE,
-                            defaultValue: '0'
-                        }
-                    }
                 }
+                // '---',
+                // {
+
+                //     opcode: 'setServoOutput',
+                //     text: formatMessage({
+                //         id: 'microbit.pins.setServoOutput',
+                //         default: 'set servo pin [PIN] out [OUT]',
+                //         description: 'microbit set servo pin out'
+                //     }),
+                //     blockType: BlockType.COMMAND,
+                //     arguments: {
+                //         PIN: {
+                //             type: ArgumentType.STRING,
+                //             menu: 'pins',
+                //             defaultValue: Pins.P0
+                //         },
+                //         OUT: {
+                //             type: ArgumentType.ANGLE,
+                //             defaultValue: '0'
+                //         }
+                //     }
+                // }
 
             ],
             menus: {
@@ -744,11 +743,45 @@ class Scratch3MicrobitDevice {
                     }
                 },
                 {
+                    opcode: 'showImageUntil',
+                    text: formatMessage({
+                        id: 'microbit.display.showImageUntil',
+                        default: 'show image [VALUE] for [TIME] secs',
+                        description: 'microbit show image for some times'
+                    }),
+                    blockType: BlockType.COMMAND,
+                    arguments: {
+                        VALUE: {
+                            type: ArgumentType.MATRIX,
+                            defaultValue: '0101010101100010101000100'
+                        },
+                        TIME: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '1'
+                        }
+                    }
+                },
+                {
                     opcode: 'show',
                     text: formatMessage({
                         id: 'microbit.display.show',
                         default: 'show [TEXT]',
                         description: 'microbit show'
+                    }),
+                    blockType: BlockType.COMMAND,
+                    arguments: {
+                        TEXT: {
+                            type: ArgumentType.STRING,
+                            defaultValue: 'hello'
+                        }
+                    }
+                },
+                {
+                    opcode: 'showUntilScrollDone',
+                    text: formatMessage({
+                        id: 'microbit.display.showUntilScrollDone',
+                        default: 'show [TEXT] until scroll done',
+                        description: 'microbit show until scroll done'
                     }),
                     blockType: BlockType.COMMAND,
                     arguments: {
@@ -1049,20 +1082,6 @@ class Scratch3MicrobitDevice {
         }
         ];
     }
-
-    /**
-     * Set pin mode.
-     * @param {object} args - the block's arguments.
-     * @return {Promise} - a Promise that resolves after the set pin mode is done.
-     */
-    // setPinMode (args) {
-    //     this._peripheral.setPinMode(args.PIN, args.MODE);
-    //     return new Promise(resolve => {
-    //         setTimeout(() => {
-    //             resolve();
-    //         }, SerialportSendInterval);
-    //     });
-    // }
 }
 
-module.exports = Scratch3MicrobitDevice;
+module.exports = OpenBlockMicrobitDevice;

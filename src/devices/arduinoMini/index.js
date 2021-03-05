@@ -14,13 +14,14 @@ const Firmata = require('../../lib/firmata/firmata');
  * @readonly
  */
 const PNPID_LIST = [
-    // https://github.com/arduino/Arduino/blob/1.8.0/hardware/arduino/avr/boards.txt#L51-L58
-    'USB\\VID_2341&PID_0043',
-    'USB\\VID_2341&PID_0001',
-    'USB\\VID_2A03&PID_0043',
-    'USB\\VID_2341&PID_0243',
-    // For chinese clones that use CH340
-    'USB\\VID_1A86&PID_7523'
+    // CH340
+    'USB\\VID_1A86&PID_7523',
+    // PL2303
+    'USB\\VID_067B&PID_2303',
+    // FT232
+    'USB\\VID_0403&PID_6001',
+    // CP2102
+    'USB\\VID_10C4&PID_EA60'
 ];
 
 /**
@@ -39,7 +40,7 @@ const SERIAL_CONFIG = {
  */
 const DIVECE_OPT = {
     type: 'arduino',
-    fqbn: 'arduino:avr:uno',
+    fqbn: 'arduino:avr:mini:cpu=atmega328',
     partno: 'atmega328p',
     programmerId: 'arduino',
     baudrate: '115200'
@@ -140,9 +141,9 @@ const DataType = {
 };
 
 /**
- * Manage communication with a Arduino Uno peripheral over a OpenBlock Link client socket.
+ * Manage communication with a Arduino Mini peripheral over a OpenBlock Link client socket.
  */
-class ArduinoUno{
+class ArduinoMini{
 
     /**
      * Construct a Arduino communication object.
@@ -527,14 +528,14 @@ class ArduinoUno{
 }
 
 /**
- * OpenBlock blocks to interact with a Arduino Uno peripheral.
+ * OpenBlock blocks to interact with a Arduino Mini peripheral.
  */
-class OpenBlockArduinoUnoDevice {
+class OpenBlockArduinoMiniDevice {
     /**
      * @return {string} - the ID of this extension.
      */
     static get DEVICE_ID () {
-        return 'arduinoUno';
+        return 'arduinoMini';
     }
 
     get PINS_MENU () {
@@ -894,8 +895,8 @@ class OpenBlockArduinoUnoDevice {
          */
         this.runtime = runtime;
 
-        // Create a new Arduino uno peripheral instance
-        this._peripheral = new ArduinoUno(this.runtime, OpenBlockArduinoUnoDevice.DEVICE_ID);
+        // Create a new Arduino Mini peripheral instance
+        this._peripheral = new ArduinoMini(this.runtime, OpenBlockArduinoMiniDevice.DEVICE_ID);
     }
 
     /**
@@ -1368,4 +1369,4 @@ class OpenBlockArduinoUnoDevice {
     }
 }
 
-module.exports = OpenBlockArduinoUnoDevice;
+module.exports = OpenBlockArduinoMiniDevice;

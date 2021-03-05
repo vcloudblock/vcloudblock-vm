@@ -140,18 +140,18 @@ const DataType = {
 };
 
 /**
- * Manage communication with a Arduino Uno peripheral over a Scrath Link client socket.
+ * Manage communication with a Arduino Uno peripheral over a OpenBlock Link client socket.
  */
 class IronKit{
 
     /**
      * Construct a Arduino communication object.
-     * @param {Runtime} runtime - the Scratch 3.0 runtime
+     * @param {Runtime} runtime - the OpenBlock runtime
      * @param {string} deviceId - the id of the extension
      */
     constructor (runtime, deviceId) {
         /**
-         * The Scratch 3.0 runtime used to trigger the green flag button.
+         * The OpenBlock runtime used to trigger the green flag button.
          * @type {Runtime}
          * @private
          */
@@ -527,9 +527,9 @@ class IronKit{
 }
 
 /**
- * Scratch 3.0 blocks to interact with a Arduino Uno peripheral.
+ * OpenBlock blocks to interact with a Arduino Uno peripheral.
  */
-class Scratch3IronKitDevice {
+class OpenBlockIronKitDevice {
     /**
      * @return {string} - the ID of this extension.
      */
@@ -885,17 +885,17 @@ class Scratch3IronKitDevice {
 
     /**
      * Construct a set of Arduino blocks.
-     * @param {Runtime} runtime - the Scratch 3.0 runtime.
+     * @param {Runtime} runtime - the OpenBlock runtime.
      */
     constructor (runtime) {
         /**
-         * The Scratch 3.0 runtime.
+         * The OpenBlock runtime.
          * @type {Runtime}
          */
         this.runtime = runtime;
 
         // Create a new Arduino uno peripheral instance
-        this._peripheral = new IronKit(this.runtime, Scratch3IronKitDevice.DEVICE_ID);
+        this._peripheral = new IronKit(this.runtime, OpenBlockIronKitDevice.DEVICE_ID);
     }
 
     /**
@@ -1368,4 +1368,4 @@ class Scratch3IronKitDevice {
     }
 }
 
-module.exports = Scratch3IronKitDevice;
+module.exports = OpenBlockIronKitDevice;

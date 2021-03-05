@@ -199,18 +199,18 @@ const DataType = {
 };
 
 /**
- * Manage communication with a Arduino Uno peripheral over a Scrath Link client socket.
+ * Manage communication with a Arduino Mega2560 peripheral over a OpenBlock Link client socket.
  */
 class ArduinoMega2560{
 
     /**
      * Construct a Arduino communication object.
-     * @param {Runtime} runtime - the Scratch 3.0 runtime
+     * @param {Runtime} runtime - the OpenBlock runtime
      * @param {string} deviceId - the id of the extension
      */
     constructor (runtime, deviceId) {
         /**
-         * The Scratch 3.0 runtime used to trigger the green flag button.
+         * The OpenBlock runtime used to trigger the green flag button.
          * @type {Runtime}
          * @private
          */
@@ -586,9 +586,9 @@ class ArduinoMega2560{
 }
 
 /**
- * Scratch 3.0 blocks to interact with a Arduino Uno peripheral.
+ * OpenBlock blocks to interact with a Arduino Mega2560 peripheral.
  */
-class Scratch3ArduinoMega2560Device {
+class OpenBlockArduinoMega2560Device {
     /**
      * @return {string} - the ID of this extension.
      */
@@ -1417,17 +1417,17 @@ class Scratch3ArduinoMega2560Device {
 
     /**
      * Construct a set of Arduino blocks.
-     * @param {Runtime} runtime - the Scratch 3.0 runtime.
+     * @param {Runtime} runtime - the OpenBlock runtime.
      */
     constructor (runtime) {
         /**
-         * The Scratch 3.0 runtime.
+         * The OpenBlock runtime.
          * @type {Runtime}
          */
         this.runtime = runtime;
 
-        // Create a new Arduino uno peripheral instance
-        this._peripheral = new ArduinoMega2560(this.runtime, Scratch3ArduinoMega2560Device.DEVICE_ID);
+        // Create a new Arduino Mega2560 peripheral instance
+        this._peripheral = new ArduinoMega2560(this.runtime, OpenBlockArduinoMega2560Device.DEVICE_ID);
     }
 
     /**
@@ -1440,7 +1440,7 @@ class Scratch3ArduinoMega2560Device {
                 name: formatMessage({
                     id: 'arduinoMega2560.category.pins',
                     default: 'Pins',
-                    description: 'The name of the arduino uno device pin category'
+                    description: 'The name of the arduino mega2560 device pin category'
                 }),
                 color1: '#4C97FF',
                 color2: '#3373CC',
@@ -1641,7 +1641,7 @@ class Scratch3ArduinoMega2560Device {
                 name: formatMessage({
                     id: 'arduinoMega2560.category.serial',
                     default: 'Serial',
-                    description: 'The name of the arduino uno device serial category'
+                    description: 'The name of the arduino mega2560 device serial category'
                 }),
                 color1: '#9966FF',
                 color2: '#774DCB',
@@ -1740,7 +1740,7 @@ class Scratch3ArduinoMega2560Device {
                 name: formatMessage({
                     id: 'arduinoMega2560.category.data',
                     default: 'Data',
-                    description: 'The name of the arduino uno device data category'
+                    description: 'The name of the arduino mega2560 device data category'
                 }),
                 color1: '#CF63CF',
                 color2: '#C94FC9',
@@ -1927,4 +1927,4 @@ class Scratch3ArduinoMega2560Device {
     }
 }
 
-module.exports = Scratch3ArduinoMega2560Device;
+module.exports = OpenBlockArduinoMega2560Device;
