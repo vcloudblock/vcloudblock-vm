@@ -1079,6 +1079,36 @@ class OpenBlockMicrobitDevice {
                     items: this.CHANNEL_MENU
                 }
             }
+        },
+        {
+            id: 'console',
+            name: formatMessage({
+                id: 'microbit.category.console',
+                default: 'Console',
+                description: 'The name of the microbit device console category'
+            }),
+            color1: '#FF3399',
+            color2: '#FF3399',
+            color3: '#FF3399',
+
+            blocks: [
+                {
+                    opcode: 'consolePrint',
+                    text: formatMessage({
+                        id: 'microbit.console.consolePrint',
+                        default: 'print [TEXT]',
+                        description: 'microbit console print'
+                    }),
+                    blockType: BlockType.COMMAND,
+                    arguments: {
+                        TEXT: {
+                            type: ArgumentType.STRING,
+                            defaultValue: 'hello'
+                        }
+                    }
+                }
+            ],
+            menus: { }
         }
         ];
     }
