@@ -37,7 +37,8 @@ const builtinDevices = {
     microbit: () => require('../devices/microbit'),
 
     // Third party
-    ironKit: () => require('../devices/ironKit')
+    ironKit: () => require('../devices/ironKit'),
+    QDPRobot: () => require('../devices/QDPRobot')
 
     // todo transform these to device extension
     // wedo2: () => require('../extensions/scratch3_wedo2'),
