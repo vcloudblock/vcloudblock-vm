@@ -234,6 +234,12 @@ class Runtime extends EventEmitter {
         this._device = null;
 
         /**
+         * Currently selected device type.
+         * @type {?DeviceType}
+         */
+        this._deviceType = null;
+
+        /**
          * Map of loaded device extensions.
          * @type {Set.<string>}
          */
@@ -911,7 +917,7 @@ class Runtime extends EventEmitter {
      */
     _makeExtensionMenuId (menuName, extensionId) {
         const deviceType = this.getCurrentDeviceType();
-        return `${deviceType}${extensionId}_menu_${xmlEscape(menuName)}`;
+        return `${deviceType}_${extensionId}_menu_${xmlEscape(menuName)}`;
     }
 
     /**
@@ -1233,7 +1239,7 @@ class Runtime extends EventEmitter {
      */
     _convertBlockForScratchBlocks (blockInfo, categoryInfo) {
         const deviceType = this.getCurrentDeviceType();
-        const extendedOpcode = `${deviceType}${categoryInfo.id}_${blockInfo.opcode}`;
+        const extendedOpcode = `${deviceType}_${categoryInfo.id}_${blockInfo.opcode}`;
 
         const blockJSON = {
             type: extendedOpcode,
@@ -2376,18 +2382,19 @@ class Runtime extends EventEmitter {
     }
 
     /**
+     * Set the current selected device type known by the runtime.
+     * @param {!DeviceType} type of deivce of current.
+     */
+    setDeviceType (type) {
+        this._deviceType = type;
+    }
+
+    /**
      * Get the current selected device type.
      * @return {?DeviceType} current selected device type known by the runtime.
      */
     getCurrentDeviceType () {
-        if (this._device) {
-            // if device include "arduino" , set it as arduino.
-            if (this._device.search('arduino') !== -1) {
-                return 'arduino_';
-            }
-            return `${this._device}_`;
-        }
-        return null;
+        return this._deviceType;
     }
 
     /**

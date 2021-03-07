@@ -228,9 +228,10 @@ class ExtensionManager {
     /**
      * Load an device by URL or internal device ID
      * @param {string} deviceURL - the URL for the device to load OR the ID of an internal device
+     * @param {string} deviceType - the type of device
      * @returns {Promise} resolved once the device is loaded and initialized or rejected on failure
      */
-    loadDeviceURL (deviceURL) {
+    loadDeviceURL (deviceURL, deviceType) {
         if (builtinDevices.hasOwnProperty(deviceURL)) {
             if (this.isDeviceLoaded(deviceURL)) {
                 const message = `Rejecting attempt to load a device twice with ID ${deviceURL}`;
@@ -239,6 +240,7 @@ class ExtensionManager {
             }
 
             this.runtime.setDevice(deviceURL);
+            this.runtime.setDeviceType(deviceType);
             const device = builtinDevices[deviceURL]();
             const deviceInstance = new device(this.runtime);
             const serviceName = this._registerInternalDevice(deviceInstance);
