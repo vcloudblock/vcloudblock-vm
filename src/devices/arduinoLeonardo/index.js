@@ -953,7 +953,7 @@ class OpenBlockArduinoLeonardoDevice {
                         arguments: {
                             PIN: {
                                 type: ArgumentType.STRING,
-                                menu: 'digitalPins',
+                                menu: 'pins',
                                 defaultValue: Pins.D0
                             },
                             LEVEL: {
