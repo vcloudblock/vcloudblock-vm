@@ -246,6 +246,12 @@ class Runtime extends EventEmitter {
         this._loadedDeviceExtensions = new Map();
 
         /**
+         * Map of pending device extensions.
+         * @type {Array.<string>}
+         */
+        this._pendingDeviceExtensions = [];
+
+        /**
          * Map of loaded extensions.
          * @type {Array.<string>}
          */
@@ -988,7 +994,6 @@ class Runtime extends EventEmitter {
             const categoryInfo = {
                 id: info.id,
                 name: maybeFormatMessage(info.name),
-                showStatusButton: info.showStatusButton,
                 blockIconURI: info.blockIconURI,
                 menuIconURI: info.menuIconURI
             };

@@ -9,8 +9,6 @@ const BlockType = require('./block-type');
 
 // Local device extension server address
 const localDeviceExtensionsUrl = 'http://127.0.0.1:20120/';
-// Remote device extension server address
-const remoteDeviceExtensionsUrl = 'http://127.0.0.1:20121/';
 
 // These extensions are currently built into the VM repository but should not be loaded at startup.
 // TODO: move these out into a separate repository?
@@ -118,19 +116,7 @@ class ExtensionManager {
         this._loadedDevice = new Map();
 
         /**
-         * Map of local extensions.
-         * @type {Array.<DeviceExtensions>}
-         */
-        this._localDeviceExtensions = [];
-
-        /**
-         * Map of remote extensions.
-         * @type {Array.<DeviceExtensions>}
-         */
-        this._remoteDeviceExtensions = [];
-
-        /**
-         * Map of local and remote extensions.
+         * Map of extensions.
          * @type {Array.<DeviceExtensions>}
          */
         this._deviceExtensions = [];
@@ -263,46 +249,21 @@ class ExtensionManager {
      * Get device extensions list from local server.
      * @returns {Promise} resolved extension list has been fetched or rejected on failure
      */
-    getLocalDeviceExtensionsList () {
+    getDeviceExtensionsList () {
         return new Promise((resolve, reject) => {
             fetch(localDeviceExtensionsUrl)
                 .then(response => response.json())
-                .then(localExtension => {
-                    localExtension = localExtension.map(extension => {
+                .then(extensions => {
+                    extensions = extensions.map(extension => {
                         extension.iconURL = localDeviceExtensionsUrl + extension.iconURL;
                         if (this.isDeviceExtensionLoaded(extension.extensionId)) {
                             extension.isLoaded = true;
                         }
                         return extension;
                     });
-                    this._localDeviceExtensions = localExtension;
-                    this._deviceExtensions = localExtension.concat(this._remoteDeviceExtensions);
+                    this._deviceExtensions = extensions;
                     return resolve(this._deviceExtensions);
                 }, err => reject(`Error while fetch local extension server: ${err}`));
-        });
-    }
-
-    /**
-     * Get device extensions list from remote server.
-     * @returns {Promise} resolved extension list has been fetched or rejected on failure
-     */
-    getRemoteDeviceExtensionsList () {
-        return new Promise((resolve, reject) => {
-            fetch(remoteDeviceExtensionsUrl)
-                .then(response => response.json())
-                .then(remoteExtension => {
-                    remoteExtension = remoteExtension.map(extension => {
-                        extension.iconURL = remoteDeviceExtensionsUrl + extension.iconURL;
-                        if (this.isDeviceExtensionLoaded(extension.extensionId)) {
-                            extension.isLoaded = true;
-                        }
-                        return extension;
-                    });
-
-                    this._remoteDeviceExtensions = remoteExtension;
-                    this._deviceExtensions = this._remoteDeviceExtensions.concat(this._localDeviceExtensions);
-                    return resolve(this._deviceExtensions);
-                }, err => reject(`Error while fetch remote extension server: ${err}`));
         });
     }
 
@@ -321,14 +282,14 @@ class ExtensionManager {
      * @returns {Promise} resolved once the device extension is loaded or rejected on failure
      */
     loadDeviceExtension (deviceExtensionId) {
+        // console.log('deviceExtensionId=', deviceExtensionId);
         return new Promise((resolve, reject) => {
             const deviceExtension = this._deviceExtensions.find(ext => ext.extensionId === deviceExtensionId);
-            if (deviceExtension === null) {
+            if (typeof deviceExtension === 'undefined') {
                 return reject(`Error while loadDeviceExtension device extension ` +
                     `can not find device extension ${deviceExtensionId}`);
             }
 
-            // const url = deviceExtension.location === 'remote' ? remoteDeviceExtensionsUrl : localDeviceExtensionsUrl;
             const url = localDeviceExtensionsUrl;
             const toolboxUrl = url + deviceExtension.toolbox;
             const blockUrl = url + deviceExtension.blocks;

@@ -555,46 +555,20 @@ class VirtualMachine extends EventEmitter {
 
     /**
      * Install `deserialize` results: null or deviceExtensions.
-     * @param {Array.deviceExtensions} deviceExtensions - the array of device extensions id to be installed
-     * @returns {Promise} resolved deviceExtensions installed
      */
-    installDeviceExtension (deviceExtensions) {
-        return new Promise((resolve, reject) => {
-            const deviceExtensionFetchPromises = [];
-            const deviceExtensionLoadPromises = [];
-
-            if (deviceExtensions) {
-                deviceExtensionFetchPromises.push(this.extensionManager.getLocalDeviceExtensionsList());
-                // deviceExtensionFetchPromises.push(this.extensionManager.getRemoteDeviceExtensionsList());
-
-                return Promise.all(deviceExtensionFetchPromises).then(() => {
-                    deviceExtensions.forEach(deviceExtensionID => {
-                        deviceExtensionLoadPromises.push(this.extensionManager.loadDeviceExtension(deviceExtensionID));
-                    });
-                    Promise.all(deviceExtensionLoadPromises).then(() => {
-                        resolve();
-                    })
-                        .catch(e => {
-                            reject(e);
-                        });
-                })
-                    .catch(() => {
-                    // Remote fetch may failed
-                        deviceExtensions.forEach(deviceExtensionID => {
-                            deviceExtensionLoadPromises.push(
-                                this.extensionManager.loadDeviceExtension(deviceExtensionID));
-                        });
-                        Promise.all(deviceExtensionLoadPromises).then(() => {
-                            resolve();
-                        })
-                            .catch(e => {
-                                reject(e);
-                            });
-                    });
-            }
-            resolve();
-
-        });
+    installDeviceExtensions () {
+        if (this.runtime._pendingDeviceExtensions.length === 0) {
+            this.emit('installDeviceExtensions.success');
+            return;
+        }
+        try {
+            this.extensionManager.loadDeviceExtension(this.runtime._pendingDeviceExtensions.shift()).then(() => {
+                this.installDeviceExtensions();
+            });
+        } catch (e) {
+            this.emit('installDeviceExtensions.error', e);
+            return;
+        }
     }
 
     /**
@@ -632,7 +606,22 @@ class VirtualMachine extends EventEmitter {
             }
         }
 
-        allPromises.push(this.installDeviceExtension(deviceExtensions));
+        if (deviceExtensions) {
+            this.runtime._pendingDeviceExtensions = deviceExtensions;
+            allPromises.push(
+                new Promise((resolve, reject) => {
+                    this.extensionManager.getDeviceExtensionsList().then(() => {
+                        this.installDeviceExtensions();
+                    });
+                    this.on('installDeviceExtensions.success', () => {
+                        resolve();
+                    });
+                    this.on('installDeviceExtensions.error', err => {
+                        reject(err);
+                    });
+                })
+            );
+        }
 
         targets = targets.filter(target => !!target);
 
