@@ -32,11 +32,7 @@ const builtinDevices = {
     arduinoMini: () => require('../devices/arduinoMini'),
     arduinoLeonardo: () => require('../devices/arduinoLeonardo'),
     arduinoMega2560: () => require('../devices/arduinoMega2560'),
-    microbit: () => require('../devices/microbit'),
-
-    // Third party
-    ironKit: () => require('../devices/ironKit'),
-    QDPRobot: () => require('../devices/QDPRobot')
+    microbit: () => require('../devices/microbit')
 
     // todo transform these to device extension
     // wedo2: () => require('../extensions/scratch3_wedo2'),
@@ -213,36 +209,34 @@ class ExtensionManager {
 
     /**
      * Load an device by URL or internal device ID
-     * @param {string} deviceURL - the URL for the device to load OR the ID of an internal device
+     * @param {string} deviceId - the URL for the device to load OR the ID of an internal device
      * @param {string} deviceType - the type of device
+     * @param {Array.<string>} pnpidList - the array of pnpid list
      * @returns {Promise} resolved once the device is loaded and initialized or rejected on failure
      */
-    loadDeviceURL (deviceURL, deviceType) {
-        if (builtinDevices.hasOwnProperty(deviceURL)) {
-            if (this.isDeviceLoaded(deviceURL)) {
-                const message = `Rejecting attempt to load a device twice with ID ${deviceURL}`;
+    loadDeviceURL (deviceId, deviceType, pnpidList) {
+        const realDeviceId = this.runtime.analysisRealDeviceId(deviceId);
+
+        if (builtinDevices.hasOwnProperty(realDeviceId)) {
+            if (this.isDeviceLoaded(realDeviceId)) {
+                const message = `Rejecting attempt to load a device twice with ID ${deviceId}`;
                 log.warn(message);
                 return Promise.resolve();
             }
 
-            this.runtime.setDevice(deviceURL);
+            this.runtime.setDevice(deviceId);
             this.runtime.setDeviceType(deviceType);
-            const device = builtinDevices[deviceURL]();
+            this.runtime.setPnpIdList(pnpidList);
+            const device = builtinDevices[realDeviceId]();
             const deviceInstance = new device(this.runtime);
             const serviceName = this._registerInternalDevice(deviceInstance);
             this._loadedDevice.clear();
-            this._loadedDevice.set(deviceURL, serviceName);
+            this._loadedDevice.set(deviceId, serviceName);
             this.unloadAllDeviceExtension();
             return Promise.resolve();
         }
+        return Promise.reject(`Error while load device can not find device ${deviceId}`);
 
-        return new Promise((resolve, reject) => {
-            // If we `require` this at the global level it breaks non-webpack targets, including tests
-            const ExtensionWorker = require('worker-loader?name=extension-worker.js!./extension-worker');
-
-            this.pendingExtensions.push({deviceURL, resolve, reject});
-            dispatch.addWorker(new ExtensionWorker());
-        });
     }
 
     /**
@@ -354,6 +348,16 @@ class ExtensionManager {
                     log.error(`Failed to refresh built-in extension primitives: ${JSON.stringify(e)}`);
                 })
         );
+        allPromises.push(Array.from(this._loadedDevice.values()).map(serviceName =>
+            dispatch.call(serviceName, 'getInfo')
+                .then(infos => {
+                    infos = this._prepareDeviceInfo(serviceName, infos);
+                    dispatch.call('runtime', '_registerDevicePrimitives', infos);
+                })
+                .catch(e => {
+                    log.error(`Failed to refresh built-in deivce primitives: ${JSON.stringify(e)}`);
+                })
+        ));
         return Promise.all(allPromises);
     }
 

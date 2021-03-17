@@ -246,14 +246,15 @@ class ArduinoNano{
 
     /**
      * Called by the runtime when user wants to scan for a peripheral.
+     * @param {Array.<string>} pnpidList - the array of pnp id list
      */
-    scan () {
+    scan (pnpidList) {
         if (this._serialport) {
             this._serialport.disconnect();
         }
         this._serialport = new Serialport(this._runtime, this._deviceId, {
             filters: {
-                pnpid: PNPID_LIST
+                pnpid: pnpidList ? pnpidList : PNPID_LIST
             }
         }, this._onConnect, this.reset);
     }

@@ -240,6 +240,12 @@ class Runtime extends EventEmitter {
         this._deviceType = null;
 
         /**
+         * Currently device pnp id list.
+         * @type {?Array.<string>}
+         */
+        this._pnpIdList = [];
+
+        /**
          * Map of loaded device extensions.
          * @type {Set.<string>}
          */
@@ -1672,67 +1678,94 @@ class Runtime extends EventEmitter {
     }
 
     /**
-     * Tell the specified extension to scan for a peripheral.
-     * @param {string} extensionId - the id of the extension.
+     * To get real device id. eg: the third party id like ironKit_arduinoUno.
+     * @param {string} deviceId - the id of the device.
+     * @return {string} deviceId - the real device id.
      */
-    scanForPeripheral (extensionId) {
-        if (this.peripheralExtensions[extensionId]) {
-            this.peripheralExtensions[extensionId].scan();
+    analysisRealDeviceId (deviceId) {
+        if (deviceId){
+        // if the id contain '_' use the string afer the '_'.
+            if (deviceId.indexOf('_') !== -1) {
+                deviceId = deviceId.split('_')[1];
+            }
+        }
+        return deviceId;
+    }
+
+    /**
+     * Tell the specified extension to scan for a peripheral.
+     * @param {string} deviceId - the id of the device.
+     */
+    scanForPeripheral (deviceId) {
+        deviceId = this.analysisRealDeviceId(deviceId);
+
+        if (this.peripheralExtensions[deviceId]) {
+            this.peripheralExtensions[deviceId].scan(this.getPnpIdList());
         }
     }
 
     /**
      * Connect to the extension's specified peripheral.
-     * @param {string} extensionId - the id of the extension.
+     * @param {string} deviceId - the id of the device.
      * @param {number} peripheralId - the id of the peripheral.
      */
-    connectPeripheral (extensionId, peripheralId) {
-        if (this.peripheralExtensions[extensionId]) {
-            this.peripheralExtensions[extensionId].connect(peripheralId);
+    connectPeripheral (deviceId, peripheralId) {
+        deviceId = this.analysisRealDeviceId(deviceId);
+
+        if (this.peripheralExtensions[deviceId]) {
+            this.peripheralExtensions[deviceId].connect(peripheralId);
         }
     }
 
     /**
      * Disconnect from the extension's connected peripheral.
-     * @param {string} extensionId - the id of the extension.
+     * @param {string} deviceId - the id of the device.
      */
-    disconnectPeripheral (extensionId) {
-        if (this.peripheralExtensions[extensionId]) {
-            this.peripheralExtensions[extensionId].disconnect();
+    disconnectPeripheral (deviceId) {
+        deviceId = this.analysisRealDeviceId(deviceId);
+
+        if (this.peripheralExtensions[deviceId]) {
+            this.peripheralExtensions[deviceId].disconnect();
         }
     }
 
     /**
      * Returns whether the extension has a currently connected peripheral.
-     * @param {string} extensionId - the id of the extension.
+     * @param {string} deviceId - the id of the device.
      * @return {boolean} - whether the extension has a connected peripheral.
      */
-    getPeripheralIsConnected (extensionId) {
+    getPeripheralIsConnected (deviceId) {
+        deviceId = this.analysisRealDeviceId(deviceId);
+
         let isConnected = false;
-        if (this.peripheralExtensions[extensionId]) {
-            isConnected = this.peripheralExtensions[extensionId].isConnected();
+        if (this.peripheralExtensions[deviceId]) {
+            isConnected = this.peripheralExtensions[deviceId].isConnected();
         }
         return isConnected;
     }
 
     /**
      * Upload code to the extension's specified peripheral.
-     * @param {string} extensionId - the id of the extension.
+     * @param {string} deviceId - the id of the device.
      * @param {string} code - the code to upload.
      */
-    uploadToPeripheral (extensionId, code) {
-        if (this.peripheralExtensions[extensionId]) {
-            this.peripheralExtensions[extensionId].upload(code);
+    uploadToPeripheral (deviceId, code) {
+        deviceId = this.analysisRealDeviceId(deviceId);
+
+        if (this.peripheralExtensions[deviceId]) {
+            this.peripheralExtensions[deviceId].upload(code);
         }
     }
 
     /**
      * Upload realtime firware to the extension's specified peripheral.
-     * @param {string} extensionId - the id of the extension.
+     * @param {string} deviceId - the id of the device.
      */
-    uploadFirmwareToPeripheral (extensionId) {
-        if (this.peripheralExtensions[extensionId]) {
-            this.peripheralExtensions[extensionId].uploadFirmware();
+    uploadFirmwareToPeripheral (deviceId) {
+        deviceId = this.analysisRealDeviceId(deviceId);
+
+        if (this.peripheralExtensions[deviceId]) {
+            this.peripheralExtensions[deviceId].uploadFirmware();
         }
     }
 
@@ -2400,6 +2433,22 @@ class Runtime extends EventEmitter {
      */
     getCurrentDeviceType () {
         return this._deviceType;
+    }
+
+    /**
+     * Set the device pnp id list known by the runtime.
+     * @param {Array.<string>} pnpidList pnp id list.
+     */
+    setPnpIdList (pnpidList) {
+        this._pnpIdList = pnpidList;
+    }
+
+    /**
+     * Get the current device pnp id list.
+     * @return {?Array.<string>} current device pnp id list known by the runtime.
+     */
+    getPnpIdList () {
+        return this._pnpIdList;
     }
 
     /**

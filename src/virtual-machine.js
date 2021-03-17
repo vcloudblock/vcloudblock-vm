@@ -550,25 +550,46 @@ class VirtualMachine extends EventEmitter {
         return deserializePromise()
             .then(({targets}) =>
                 this.installTargets(targets, projectJSON.extensions, true,
-                    projectJSON.device, projectJSON.deviceExtensions));
+                    projectJSON.device, projectJSON.deviceType, projectJSON.pnpIdList, projectJSON.deviceExtensions));
     }
 
     /**
-     * Install `deserialize` results: null or deviceExtensions.
+     * Sync install device extensions.
      */
-    installDeviceExtensions () {
+    installDeviceExtensionsSync () {
         if (this.runtime._pendingDeviceExtensions.length === 0) {
-            this.emit('installDeviceExtensions.success');
+            this.emit('installDeviceExtensionsSync.success');
             return;
         }
         try {
             this.extensionManager.loadDeviceExtension(this.runtime._pendingDeviceExtensions.shift()).then(() => {
-                this.installDeviceExtensions();
+                this.installDeviceExtensionsSync();
             });
         } catch (e) {
-            this.emit('installDeviceExtensions.error', e);
+            this.emit('installDeviceExtensionsSync.error', e);
             return;
         }
+    }
+
+    /**
+     * Install `deserialize` results: deviceExtensions.
+     * @param {Array.<DeviceExtension>} deviceExtensions - the deivce extensions to be installed
+     * @returns {Promise} Promise that resolves after the device extensions has loaded
+     */
+    installDeviceExtensions (deviceExtensions) {
+        return new Promise((resolve, reject) => {
+            this.runtime._pendingDeviceExtensions = deviceExtensions;
+
+            this.extensionManager.getDeviceExtensionsList().then(() => {
+                this.installDeviceExtensionsSync();
+            });
+            this.on('installDeviceExtensionsSync.success', () => {
+                resolve();
+            });
+            this.on('installDeviceExtensionsSync.error', err => {
+                reject(err);
+            });
+        });
     }
 
     /**
@@ -577,14 +598,17 @@ class VirtualMachine extends EventEmitter {
      * @param {ImportedExtensionsInfo} extensions - metadata about extensions used by these targets
      * @param {boolean} wholeProject - set to true if installing a whole project, as opposed to a single sprite.
      * @param {Device} device - the deivce to be installed
+     * @param {DeviceType} deviceType - the type of deivce
+     * @param {Array.<string>} pnpIdList - a list of pnpid
      * @param {Array.<DeviceExtension>} deviceExtensions - the deivce extensions to be installed
      * @returns {Promise} resolved once targets have been installed
      */
-    installTargets (targets, extensions, wholeProject, device = null, deviceExtensions = null) {
+    installTargets (targets, extensions, wholeProject, device = null,
+        deviceType = null, pnpIdList = null, deviceExtensions = null) {
         const allPromises = [];
 
         if (device) {
-            allPromises.push(this.extensionManager.loadDeviceURL(device));
+            allPromises.push(this.extensionManager.loadDeviceURL(device, deviceType, pnpIdList));
         }
 
         if (extensions) {
@@ -607,20 +631,7 @@ class VirtualMachine extends EventEmitter {
         }
 
         if (deviceExtensions) {
-            this.runtime._pendingDeviceExtensions = deviceExtensions;
-            allPromises.push(
-                new Promise((resolve, reject) => {
-                    this.extensionManager.getDeviceExtensionsList().then(() => {
-                        this.installDeviceExtensions();
-                    });
-                    this.on('installDeviceExtensions.success', () => {
-                        resolve();
-                    });
-                    this.on('installDeviceExtensions.error', err => {
-                        reject(err);
-                    });
-                })
-            );
+            allPromises.push(this.installDeviceExtensions(deviceExtensions));
         }
 
         targets = targets.filter(target => !!target);
