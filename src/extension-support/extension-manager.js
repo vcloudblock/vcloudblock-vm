@@ -244,7 +244,7 @@ class ExtensionManager {
      * @returns {Promise} resolved extension list has been fetched or rejected on failure
      */
     getDeviceExtensionsList () {
-        return new Promise((resolve, reject) => {
+        return new Promise(resolve => {
             fetch(localDeviceExtensionsUrl)
                 .then(response => response.json())
                 .then(extensions => {

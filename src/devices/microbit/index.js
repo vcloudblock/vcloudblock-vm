@@ -143,18 +143,12 @@ class Microbit{
     }
 
     /**
-     * Called by the runtime when user wants to connect to a certain peripheral.
-     * @param {number} id - the id of the peripheral to connect to.
-     * @param {?number} baudrate - the baudrate.
+     * Called by the runtime when user wants to upload code to a peripheral.
+     * @param {string} code - the code want to upload.
      */
-    connect (id, baudrate = null) {
-        const config = SERIAL_CONFIG;
-        if (baudrate) {
-            config.baudRate = baudrate;
-        }
-        if (this._serialport) {
-            this._serialport.connectPeripheral(id, {config: config});
-        }
+    upload (code) {
+        const base64Str = Buffer.from(code).toString('base64');
+        this._serialport.upload(base64Str, DIVECE_OPT, 'base64');
     }
 
     /**
@@ -181,10 +175,15 @@ class Microbit{
     /**
      * Called by the runtime when user wants to connect to a certain peripheral.
      * @param {number} id - the id of the peripheral to connect to.
+     * @param {?number} baudrate - the baudrate.
      */
-    connect (id) {
+    connect (id, baudrate = null) {
+        const config = SERIAL_CONFIG;
+        if (baudrate) {
+            config.baudRate = baudrate;
+        }
         if (this._serialport) {
-            this._serialport.connectPeripheral(id, {config: SERIAL_CONFIG});
+            this._serialport.connectPeripheral(id, {config: config});
         }
     }
 
