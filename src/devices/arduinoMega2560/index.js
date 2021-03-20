@@ -172,6 +172,11 @@ const Buadrate = {
     B115200: '115200'
 };
 
+const Eol = {
+    Warp: 'warp',
+    NoWarp: 'noWarp'
+};
+
 const SerialNo = {
     Serial0: '0',
     Serial1: '1',
@@ -223,6 +228,7 @@ class ArduinoMega2560{
          */
         this._serialport = null;
         this._runtime.registerPeripheralExtension(deviceId, this);
+        this._runtime.setRealtimeBaudrate(SERIAL_CONFIG.baudRate);
 
         /**
          * The id of the extension this peripheral belongs to.
@@ -326,10 +332,15 @@ class ArduinoMega2560{
     /**
      * Called by the runtime when user wants to connect to a certain peripheral.
      * @param {number} id - the id of the peripheral to connect to.
+     * @param {?number} baudrate - the baudrate.
      */
-    connect (id) {
+    connect (id, baudrate = null) {
+        const config = SERIAL_CONFIG;
+        if (baudrate) {
+            config.baudRate = baudrate;
+        }
         if (this._serialport) {
-            this._serialport.connectPeripheral(id, {config: SERIAL_CONFIG});
+            this._serialport.connectPeripheral(id, {config: config});
         }
     }
 
@@ -369,6 +380,25 @@ class ArduinoMega2560{
             connected = this._serialport.isConnected();
         }
         return connected;
+    }
+
+    /**
+     * Set baudrate of the peripheral serialport.
+     * @param {number} baudrate - the baudrate.
+     */
+    setBaudrate (baudrate) {
+        this._serialport.setBaudrate(baudrate);
+    }
+
+    /**
+     * Write data to the peripheral serialport.
+     * @param {string} data - the data to write.
+     */
+    write (data) {
+        if (!this.isConnected()) return;
+
+        const base64Str = Buffer.from(data).toString('base64');
+        this._serialport.write(base64Str, 'base64');
     }
 
     /**
@@ -1387,6 +1417,27 @@ class OpenBlockArduinoMega2560Device {
         ];
     }
 
+    get EOL_MENU () {
+        return [
+            {
+                text: formatMessage({
+                    id: 'arduinoUno.eolMenu.warp',
+                    default: 'Warp',
+                    description: 'label for warp print'
+                }),
+                value: Eol.Warp
+            },
+            {
+                text: formatMessage({
+                    id: 'arduinoUno.eolMenu.noWarp',
+                    default: 'No warp',
+                    description: 'label for no warp print'
+                }),
+                value: Eol.NoWarp
+            }
+        ];
+    }
+
     get DATA_TYPE_MENU () {
         return [
             {
@@ -1675,7 +1726,7 @@ class OpenBlockArduinoMega2560Device {
                         opcode: 'multiSerialPrint',
                         text: formatMessage({
                             id: 'arduinoMega2560.serial.multiSerialPrint',
-                            default: 'serial [NO] print [VALUE]',
+                            default: 'serial [NO] print [VALUE] [EOL]',
                             description: 'arduinoMega2560 multi serial print'
                         }),
                         blockType: BlockType.COMMAND,
@@ -1688,6 +1739,11 @@ class OpenBlockArduinoMega2560Device {
                             VALUE: {
                                 type: ArgumentType.STRING,
                                 defaultValue: 'hello'
+                            },
+                            EOL: {
+                                type: ArgumentType.STRING,
+                                menu: 'eol',
+                                defaultValue: Eol.Warp
                             }
                         },
                         programMode: [ProgramModeType.UPLOAD]
@@ -1733,6 +1789,9 @@ class OpenBlockArduinoMega2560Device {
                     },
                     serialNo: {
                         items: this.SERIAL_NO_MENU
+                    },
+                    eol: {
+                        items: this.EOL_MENU
                     }
                 }
             },

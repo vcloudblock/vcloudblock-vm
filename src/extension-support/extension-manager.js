@@ -256,8 +256,11 @@ class ExtensionManager {
                         return extension;
                     });
                     this._deviceExtensions = extensions;
-                    return resolve(this._deviceExtensions);
-                }, err => reject(`Error while fetch local extension server: ${err}`));
+                    return resolve();
+                }, err => {
+                    log.error(`Error while fetch local extension server: ${err}`);
+                    return resolve();
+                });
         });
     }
 

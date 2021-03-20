@@ -1,4 +1,5 @@
 const JSONRPC = require('../util/jsonrpc');
+const Buffer = require('buffer').Buffer;
 
 class Serialport extends JSONRPC {
 
@@ -98,6 +99,16 @@ class Serialport extends JSONRPC {
         return this._connected;
     }
 
+    setBaudrate (baudRate) {
+        if (baudRate) {
+            const params = {baudRate};
+            return this.sendRemoteRequest('updateBaudrate', params)
+                .catch(e => {
+                    this.handleDisconnectError(e);
+                });
+        }
+    }
+
     /**
      * Set serialport start read.
      * @param {object} onMessage - callback for characteristic change notifications.
@@ -182,8 +193,15 @@ class Serialport extends JSONRPC {
             this.handleDisconnectError();
             break;
         case 'onMessage':
-            if (this._onMessage) {
-                this._onMessage(params.message);
+            if (this._runtime.getCurrentIsRealtimeMode()){
+                if (this._onMessage) {
+                    this._onMessage(params.message);
+                }
+            } else {
+                // Parse data to string.
+                const data = new Buffer.from(params.message, params.encoding);
+                this._runtime.emit(
+                    this._runtime.constructor.PERIPHERAL_RECIVE_DATA, data);
             }
             break;
         case 'uploadStdout':

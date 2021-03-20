@@ -246,6 +246,12 @@ class Runtime extends EventEmitter {
         this._pnpIdList = [];
 
         /**
+         * Currently device realtime firmware serialport baudrate.
+         * @type {number}
+         */
+        this._realtimeBaudrate = 57600;
+
+        /**
          * Map of loaded device extensions.
          * @type {Set.<string>}
          */
@@ -754,6 +760,14 @@ class Runtime extends EventEmitter {
      */
     static get PERIPHERAL_SCAN_TIMEOUT () {
         return 'PERIPHERAL_SCAN_TIMEOUT';
+    }
+
+    /**
+     * Event name for reporting that a peripheral recived data.
+     * @const {string}
+     */
+    static get PERIPHERAL_RECIVE_DATA () {
+        return 'PERIPHERAL_RECIVE_DATA';
     }
 
     /**
@@ -1708,12 +1722,13 @@ class Runtime extends EventEmitter {
      * Connect to the extension's specified peripheral.
      * @param {string} deviceId - the id of the device.
      * @param {number} peripheralId - the id of the peripheral.
+     * @param {number} baudrate - the baudrate.
      */
-    connectPeripheral (deviceId, peripheralId) {
+    connectPeripheral (deviceId, peripheralId, baudrate) {
         deviceId = this.analysisRealDeviceId(deviceId);
 
         if (this.peripheralExtensions[deviceId]) {
-            this.peripheralExtensions[deviceId].connect(peripheralId);
+            this.peripheralExtensions[deviceId].connect(peripheralId, baudrate);
         }
     }
 
@@ -1726,6 +1741,32 @@ class Runtime extends EventEmitter {
 
         if (this.peripheralExtensions[deviceId]) {
             this.peripheralExtensions[deviceId].disconnect();
+        }
+    }
+
+    /**
+     * Set baudrate of the extension's connected peripheral.
+     * @param {string} deviceId - the id of the device.
+     * @param {number} baudrate - the baudrate.
+     */
+    setPeripheralBaudrate (deviceId, baudrate) {
+        deviceId = this.analysisRealDeviceId(deviceId);
+
+        if (this.peripheralExtensions[deviceId]) {
+            this.peripheralExtensions[deviceId].setBaudrate(baudrate);
+        }
+    }
+
+    /**
+     * Wirte data to the extension's connected peripheral.
+     * @param {string} deviceId - the id of the device.
+     * @param {number} data - the data to write.
+     */
+    writeToPeripheral (deviceId, data) {
+        deviceId = this.analysisRealDeviceId(deviceId);
+
+        if (this.peripheralExtensions[deviceId]) {
+            this.peripheralExtensions[deviceId].write(data);
         }
     }
 
@@ -2452,6 +2493,14 @@ class Runtime extends EventEmitter {
     }
 
     /**
+     * Set the device realtime firmware serialport baudrate known by the runtime.
+     * @param {number} baudrate to log.
+     */
+    setRealtimeBaudrate (baudrate) {
+        this._realtimeBaudrate = baudrate;
+    }
+
+    /**
      * Add a device extension to the _loadedDeviceExtensions.
      * @param {string} id id of this device extension.
      * @param {string} xml toolbox xml of this device extension.
@@ -2525,6 +2574,9 @@ class Runtime extends EventEmitter {
      */
     setRealtimeMode (sta) {
         this._isRealtimeMode = sta;
+        if (sta) {
+            this.setPeripheralBaudrate(this._device, this._realtimeBaudrate);
+        }
         this.emit(Runtime.PROGRAM_MODE_UPDATE, {isRealtimeMode: this._isRealtimeMode});
     }
 

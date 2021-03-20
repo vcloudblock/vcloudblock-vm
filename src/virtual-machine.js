@@ -169,6 +169,9 @@ class VirtualMachine extends EventEmitter {
         this.runtime.on(Runtime.PERIPHERAL_SCAN_TIMEOUT, () =>
             this.emit(Runtime.PERIPHERAL_SCAN_TIMEOUT)
         );
+        this.runtime.on(Runtime.PERIPHERAL_RECIVE_DATA, data =>
+            this.emit(Runtime.PERIPHERAL_RECIVE_DATA, data)
+        );
         this.runtime.on(Runtime.PERIPHERAL_UPLOAD_STDOUT, info =>
             this.emit(Runtime.PERIPHERAL_UPLOAD_STDOUT, info)
         );
@@ -303,9 +306,10 @@ class VirtualMachine extends EventEmitter {
      * Connect to the extension's specified peripheral.
      * @param {string} extensionId - the id of the extension.
      * @param {number} peripheralId - the id of the peripheral.
+     * @param {number} baudrate - the baudrate.
      */
-    connectPeripheral (extensionId, peripheralId) {
-        this.runtime.connectPeripheral(extensionId, peripheralId);
+    connectPeripheral (extensionId, peripheralId, baudrate) {
+        this.runtime.connectPeripheral(extensionId, peripheralId, baudrate);
     }
 
     /**
@@ -314,6 +318,24 @@ class VirtualMachine extends EventEmitter {
      */
     disconnectPeripheral (extensionId) {
         this.runtime.disconnectPeripheral(extensionId);
+    }
+
+    /**
+     * Set baudrate of the extension's connected peripheral.
+     * @param {string} extensionId - the id of the extension.
+     * @param {number} baudrate - the baudrate.
+     */
+    setPeripheralBaudrate (extensionId, baudrate) {
+        this.runtime.setPeripheralBaudrate(extensionId, baudrate);
+    }
+
+    /**
+     * Wirte data to the extension's connected peripheral.
+     * @param {string} extensionId - the id of the extension.
+     * @param {number} data - the data to write.
+     */
+    writeToPeripheral (extensionId, data) {
+        this.runtime.writeToPeripheral(extensionId, data);
     }
 
     /**
@@ -557,17 +579,19 @@ class VirtualMachine extends EventEmitter {
      * Sync install device extensions.
      */
     installDeviceExtensionsSync () {
-        if (this.runtime._pendingDeviceExtensions.length === 0) {
-            this.emit('installDeviceExtensionsSync.success');
-            return;
-        }
-        try {
-            this.extensionManager.loadDeviceExtension(this.runtime._pendingDeviceExtensions.shift()).then(() => {
-                this.installDeviceExtensionsSync();
-            });
-        } catch (e) {
-            this.emit('installDeviceExtensionsSync.error', e);
-            return;
+        if (this.runtime._pendingDeviceExtensions) {
+            if (this.runtime._pendingDeviceExtensions.length === 0) {
+                this.emit('installDeviceExtensionsSync.success');
+                return;
+            }
+            try {
+                this.extensionManager.loadDeviceExtension(this.runtime._pendingDeviceExtensions.shift()).then(() => {
+                    this.installDeviceExtensionsSync();
+                });
+            } catch (e) {
+                this.emit('installDeviceExtensionsSync.error', e);
+                return;
+            }
         }
     }
 
