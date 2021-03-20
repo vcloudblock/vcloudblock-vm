@@ -1643,6 +1643,8 @@ class Runtime extends EventEmitter {
                     blocksWithDisableProp.map(block => block.xml).join('')}</category>`
             };
         }).concat(_loadedDeviceExtensionsXML);
+
+        // todo 根据编程模式 过滤积木
     }
 
     /**
@@ -2574,7 +2576,7 @@ class Runtime extends EventEmitter {
      */
     setRealtimeMode (sta) {
         this._isRealtimeMode = sta;
-        if (sta) {
+        if (sta && this.getPeripheralIsConnected(this._device)) {
             this.setPeripheralBaudrate(this._device, this._realtimeBaudrate);
         }
         this.emit(Runtime.PROGRAM_MODE_UPDATE, {isRealtimeMode: this._isRealtimeMode});
