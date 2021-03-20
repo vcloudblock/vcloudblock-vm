@@ -256,7 +256,7 @@ class ExtensionManager {
                         return extension;
                     });
                     this._deviceExtensions = extensions;
-                    return resolve();
+                    return resolve(this._deviceExtensions);
                 }, err => {
                     log.error(`Error while fetch local extension server: ${err}`);
                     return resolve();
