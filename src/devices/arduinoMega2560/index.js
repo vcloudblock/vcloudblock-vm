@@ -540,50 +540,53 @@ class ArduinoMega2560{
     /**
      * @param {PIN} pin - the pin to set.
      * @param {MODE} mode - the pin mode to set.
-     * @return {Promise} - a Promise that resolves when writing to peripheral.
      */
     setPinMode (pin, mode) {
-        pin = this.parsePin(pin);
-        switch (mode) {
-        case Mode.Input:
-            mode = this._firmata.MODES.INPUT;
-            break;
-        case Mode.Output:
-            mode = this._firmata.MODES.OUTPUT;
-            break;
-        case Mode.InputPullup:
-            mode = this._firmata.MODES.PULLUP;
-            break;
+        if (this._firmata) {
+            pin = this.parsePin(pin);
+            switch (mode) {
+            case Mode.Input:
+                mode = this._firmata.MODES.INPUT;
+                break;
+            case Mode.Output:
+                mode = this._firmata.MODES.OUTPUT;
+                break;
+            case Mode.InputPullup:
+                mode = this._firmata.MODES.PULLUP;
+                break;
+            }
+            this._firmata.pinMode(pin, mode);
         }
-        return this._firmata.pinMode(pin, mode);
     }
 
     /**
      * @param {PIN} pin - the pin to set.
      * @param {LEVEL} level - the pin level to set.
-     * @return {Promise} - a Promise that resolves when writing to peripheral.
      */
     setDigitalOutput (pin, level) {
-        pin = this.parsePin(pin);
-        level = parseInt(level, 10);
-        return this._firmata.digitalWrite(pin, level);
+        if (this._firmata) {
+            pin = this.parsePin(pin);
+            level = parseInt(level, 10);
+            this._firmata.digitalWrite(pin, level);
+        }
     }
 
     /**
      * @param {PIN} pin - the pin to set.
      * @param {VALUE} value - the pwm value to set.
-     * @return {Promise} - a Promise that resolves when writing to peripheral.
      */
     setPwmOutput (pin, value) {
-        pin = this.parsePin(pin);
-        if (value < 0) {
-            value = 0;
+        if (this._firmata) {
+            pin = this.parsePin(pin);
+            if (value < 0) {
+                value = 0;
+            }
+            if (value > 255) {
+                value = 255;
+            }
+            this._firmata.pinMode(pin, this._firmata.MODES.PWM);
+            this._firmata.pwmWrite(pin, value);
         }
-        if (value > 255) {
-            value = 255;
-        }
-        this._firmata.pinMode(pin, this._firmata.MODES.PWM);
-        return this._firmata.pwmWrite(pin, value);
     }
 
     /**
@@ -591,12 +594,14 @@ class ArduinoMega2560{
      * @return {Promise} - a Promise that resolves when read from peripheral.
      */
     readDigitalPin (pin) {
-        pin = this.parsePin(pin);
-        return new Promise(resolve => {
-            this._firmata.digitalRead(pin, value => {
-                resolve(value);
+        if (this._firmata) {
+            pin = this.parsePin(pin);
+            return new Promise(resolve => {
+                this._firmata.digitalRead(pin, value => {
+                    resolve(value);
+                });
             });
-        });
+        }
     }
 
     /**
@@ -604,15 +609,17 @@ class ArduinoMega2560{
      * @return {Promise} - a Promise that resolves when read from peripheral.
      */
     readAnalogPin (pin) {
-        pin = this.parsePin(pin);
-        // Shifting to analog pin number.
-        pin = pin - 14;
-        this._firmata.pinMode(pin, this._firmata.MODES.ANALOG);
-        return new Promise(resolve => {
-            this._firmata.analogRead(pin, value => {
-                resolve(value);
+        if (this._firmata) {
+            pin = this.parsePin(pin);
+            // Shifting to analog pin number.
+            pin = pin - 14;
+            this._firmata.pinMode(pin, this._firmata.MODES.ANALOG);
+            return new Promise(resolve => {
+                this._firmata.analogRead(pin, value => {
+                    resolve(value);
+                });
             });
-        });
+        }
     }
 }
 
