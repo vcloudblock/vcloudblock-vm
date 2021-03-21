@@ -421,6 +421,17 @@ class ArduinoUno{
     }
 
     /**
+     * Return true if peripheral has connected to firmata and program mode is realtime.
+     * @return {boolean} - whether the peripheral is ready for realtime mode communication.
+     */
+    isReady () {
+        if (this._runtime.getCurrentIsRealtimeMode() && this._isFirmataConnected) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * @param {PIN} pin - the pin string to parse.
      * @return {number} - the pin number.
      */
@@ -429,7 +440,6 @@ class ArduinoUno{
             return parseInt(pin.slice(1), 10) + 14;
         }
         return parseInt(pin, 10);
-
     }
 
     /**
@@ -437,7 +447,7 @@ class ArduinoUno{
      * @param {MODE} mode - the pin mode to set.
      */
     setPinMode (pin, mode) {
-        if (this._firmata) {
+        if (this.isReady()) {
             pin = this.parsePin(pin);
             switch (mode) {
             case Mode.Input:
@@ -459,7 +469,7 @@ class ArduinoUno{
      * @param {LEVEL} level - the pin level to set.
      */
     setDigitalOutput (pin, level) {
-        if (this._firmata) {
+        if (this.isReady()) {
             pin = this.parsePin(pin);
             level = parseInt(level, 10);
             this._firmata.digitalWrite(pin, level);
@@ -471,7 +481,7 @@ class ArduinoUno{
      * @param {VALUE} value - the pwm value to set.
      */
     setPwmOutput (pin, value) {
-        if (this._firmata) {
+        if (this.isReady()) {
             pin = this.parsePin(pin);
             if (value < 0) {
                 value = 0;
@@ -489,7 +499,7 @@ class ArduinoUno{
      * @return {Promise} - a Promise that resolves when read from peripheral.
      */
     readDigitalPin (pin) {
-        if (this._firmata) {
+        if (this.isReady()) {
             pin = this.parsePin(pin);
             return new Promise(resolve => {
                 this._firmata.digitalRead(pin, value => {
@@ -504,7 +514,7 @@ class ArduinoUno{
      * @return {Promise} - a Promise that resolves when read from peripheral.
      */
     readAnalogPin (pin) {
-        if (this._firmata) {
+        if (this.isReady()) {
             pin = this.parsePin(pin);
             // Shifting to analog pin number.
             pin = pin - 14;
