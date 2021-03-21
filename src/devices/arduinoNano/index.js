@@ -314,7 +314,7 @@ class ArduinoNano{
     write (data) {
         if (!this.isConnected()) return;
 
-        const base64Str = Buffer.from(data).toString('base64');
+        const base64Str = data.toString('base64');
         this._serialport.write(base64Str, 'base64');
     }
 
