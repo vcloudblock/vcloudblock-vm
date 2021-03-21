@@ -415,10 +415,6 @@ class VirtualMachine extends EventEmitter {
                 return Promise.reject(error);
             });
 
-        // Clear current extentions.
-        this.runtime.clearCurrentExtension();
-        this.runtime.clearCurrentDeviceExtension();
-
         return validationPromise
             .then(validatedInput => this.deserializeProject(validatedInput[0], validatedInput[1]))
             .then(() => this.runtime.emitProjectLoaded())

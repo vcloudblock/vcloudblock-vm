@@ -1667,7 +1667,7 @@ class Runtime extends EventEmitter {
         });
 
         if (this.getCurrentIsRealtimeMode()) {
-            return this.generateXMLfromBlockInfo(target, this._blockInfo.concat(this._deviceBlockInfo));
+            return this.generateXMLfromBlockInfo(target, this._deviceBlockInfo.concat(this._blockInfo));
         }
         return this.generateXMLfromBlockInfo(target, this._deviceBlockInfo).concat(_loadedDeviceExtensionsXML);
 
@@ -2586,6 +2586,7 @@ class Runtime extends EventEmitter {
      * Clear all extensions of the _loadedExtensions.
      */
     clearCurrentExtension () {
+        this._blockInfo = [];
         this._loadedExtensions = [];
     }
 

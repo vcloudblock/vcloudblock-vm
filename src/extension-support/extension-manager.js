@@ -231,8 +231,14 @@ class ExtensionManager {
             const deviceInstance = new device(this.runtime);
             const serviceName = this._registerInternalDevice(deviceInstance);
             this._loadedDevice.clear();
+
             this._loadedDevice.set(deviceId, serviceName);
+
+            // Clear current extentions.
+            this.runtime.clearCurrentExtension();
+            this._loadedExtensions.clear();
             this.unloadAllDeviceExtension();
+
             return Promise.resolve();
         }
         return Promise.reject(`Error while load device can not find device ${deviceId}`);
