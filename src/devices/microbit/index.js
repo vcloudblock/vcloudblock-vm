@@ -119,19 +119,6 @@ class Microbit{
         this._deviceId = deviceId;
 
         /**
-         * A flag that is true while we are busy sending data to the serialport socket.
-         * @type {boolean}
-         * @private
-         */
-        this._busy = false;
-
-        /**
-         * ID for a timeout which is used to clear the busy flag if it has been
-         * true for a long time.
-         */
-        this._busyTimeoutID = null;
-
-        /**
         * Pending data list. If busy is set when send, the data will push into this array to
         * waitting to be sended.
         */

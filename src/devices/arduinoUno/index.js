@@ -66,12 +66,6 @@ const ConnectFirmataSuccess = formatMessage({
 });
 
 /**
- * A time interval to wait (in milliseconds) while a block that sends a serialport message is running.
- * @type {number}
- */
-const SerialportSendInterval = 5;
-
-/**
  * A time interval to send firmata hartbeat(in milliseconds).
  */
 const FrimataHartbeatInterval = 2000;
@@ -175,19 +169,6 @@ class ArduinoUno{
          * The id of the extension this peripheral belongs to.
          */
         this._deviceId = deviceId;
-
-        /**
-         * A flag that is true while we are busy sending data to the serialport socket.
-         * @type {boolean}
-         * @private
-         */
-        this._busy = false;
-
-        /**
-         * ID for a timeout which is used to clear the busy flag if it has been
-         * true for a long time.
-         */
-        this._busyTimeoutID = null;
 
         /**
         * Pending data list. If busy is set when send, the data will push into this array to
@@ -349,35 +330,8 @@ class ArduinoUno{
     send (message) {
         if (!this.isConnected()) return;
 
-        // If busy push this data to _pendingData.
-        if (this._busy) {
-            this._pendingData.push(message.toString());
-            return;
-        }
-
-        // Set a busy flag so that while we are sending a message and waiting for
-        // the response, additional messages are ignored.
-        this._busy = true;
-
-        // Set a timeout after which to reset the busy flag. This is used in case
-        // a message was sent for which we never received a response, because
-        // e.g. the peripheral was turned off after the message was sent. We reset
-        // the busy flag after a while so that it is possible to try again later.
-        this._busyTimeoutID = window.setTimeout(() => {
-            this._busy = false;
-        }, 5000);
-
         const data = Base64Util.uint8ArrayToBase64(message);
-
-        this._serialport.write(data, 'base64').then(() => {
-            this._busy = false;
-
-            // If _pendingData is not empty call this func to send _pendingData.
-            if (this._pendingData.length !== 0) {
-                this.send(this._pendingData.shift().split(','));
-                window.clearTimeout(this._busyTimeoutID);
-            }
-        });
+        this._serialport.write(data, 'base64');
     }
 
     /**
@@ -1381,11 +1335,7 @@ class OpenBlockArduinoUnoDevice {
      */
     setPinMode (args) {
         this._peripheral.setPinMode(args.PIN, args.MODE);
-        return new Promise(resolve => {
-            setTimeout(() => {
-                resolve();
-            }, SerialportSendInterval);
-        });
+        return Promise.resolve();
     }
 
     /**
@@ -1395,11 +1345,7 @@ class OpenBlockArduinoUnoDevice {
      */
     setDigitalOutput (args) {
         this._peripheral.setDigitalOutput(args.PIN, args.LEVEL);
-        return new Promise(resolve => {
-            setTimeout(() => {
-                resolve();
-            }, SerialportSendInterval);
-        });
+        return Promise.resolve();
     }
 
     /**
@@ -1409,11 +1355,7 @@ class OpenBlockArduinoUnoDevice {
      */
     setPwmOutput (args) {
         this._peripheral.setPwmOutput(args.PIN, args.OUT);
-        return new Promise(resolve => {
-            setTimeout(() => {
-                resolve();
-            }, SerialportSendInterval);
-        });
+        return Promise.resolve();
     }
 
     /**
