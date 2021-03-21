@@ -322,6 +322,7 @@ class Blocks {
             for (let i = 0; i < newBlocks.length; i++) {
                 this.createBlock(newBlocks[i]);
             }
+            this.runtime.requestCodeUpdate();
             break;
         }
         case 'change':
@@ -331,6 +332,7 @@ class Blocks {
                 name: e.name,
                 value: e.newValue
             });
+            this.runtime.requestCodeUpdate();
             break;
         case 'move':
             this.moveBlock({
@@ -356,6 +358,7 @@ class Blocks {
                 const newBlocks = adapter(e);
                 this.runtime.emitBlockEndDrag(newBlocks, e.blockId);
             }
+            this.runtime.requestCodeUpdate();
             break;
         case 'delete':
             // Don't accept delete events for missing blocks,
@@ -369,6 +372,7 @@ class Blocks {
                 this.runtime.quietGlow(e.blockId);
             }
             this.deleteBlock(e.blockId);
+            this.runtime.requestCodeUpdate();
             break;
         case 'var_create':
             // Check if the variable being created is global or local
@@ -398,6 +402,7 @@ class Blocks {
                 stage.createVariable(e.varId, e.varName, e.varType, e.isCloud);
                 this.emitProjectChanged();
             }
+            this.runtime.requestCodeUpdate();
             break;
         case 'var_rename':
             if (editingTarget && editingTarget.variables.hasOwnProperty(e.varId)) {
@@ -417,12 +422,14 @@ class Blocks {
                 }
             }
             this.emitProjectChanged();
+            this.runtime.requestCodeUpdate();
             break;
         case 'var_delete': {
             const target = (editingTarget && editingTarget.variables.hasOwnProperty(e.varId)) ?
                 editingTarget : stage;
             target.deleteVariable(e.varId);
             this.emitProjectChanged();
+            this.runtime.requestCodeUpdate();
             break;
         }
         case 'comment_create':
@@ -444,6 +451,7 @@ class Blocks {
                 }
             }
             this.emitProjectChanged();
+            this.runtime.requestCodeUpdate();
             break;
         case 'comment_change':
             if (this.runtime.getEditingTarget()) {
@@ -465,6 +473,7 @@ class Blocks {
                     comment.text = change.text;
                 }
                 this.emitProjectChanged();
+                this.runtime.requestCodeUpdate();
             }
             break;
         case 'comment_move':
@@ -503,11 +512,10 @@ class Blocks {
                 }
 
                 this.emitProjectChanged();
+                this.runtime.requestCodeUpdate();
             }
             break;
         }
-
-        this.runtime.requestCodeUpdate();
     }
 
     // ---------------------------------------------------------------------

@@ -277,11 +277,18 @@ class Runtime extends EventEmitter {
         this._primitives = {};
 
         /**
-         * Map to look up all block information by extended opcode.
+         * Map to look up all block (except devoce block) information by extended opcode.
          * @type {Array.<CategoryInfo>}
          * @private
          */
         this._blockInfo = [];
+
+        /**
+         * Map to look up deivce block information by extended opcode.
+         * @type {Array.<CategoryInfo>}
+         * @private
+         */
+        this._deviceBlockInfo = [];
 
         /**
          * Map to look up hat blocks' metadata.
@@ -1008,7 +1015,7 @@ class Runtime extends EventEmitter {
      * @private
      */
     _registerDevicePrimitives (deviceInfos) {
-        this._blockInfo = [];
+        this._deviceBlockInfo = [];
         const categoryInfoArray = [];
         deviceInfos.forEach(info => {
             const categoryInfo = {
@@ -1028,7 +1035,7 @@ class Runtime extends EventEmitter {
                 categoryInfo.color3 = defaultExtensionColors[2];
             }
 
-            this._blockInfo.push(categoryInfo);
+            this._deviceBlockInfo.push(categoryInfo);
 
             this._fillExtensionCategory(categoryInfo, info);
 
@@ -1059,7 +1066,8 @@ class Runtime extends EventEmitter {
      * @private
      */
     _refreshExtensionPrimitives (extensionInfo) {
-        const categoryInfo = this._blockInfo.find(info => info.id === extensionInfo.id);
+        const categoryInfo = this._blockInfo.find(info => info.id === extensionInfo.id) ||
+            this._deviceBlockInfo.find(info => info.id === extensionInfo.id);
         if (categoryInfo) {
             categoryInfo.name = maybeFormatMessage(extensionInfo.name);
             this._fillExtensionCategory(categoryInfo, extensionInfo);
@@ -1575,22 +1583,17 @@ class Runtime extends EventEmitter {
     }
 
     /**
-     * @returns {Array.<object>} scratch-blocks XML for each category of extension blocks, in category order.
+     * Generate scratch-blocks XML from block info.
      * @param {?Target} [target] - the active editing target (optional)
-     * @param {string} programmode - the program mode of scratch.
-     * @property {string} id - the category / extension ID
-     * @property {string} xml - the XML text for this category, starting with `<category>` and ending with `</category>`
+     * @param {Set.<string>} blockInfo - the original block info
+     * @returns {Array.<object>} generate scratch-blocks XML for each category of blocks, in category order.
      */
-    getBlocksXML (target) {
-        const _loadedDeviceExtensionsXML = [];
-        this._loadedDeviceExtensions.forEach((xml, id) => {
-            _loadedDeviceExtensionsXML.push({id: id, xml: xml});
-        });
-
-        return this._blockInfo.map(categoryInfo => {
+    generateXMLfromBlockInfo (target, blockInfo) {
+        return blockInfo.map(categoryInfo => {
             const {name, color1, color2} = categoryInfo;
             // Filter out blocks that aren't supposed to be shown on this target, as determined by the block info's
-            // `hideFromPalette` and `filter` properties.
+            // `hideFromPalette` and `filter` properties. And filter out blocks that aren't supposed to current
+            // programmode.
             const paletteBlocks = categoryInfo.blocks.filter(block => {
                 let blockFilterIncludesTarget = true;
                 // If an editing target is not passed, include all blocks
@@ -1600,23 +1603,15 @@ class Runtime extends EventEmitter {
                         target.isStage ? TargetType.STAGE : TargetType.SPRITE
                     );
                 }
-                // If the block info's `hideFromPalette` is true, then filter out this block
-                return blockFilterIncludesTarget && !block.info.hideFromPalette;
-            });
-
-            const blocksWithDisableProp = paletteBlocks.map(block => {
-                const blockCopy = JSON.parse(JSON.stringify(block));
-
-                if (blockCopy.info.programMode) {
-                    const blockFilterIncludesMode = blockCopy.info.programMode.includes(
-                        this._isRealtimeMode ? ProgramModeType.REALTIME : ProgramModeType.UPLOAD
+                // If the block info doesn't include a `programMode` property, always include it
+                let blockFilterIncludesProgramMode = true;
+                if (block.info.programMode) {
+                    blockFilterIncludesProgramMode = block.info.programMode.includes(
+                        this.getCurrentIsRealtimeMode() ? ProgramModeType.REALTIME : ProgramModeType.UPLOAD
                     );
-                    if (!blockFilterIncludesMode) {
-                        const index = blockCopy.xml.indexOf('>');
-                        blockCopy.xml = `${blockCopy.xml.slice(0, index)} disabled="true"${blockCopy.xml.slice(index)}`;
-                    }
                 }
-                return blockCopy;
+                // If the block info's `hideFromPalette` is true, then filter out this block
+                return blockFilterIncludesTarget && blockFilterIncludesProgramMode && !block.info.hideFromPalette;
             });
 
             const colorXML = `colour="${color1}" secondaryColour="${color2}"`;
@@ -1637,21 +1632,53 @@ class Runtime extends EventEmitter {
                 statusButtonXML = 'showStatusButton="true"';
             }
 
+            // If blocks is empty return a empty xml to avoid empty category.
+            let blocksNotEmpty = false;
+            paletteBlocks.forEach(block => {
+                if (block.info !== '---') {
+                    blocksNotEmpty = true;
+                }
+            });
+            if (blocksNotEmpty){
+                return {
+                    id: categoryInfo.id,
+                    xml: `<category name="${name}" id="${categoryInfo.id}" ${statusButtonXML} ${colorXML}
+                    ${menuIconXML}>${paletteBlocks.map(block => block.xml).join('')}</category>`
+                };
+            }
             return {
                 id: categoryInfo.id,
-                xml: `<category name="${name}" id="${categoryInfo.id}" ${statusButtonXML} ${colorXML} ${menuIconXML}>${
-                    blocksWithDisableProp.map(block => block.xml).join('')}</category>`
+                xml: ``
             };
-        }).concat(_loadedDeviceExtensionsXML);
+        });
+    }
 
-        // todo 根据编程模式 过滤积木
+    /**
+     * @returns {Array.<object>} scratch-blocks XML for each category of extension blocks, in category order.
+     * @param {?Target} [target] - the active editing target (optional)
+     * @param {string} programmode - the program mode of scratch.
+     * @property {string} id - the category / extension ID
+     * @property {string} xml - the XML text for this category, starting with `<category>` and ending with `</category>`
+     */
+    getBlocksXML (target) {
+        const _loadedDeviceExtensionsXML = [];
+        this._loadedDeviceExtensions.forEach((xml, id) => {
+            _loadedDeviceExtensionsXML.push({id: id, xml: xml});
+        });
+
+        if (this.getCurrentIsRealtimeMode()) {
+            return this.generateXMLfromBlockInfo(target, this._blockInfo.concat(this._deviceBlockInfo));
+        }
+        return this.generateXMLfromBlockInfo(target, this._deviceBlockInfo).concat(_loadedDeviceExtensionsXML);
+
     }
 
     /**
      * @returns {Array.<string>} - an array containing the scratch-blocks JSON information for each dynamic block.
      */
     getBlocksJSON () {
-        return this._blockInfo.reduce(
+        const blockInfos = this._blockInfo.concat(this._deviceBlockInfo);
+        return blockInfos.reduce(
             (result, categoryInfo) => result.concat(categoryInfo.blocks.map(blockInfo => blockInfo.json)), []);
     }
 
@@ -2955,7 +2982,8 @@ class Runtime extends EventEmitter {
         const [category, opcode] = StringUtil.splitFirst(extendedOpcode, '_');
         if (!(category && opcode)) return;
 
-        const categoryInfo = this._blockInfo.find(ci => ci.id === category);
+        const categoryInfo = this._blockInfo.find(ci => ci.id === category) ||
+            this._deviceBlockInfo.find(ci => ci.id === category);
         if (!categoryInfo) return;
 
         const block = categoryInfo.blocks.find(b => b.info.opcode === opcode);
