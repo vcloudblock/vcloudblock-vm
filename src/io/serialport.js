@@ -198,8 +198,7 @@ class Serialport extends JSONRPC {
                     this._onMessage(params.message);
                 }
             } else {
-                // Parse data to string.
-                const data = new Buffer.from(params.message, params.encoding);
+                const data = Buffer.from(params.message, params.encoding);
                 this._runtime.emit(
                     this._runtime.constructor.PERIPHERAL_RECIVE_DATA, data);
             }
