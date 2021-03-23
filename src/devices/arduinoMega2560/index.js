@@ -385,6 +385,8 @@ class ArduinoMega2560{
      * @private
      */
     startHeartbeat () {
+        this._isFirmataConnected = false;
+
         this._firmataIntervelID = window.setInterval(() => {
             if (this._runtime.getCurrentIsRealtimeMode()) {
                 // Send reportVersion request as heartbeat.
@@ -449,13 +451,17 @@ class ArduinoMega2560{
             this._runtime.on(this._runtime.constructor.PROGRAM_MODE_UPDATE, data => {
                 if (data.isRealtimeMode) {
                     this.startHeartbeat();
-                    this._isFirmataConnected = false;
                 } else {
                     this.stopHeartbeat();
                 }
             });
+            this._runtime.on(this._runtime.constructor.PERIPHERAL_UPLOAD_SUCCESS, () => {
+                if (this._runtime.getCurrentIsRealtimeMode()) {
+                    this.startHeartbeat();
+                }
+            });
             // Start the heartbeat listener.
-            this._firmata.on('reportversion', this.listenHeartbeat);
+            this._firmata.on('reportversion', this.listenHeartbeat.bind(this));
         }
     }
 

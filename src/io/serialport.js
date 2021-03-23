@@ -258,6 +258,17 @@ class Serialport extends JSONRPC {
      * - peripheral is not running.
      * @param {string} e - error message.
      */
+    handleRealtimeDisconnectError (e) {
+        this._runtime.emit(this._runtime.constructor.PERIPHERAL_REALTIME_CONNECTION_LOST_ERROR, {
+            message: e,
+            deviceId: this._deviceId
+        });
+    }
+
+    handleRealtimeConnectSucess () {
+        this._runtime.emit(this._runtime.constructor.PERIPHERAL_REALTIME_CONNECT_SUCCESS, {deviceId: this._deviceId});
+    }
+
     _handleRequestError (/* e */) {
         this._runtime.emit(this._runtime.constructor.PERIPHERAL_REQUEST_ERROR, {
             message: `Scratch lost connection to`,
@@ -270,17 +281,6 @@ class Serialport extends JSONRPC {
             window.clearTimeout(this._discoverTimeoutID);
         }
         this._runtime.emit(this._runtime.constructor.PERIPHERAL_SCAN_TIMEOUT);
-    }
-
-    handleRealtimeDisconnectError (e) {
-        this._runtime.emit(this._runtime.constructor.PERIPHERAL_REALTIME_CONNECTION_LOST_ERROR, {
-            message: e,
-            deviceId: this._deviceId
-        });
-    }
-
-    handleRealtimeConnectSucess () {
-        this._runtime.emit(this._runtime.constructor.PERIPHERAL_REALTIME_CONNECT_SUCCESS, {deviceId: this._deviceId});
     }
 }
 
