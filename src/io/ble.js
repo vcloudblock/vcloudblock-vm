@@ -6,12 +6,12 @@ class BLE extends JSONRPC {
      * A BLE peripheral socket object.  It handles connecting, over web sockets, to
      * BLE peripherals, and reading and writing data to them.
      * @param {Runtime} runtime - the Runtime for sending/receiving GUI update events.
-     * @param {string} extensionId - the id of the extension using this socket.
+     * @param {string} deviceId - the id of the extension using this socket.
      * @param {object} peripheralOptions - the list of options for peripheral discovery.
      * @param {object} connectCallback - a callback for connection.
      * @param {object} resetCallback - a callback for resetting extension state.
      */
-    constructor (runtime, extensionId, peripheralOptions, connectCallback, resetCallback = null) {
+    constructor (runtime, deviceId, peripheralOptions, connectCallback, resetCallback = null) {
         super();
 
         this._socket = runtime.getScratchLinkSocket('BLE');
@@ -28,7 +28,7 @@ class BLE extends JSONRPC {
         this._characteristicDidChangeCallback = null;
         this._resetCallback = resetCallback;
         this._discoverTimeoutID = null;
-        this._extensionId = extensionId;
+        this._deviceId = deviceId;
         this._peripheralOptions = peripheralOptions;
         this._runtime = runtime;
 
@@ -214,7 +214,7 @@ class BLE extends JSONRPC {
 
         this._runtime.emit(this._runtime.constructor.PERIPHERAL_CONNECTION_LOST_ERROR, {
             message: `Scratch lost connection to`,
-            extensionId: this._extensionId
+            deviceId: this._deviceId
         });
     }
 
@@ -223,7 +223,7 @@ class BLE extends JSONRPC {
 
         this._runtime.emit(this._runtime.constructor.PERIPHERAL_REQUEST_ERROR, {
             message: `Scratch lost connection to`,
-            extensionId: this._extensionId
+            deviceId: this._deviceId
         });
     }
 
