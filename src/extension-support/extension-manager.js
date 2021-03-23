@@ -7,6 +7,9 @@ const maybeFormatMessage = require('../util/maybe-format-message');
 
 const BlockType = require('./block-type');
 
+// Local device server address
+const localDevicesUrl = 'http://127.0.0.1:20122/';
+
 // Local device extension server address
 const localDeviceExtensionsUrl = 'http://127.0.0.1:20120/';
 
@@ -208,6 +211,30 @@ class ExtensionManager {
     }
 
     /**
+     * Get unbuild-in devices list from local server.
+     * @returns {Promise} resolved devices list has been fetched or failure
+     */
+    getDeviceList () {
+        return new Promise(resolve => {
+            fetch(localDevicesUrl)
+                .then(response => response.json())
+                .then(devices => {
+                    devices = devices.map(dev => {
+                        dev.iconURL = localDevicesUrl + dev.iconURL;
+                        dev.connectionIconURL = localDevicesUrl + dev.connectionIconURL;
+                        dev.connectionSmallIconURL = localDevicesUrl + dev.connectionSmallIconURL;
+                        return dev;
+                    });
+                    return resolve(devices);
+                }, err => {
+                    log.error(`Error while fetch local device server: ${err}`);
+                    return resolve();
+                });
+        });
+    }
+
+
+    /**
      * Load an device by URL or internal device ID
      * @param {string} deviceId - the URL for the device to load OR the ID of an internal device
      * @param {string} deviceType - the type of device
@@ -218,7 +245,7 @@ class ExtensionManager {
         const realDeviceId = this.runtime.analysisRealDeviceId(deviceId);
 
         if (builtinDevices.hasOwnProperty(realDeviceId)) {
-            if (this.isDeviceLoaded(realDeviceId)) {
+            if (this.isDeviceLoaded(deviceId)) {
                 const message = `Rejecting attempt to load a device twice with ID ${deviceId}`;
                 log.warn(message);
                 return Promise.resolve();
@@ -247,7 +274,7 @@ class ExtensionManager {
 
     /**
      * Get device extensions list from local server.
-     * @returns {Promise} resolved extension list has been fetched or rejected on failure
+     * @returns {Promise} resolved extension list has been fetched or failure
      */
     getDeviceExtensionsList () {
         return new Promise(resolve => {
