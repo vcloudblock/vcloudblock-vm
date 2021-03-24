@@ -1,12 +1,9 @@
 # openblock-vm
 ![](https://img.shields.io/travis/com/openblockcc/openblock-vm) ![](https://img.shields.io/github/license/openblockcc/openblock-vm)
 
-## Instructions
+## Getting Start
 
-```
-npm install
-npm link
-```
+Visit the wiki: https://openblockcc.github.io/wiki/
 
 
 

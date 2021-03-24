@@ -256,13 +256,6 @@ class ArduinoMega2560{
          * @private
          */
         this._isFirmataConnected = false;
-
-        /**
-         * A flag that is true while heartbeat event listener is created.
-         * @type {boolean}
-         * @private
-         */
-        this._eventListener = false;
     }
 
     /**
@@ -327,6 +320,7 @@ class ArduinoMega2560{
      * Reset all the state and timeout/interval ids.
      */
     reset () {
+        delete this._firmata;
         if (this._firmataTimeoutID) {
             window.clearTimeout(this._firmataTimeoutID);
             this._firmataTimeoutID = null;
@@ -409,7 +403,7 @@ class ArduinoMega2560{
     stopHeartbeat () {
         window.clearInterval(this._firmataIntervelID);
         this._firmataIntervelID = null;
-        window.clearInterval(this._firmataTimeoutID);
+        window.clearTimeout(this._firmataTimeoutID);
         this._firmataTimeoutID = null;
     }
 
@@ -446,23 +440,20 @@ class ArduinoMega2560{
             this.startHeartbeat();
         }
 
-        if (!this._eventListener) {
-            this._eventListener = true;
-            this._runtime.on(this._runtime.constructor.PROGRAM_MODE_UPDATE, data => {
-                if (data.isRealtimeMode) {
-                    this.startHeartbeat();
-                } else {
-                    this.stopHeartbeat();
-                }
-            });
-            this._runtime.on(this._runtime.constructor.PERIPHERAL_UPLOAD_SUCCESS, () => {
-                if (this._runtime.getCurrentIsRealtimeMode()) {
-                    this.startHeartbeat();
-                }
-            });
-            // Start the heartbeat listener.
-            this._firmata.on('reportversion', this.listenHeartbeat.bind(this));
-        }
+        this._runtime.on(this._runtime.constructor.PROGRAM_MODE_UPDATE, data => {
+            if (data.isRealtimeMode) {
+                this.startHeartbeat();
+            } else {
+                this.stopHeartbeat();
+            }
+        });
+        this._runtime.on(this._runtime.constructor.PERIPHERAL_UPLOAD_SUCCESS, () => {
+            if (this._runtime.getCurrentIsRealtimeMode()) {
+                this.startHeartbeat();
+            }
+        });
+        // Start the heartbeat listener.
+        this._firmata.on('reportversion', this.listenHeartbeat.bind(this));
     }
 
     /**

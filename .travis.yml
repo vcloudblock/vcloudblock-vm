@@ -1,7 +1,7 @@
 language: node_js
 node_js:
-- 8
 - 10
+- 12
 env:
   global:
   - NODE_ENV=production
@@ -23,12 +23,12 @@ after_script: greenkeeper-lockfile-upload
 jobs:
     include:
     - env: NPM_SCRIPT=lint
-      node_js: 8
+      node_js: 10
     - env: NPM_SCRIPT=build
-      node_js: 8
+      node_js: 10
       if: not (branch in (master, develop) and type != pull_request)
     - stage: release
-      node_js: 8
+      node_js: 10
       env: NPM_SCRIPT=build
       before_deploy:
       - npm --no-git-tag-version version $($(npm bin)/json -f package.json version)-prerelease.$(date +%Y%m%d%H%M%S)
