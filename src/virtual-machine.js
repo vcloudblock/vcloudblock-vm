@@ -568,7 +568,8 @@ class VirtualMachine extends EventEmitter {
         return deserializePromise()
             .then(({targets}) =>
                 this.installTargets(targets, projectJSON.extensions, true,
-                    projectJSON.device, projectJSON.deviceType, projectJSON.pnpIdList, projectJSON.deviceExtensions));
+                    projectJSON.device, projectJSON.deviceType, projectJSON.pnpIdList,
+                    projectJSON.programMode, projectJSON.deviceExtensions));
     }
 
     /**
@@ -620,11 +621,12 @@ class VirtualMachine extends EventEmitter {
      * @param {Device} device - the deivce to be installed
      * @param {DeviceType} deviceType - the type of deivce
      * @param {Array.<string>} pnpIdList - a list of pnpid
+     * @param {string} programMode - if in realtime mode 'realtime' else 'upload'
      * @param {Array.<DeviceExtension>} deviceExtensions - the deivce extensions to be installed
      * @returns {Promise} resolved once targets have been installed
      */
     installTargets (targets, extensions, wholeProject, device = null,
-        deviceType = null, pnpIdList = null, deviceExtensions = null) {
+        deviceType = null, pnpIdList = null, programMode = 'realtime', deviceExtensions = null) {
         const allPromises = [];
 
         if (device) {
@@ -686,6 +688,7 @@ class VirtualMachine extends EventEmitter {
             this.emitWorkspaceUpdate();
             this.runtime.setEditingTarget(this.editingTarget);
             this.runtime.ioDevices.cloud.setStage(this.runtime.getTargetForStage());
+            this.runtime.setRealtimeMode(programMode === 'realtime');
         });
     }
 

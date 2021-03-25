@@ -560,6 +560,8 @@ const serialize = function (runtime, targetId) {
 
     obj.pnpIdList = runtime.getPnpIdList();
 
+    obj.programMode = runtime.getCurrentIsRealtimeMode() ? 'realtime' : 'upload';
+
     // Assemble extension list
     obj.extensions = runtime.getCurrentExtensionLoaded();
 
