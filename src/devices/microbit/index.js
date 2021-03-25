@@ -38,7 +38,7 @@ const LedState = {
 
 const Key = {
     A: 'a',
-    B: 'n'
+    B: 'b'
 };
 
 const Gestrue = {
@@ -635,7 +635,7 @@ class OpenBlockMicrobitDevice {
                         },
                         OUT: {
                             type: ArgumentType.NUMBER,
-                            defaultValue: '1024'
+                            defaultValue: '1023'
                         }
                     }
                 },
