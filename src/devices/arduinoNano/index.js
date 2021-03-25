@@ -86,8 +86,8 @@ const Pins = {
 
 
 const Level = {
-    High: '1',
-    Low: '0'
+    High: 'HIGH',
+    Low: 'LOW'
 };
 
 const Buadrate = {
