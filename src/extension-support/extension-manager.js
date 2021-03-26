@@ -227,7 +227,7 @@ class ExtensionManager {
                     });
                     return resolve(devices);
                 }, err => {
-                    log.error(`Error while fetch local device server: ${err}`);
+                    log.warn(`Can not fetch data from local device server: ${err}`);
                     return resolve();
                 });
         });
@@ -291,7 +291,7 @@ class ExtensionManager {
                     this._deviceExtensions = extensions;
                     return resolve(this._deviceExtensions);
                 }, err => {
-                    log.error(`Error while fetch local extension server: ${err}`);
+                    log.warn(`Can not fetch data from local extension server: ${err}`);
                     return resolve();
                 });
         });
