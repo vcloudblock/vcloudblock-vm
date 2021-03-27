@@ -261,6 +261,7 @@ class ArduinoUno{
      * Reset all the state and timeout/interval ids.
      */
     reset () {
+        this._firmata.removeListener('reportversion', this.listenHeartbeat.bind(this));
         delete this._firmata;
         if (this._firmataTimeoutID) {
             window.clearTimeout(this._firmataTimeoutID);
@@ -431,6 +432,17 @@ class ArduinoUno{
     }
 
     /**
+     * @param {LEVEL} level - the level string to parse.
+     * @return {number} - the level in number.
+     */
+    parseLevel (level) {
+        if (level === Level.High) {
+            return 1;
+        }
+        return 0;
+    }
+
+    /**
      * @param {PIN} pin - the pin to set.
      * @param {MODE} mode - the pin mode to set.
      */
@@ -459,7 +471,7 @@ class ArduinoUno{
     setDigitalOutput (pin, level) {
         if (this.isReady()) {
             pin = this.parsePin(pin);
-            level = parseInt(level, 10);
+            level = this.parseLevel(level);
             this._firmata.digitalWrite(pin, level);
         }
     }
