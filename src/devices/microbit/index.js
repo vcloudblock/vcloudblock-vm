@@ -234,6 +234,7 @@ class Microbit{
      * @private
      */
     _onConnect () {
+        this._serialport.read(this._onMessage);
     }
 
     /**

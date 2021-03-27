@@ -261,8 +261,10 @@ class ArduinoUno{
      * Reset all the state and timeout/interval ids.
      */
     reset () {
-        this._firmata.removeListener('reportversion', this.listenHeartbeat.bind(this));
-        delete this._firmata;
+        if (this._firmata) {
+            this._firmata.removeListener('reportversion', this.listenHeartbeat.bind(this));
+            delete this._firmata;
+        }
         if (this._firmataTimeoutID) {
             window.clearTimeout(this._firmataTimeoutID);
             this._firmataTimeoutID = null;
