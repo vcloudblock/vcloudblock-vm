@@ -528,6 +528,27 @@ class ArduinoUno{
             });
         }
     }
+
+    /**
+     * @param {PIN} pin - the pin to set.
+     * @param {VALUE} value - the degree to set.
+     */
+    setServoOutput (pin, value) {
+        if (this.isReady()) {
+            pin = this.parsePin(pin);
+            if (value < 0) {
+                value = 0;
+            }
+            if (value > 180) {
+                value = 180;
+            }
+            this._firmata.pinMode(pin, this._firmata.MODES.PWM);
+            this._firmata.pwmWrite(pin, value);
+
+            this._firmata.servoConfig(pin, 900, 2100);
+            this._firmata.servoWrite(pin, value);
+        }
+    }
 }
 
 /**
@@ -1386,6 +1407,16 @@ class OpenBlockArduinoUnoDevice {
      */
     readAnalogPin (args) {
         return this._peripheral.readAnalogPin(args.PIN);
+    }
+
+    /**
+     * Set servo out put.
+     * @param {object} args - the block's arguments.
+     * @return {Promise} - a Promise that resolves after the set servo out value is done.
+     */
+    setServoOutput (args) {
+        this._peripheral.setServoOutput(args.PIN, args.OUT);
+        return Promise.resolve();
     }
 }
 
