@@ -40,10 +40,7 @@ const SERIAL_CONFIG = {
  */
 const DIVECE_OPT = {
     type: 'arduino',
-    fqbn: 'arduino:avr:mini:cpu=atmega328',
-    partno: 'atmega328p',
-    programmerId: 'arduino',
-    baudrate: '115200'
+    fqbn: 'arduino:avr:mini:cpu=atmega328'
 };
 
 /**

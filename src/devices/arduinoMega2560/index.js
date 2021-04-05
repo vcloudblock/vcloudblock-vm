@@ -41,10 +41,7 @@ const SERIAL_CONFIG = {
  */
 const DIVECE_OPT = {
     type: 'arduino',
-    fqbn: 'arduino:avr:mega:cpu=atmega2560',
-    partno: 'atmega2560',
-    programmerId: 'wiring',
-    baudrate: '115200'
+    fqbn: 'arduino:avr:mega:cpu=atmega2560'
 };
 
 /**

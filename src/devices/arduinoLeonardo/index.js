@@ -37,10 +37,7 @@ const SERIAL_CONFIG = {
  */
 const DIVECE_OPT = {
     type: 'arduino',
-    fqbn: 'arduino:avr:leonardo',
-    partno: 'atmega32u4',
-    programmerId: 'avr109',
-    baudrate: '57600'
+    fqbn: 'arduino:avr:leonardo'
 };
 
 /**
