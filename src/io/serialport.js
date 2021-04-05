@@ -153,6 +153,7 @@ class Serialport extends JSONRPC {
         if (encoding) {
             params.encoding = encoding;
         }
+        params.library = this._runtime.getCurrentDeviceExtensionLibrary();
         return this.sendRemoteRequest('upload', params)
             .catch(e => {
                 this.handleDisconnectError(e);

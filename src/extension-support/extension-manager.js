@@ -329,7 +329,7 @@ class ExtensionManager {
             loadjs([toolboxUrl, blockUrl, generatorUrl, msgUrl], {returnPromise: true})
                 .then(() => {
                     const toolboxXML = addToolbox(); // eslint-disable-line no-undef
-                    this.runtime.addDeviceExtension(deviceExtensionId, toolboxXML);
+                    this.runtime.addDeviceExtension(deviceExtensionId, toolboxXML, deviceExtension.library);
 
                     const addExts = {addBlocks, addGenerator, addMsg};// eslint-disable-line no-undef
 

@@ -1656,14 +1656,12 @@ class Runtime extends EventEmitter {
     /**
      * @returns {Array.<object>} scratch-blocks XML for each category of extension blocks, in category order.
      * @param {?Target} [target] - the active editing target (optional)
-     * @param {string} programmode - the program mode of scratch.
-     * @property {string} id - the category / extension ID
-     * @property {string} xml - the XML text for this category, starting with `<category>` and ending with `</category>`
      */
     getBlocksXML (target) {
         const _loadedDeviceExtensionsXML = [];
-        this._loadedDeviceExtensions.forEach((xml, id) => {
-            _loadedDeviceExtensionsXML.push({id: id, xml: xml});
+        this._loadedDeviceExtensions.forEach((value, id) => {
+
+            _loadedDeviceExtensionsXML.push({id: id, xml: value.xml});
         });
 
         if (this.getCurrentIsRealtimeMode()) {
@@ -2533,9 +2531,10 @@ class Runtime extends EventEmitter {
      * Add a device extension to the _loadedDeviceExtensions.
      * @param {string} id id of this device extension.
      * @param {string} xml toolbox xml of this device extension.
+     * @param {Array.<string>} library path of this device extension.
      */
-    addDeviceExtension (id, xml) {
-        this._loadedDeviceExtensions.set(id, xml);
+    addDeviceExtension (id, xml, library) {
+        this._loadedDeviceExtensions.set(id, {xml: xml, library: library});
     }
 
     /**
@@ -2568,10 +2567,24 @@ class Runtime extends EventEmitter {
      */
     getCurrentDeviceExtensionLoaded () {
         const ids = [];
-        this._loadedDeviceExtensions.forEach((xml, id) => {
+        this._loadedDeviceExtensions.forEach(id => {
             ids.push(id);
         });
         return ids;
+    }
+
+    /**
+     * Get the current Loaded device extension's libraries path.
+     * @return {Array} array of current loaded device extension's libraries path.
+     */
+    getCurrentDeviceExtensionLibrary () {
+        const libraries = [];
+        this._loadedDeviceExtensions.forEach(value => {
+            if (value.library) {
+                libraries.push(value.library);
+            }
+        });
+        return libraries;
     }
 
     /**
