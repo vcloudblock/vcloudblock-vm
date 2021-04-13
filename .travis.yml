@@ -60,12 +60,13 @@ jobs:
           condition: $TRAVIS_EVENT_TYPE != cron
         skip_cleanup: true
         script: if npm info | grep -q $RELEASE_VERSION; then git tag $RELEASE_VERSION && git push https://${GH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git $RELEASE_VERSION; fi
-      - provider: script
-        on:
-          all_branches: true
-          condition: $TRAVIS_EVENT_TYPE != cron
+      - provider: pages
         skip_cleanup: true
-        script: npm run --silent deploy -- -x -r $GH_PAGES_REPO
+        github_token: $GH_TOKEN
+        keep_history: true
+        on:
+          branch: main
+        local_dir: playground
       - provider: script
         on:
           branch: develop
