@@ -824,19 +824,35 @@ class OpenBlockArduinoNanoDevice {
     get INTERRUP_MODE_MENU () {
         return [
             {
-                text: 'rising edge',
+                text: formatMessage({
+                    id: 'arduinoUno.InterrupModeMenu.risingEdge',
+                    default: 'rising edge',
+                    description: 'label for rising edge interrup'
+                }),
                 value: InterrupMode.Rising
             },
             {
-                text: 'falling edge',
+                text: formatMessage({
+                    id: 'arduinoUno.InterrupModeMenu.fallingEdge',
+                    default: 'falling edge',
+                    description: 'label for falling edge interrup'
+                }),
                 value: InterrupMode.Falling
             },
             {
-                text: 'change edge',
+                text: formatMessage({
+                    id: 'arduinoUno.InterrupModeMenu.changeEdge',
+                    default: 'change edge',
+                    description: 'label for change edge interrup'
+                }),
                 value: InterrupMode.Change
             },
             {
-                text: 'low',
+                text: formatMessage({
+                    id: 'arduinoUno.InterrupModeMenu.low',
+                    default: 'low',
+                    description: 'label for low interrup'
+                }),
                 value: InterrupMode.Low
             }
         ];
