@@ -601,7 +601,7 @@ class ArduinoMega2560{
             this._firmata.pinMode(pin, this._firmata.MODES.PWM);
             this._firmata.pwmWrite(pin, value);
 
-            this._firmata.servoConfig(pin, 900, 2100);
+            this._firmata.servoConfig(pin, 600, 2400);
             this._firmata.servoWrite(pin, value);
         }
     }
