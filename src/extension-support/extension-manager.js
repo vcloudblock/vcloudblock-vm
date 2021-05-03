@@ -311,7 +311,6 @@ class ExtensionManager {
      * @returns {Promise} resolved once the device extension is loaded or rejected on failure
      */
     loadDeviceExtension (deviceExtensionId) {
-        // console.log('deviceExtensionId=', deviceExtensionId);
         return new Promise((resolve, reject) => {
             const deviceExtension = this._deviceExtensions.find(ext => ext.extensionId === deviceExtensionId);
             if (typeof deviceExtension === 'undefined') {

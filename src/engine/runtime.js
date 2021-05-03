@@ -2567,7 +2567,7 @@ class Runtime extends EventEmitter {
      */
     getCurrentDeviceExtensionLoaded () {
         const ids = [];
-        this._loadedDeviceExtensions.forEach(id => {
+        this._loadedDeviceExtensions.forEach((value, id) => {
             ids.push(id);
         });
         return ids;
