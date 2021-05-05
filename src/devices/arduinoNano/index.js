@@ -29,7 +29,7 @@ const SERIAL_CONFIG = {
 };
 
 /**
- * Configuration of build and flash. Used by arduino_debug and avrdude.
+ * Configuration for arduino-cli.
  * @readonly
  */
 const DIVECE_OPT = {
@@ -1216,6 +1216,7 @@ class OpenBlockArduinoNanoDevice {
                             description: 'arduinoUno serial available data length'
                         }),
                         blockType: BlockType.REPORTER,
+                        disableMonitor: true,
                         programMode: [ProgramModeType.UPLOAD]
                     },
                     {
@@ -1226,6 +1227,7 @@ class OpenBlockArduinoNanoDevice {
                             description: 'arduinoUno serial read data'
                         }),
                         blockType: BlockType.REPORTER,
+                        disableMonitor: true,
                         programMode: [ProgramModeType.UPLOAD]
                     }
                 ],

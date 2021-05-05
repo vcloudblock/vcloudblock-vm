@@ -944,7 +944,8 @@ class OpenBlockMicrobitDevice {
                         default: 'compass angle',
                         description: 'microbit compass angle'
                     }),
-                    blockType: BlockType.REPORTER
+                    blockType: BlockType.REPORTER,
+                    disableMonitor: true
                 },
                 {
                     opcode: 'compassMagneticDensity',
@@ -953,7 +954,8 @@ class OpenBlockMicrobitDevice {
                         default: 'compass magnetic density',
                         description: 'microbit compass magnetic density'
                     }),
-                    blockType: BlockType.REPORTER
+                    blockType: BlockType.REPORTER,
+                    disableMonitor: true
                 },
                 {
                     opcode: 'calibrateCompass',
@@ -972,7 +974,8 @@ class OpenBlockMicrobitDevice {
                         default: 'light level',
                         description: 'microbit light level'
                     }),
-                    blockType: BlockType.REPORTER
+                    blockType: BlockType.REPORTER,
+                    disableMonitor: true
                 },
                 '---',
                 {
@@ -982,7 +985,8 @@ class OpenBlockMicrobitDevice {
                         default: 'temperature',
                         description: 'microbit temperature'
                     }),
-                    blockType: BlockType.REPORTER
+                    blockType: BlockType.REPORTER,
+                    disableMonitor: true
                 },
                 '---',
                 {
@@ -992,7 +996,8 @@ class OpenBlockMicrobitDevice {
                         default: 'running time',
                         description: 'microbit running time'
                     }),
-                    blockType: BlockType.REPORTER
+                    blockType: BlockType.REPORTER,
+                    disableMonitor: true
                 }
             ],
             menus: {
@@ -1069,7 +1074,8 @@ class OpenBlockMicrobitDevice {
                         default: 'receive wireless message',
                         description: 'microbit receive wireless message'
                     }),
-                    blockType: BlockType.REPORTER
+                    blockType: BlockType.REPORTER,
+                    disableMonitor: true
                 },
                 {
                     opcode: 'setWirelessCommunicationChannel',

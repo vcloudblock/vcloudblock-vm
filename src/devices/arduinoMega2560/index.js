@@ -36,7 +36,7 @@ const SERIAL_CONFIG = {
 };
 
 /**
- * Configuration of build and flash. Used by arduino_debug and avrdude.
+ * Configuration for arduino-cli.
  * @readonly
  */
 const DIVECE_OPT = {
