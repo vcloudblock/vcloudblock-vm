@@ -35,6 +35,7 @@ const builtinDevices = {
     arduinoMini: () => require('../devices/arduinoMini'),
     arduinoLeonardo: () => require('../devices/arduinoLeonardo'),
     arduinoMega2560: () => require('../devices/arduinoMega2560'),
+    arduinoEsp32: () => require('../devices/arduinoEsp32'),
     microbit: () => require('../devices/microbit')
 
     // todo transform these to device extension
