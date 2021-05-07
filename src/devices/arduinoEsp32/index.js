@@ -97,10 +97,28 @@ const Pins = {
     IO39: '39'
 };
 
-
 const Level = {
     High: 'HIGH',
     Low: 'LOW'
+};
+
+const Channels = {
+    CH0: '0',
+    CH1: '1',
+    CH2: '2',
+    CH3: '3',
+    CH4: '4',
+    CH5: '5',
+    CH6: '6',
+    CH7: '7',
+    CH8: '8',
+    CH9: '9',
+    CH10: '10',
+    CH11: '11',
+    CH12: '12',
+    CH13: '13',
+    CH14: '14',
+    CH15: '15'
 };
 
 const SerialNo = {
@@ -392,27 +410,27 @@ class ArduinoEsp32{
      * @private
      */
     _onConnect () {
-        this._serialport.read(this._onMessage);
-        this._firmata = new Firmata(this.send.bind(this));
+        // this._serialport.read(this._onMessage);
+        // this._firmata = new Firmata(this.send.bind(this));
 
-        if (this._runtime.getCurrentIsRealtimeMode()) {
-            this.startHeartbeat();
-        }
+        // if (this._runtime.getCurrentIsRealtimeMode()) {
+        //     this.startHeartbeat();
+        // }
 
-        this._runtime.on(this._runtime.constructor.PROGRAM_MODE_UPDATE, data => {
-            if (data.isRealtimeMode) {
-                this.startHeartbeat();
-            } else {
-                this.stopHeartbeat();
-            }
-        });
-        this._runtime.on(this._runtime.constructor.PERIPHERAL_UPLOAD_SUCCESS, () => {
-            if (this._runtime.getCurrentIsRealtimeMode()) {
-                this.startHeartbeat();
-            }
-        });
-        // Start the heartbeat listener.
-        this._firmata.on('reportversion', this.listenHeartbeat.bind(this));
+        // this._runtime.on(this._runtime.constructor.PROGRAM_MODE_UPDATE, data => {
+        //     if (data.isRealtimeMode) {
+        //         this.startHeartbeat();
+        //     } else {
+        //         this.stopHeartbeat();
+        //     }
+        // });
+        // this._runtime.on(this._runtime.constructor.PERIPHERAL_UPLOAD_SUCCESS, () => {
+        //     if (this._runtime.getCurrentIsRealtimeMode()) {
+        //         this.startHeartbeat();
+        //     }
+        // });
+        // // Start the heartbeat listener.
+        // this._firmata.on('reportversion', this.listenHeartbeat.bind(this));
     }
 
     /**
@@ -710,6 +728,123 @@ class OpenBlockArduinoEsp32Device {
         ];
     }
 
+    get OUT_PINS_MENU () {
+        return [
+            {
+                text: 'IO0',
+                value: Pins.IO0
+            },
+            {
+                text: 'IO1',
+                value: Pins.IO1
+            },
+            {
+                text: 'IO2',
+                value: Pins.IO2
+            },
+            {
+                text: 'IO3',
+                value: Pins.IO3
+            },
+            {
+                text: 'IO4',
+                value: Pins.IO4
+            },
+            {
+                text: 'IO5',
+                value: Pins.IO5
+            },
+            {
+                text: 'IO6',
+                value: Pins.IO6
+            },
+            {
+                text: 'IO7',
+                value: Pins.IO7
+            },
+            {
+                text: 'IO8',
+                value: Pins.IO8
+            },
+            {
+                text: 'IO9',
+                value: Pins.IO9
+            },
+            {
+                text: 'IO10',
+                value: Pins.IO10
+            },
+            {
+                text: 'IO11',
+                value: Pins.IO11
+            },
+            {
+                text: 'IO12',
+                value: Pins.IO12
+            },
+            {
+                text: 'IO13',
+                value: Pins.IO13
+            },
+            {
+                text: 'IO14',
+                value: Pins.IO14
+            },
+            {
+                text: 'IO15',
+                value: Pins.IO15
+            },
+            {
+                text: 'IO16',
+                value: Pins.IO16
+            },
+            {
+                text: 'IO17',
+                value: Pins.IO17
+            },
+            {
+                text: 'IO18',
+                value: Pins.IO18
+            },
+            {
+                text: 'IO19',
+                value: Pins.IO19
+            },
+            {
+                text: 'IO21',
+                value: Pins.IO21
+            },
+            {
+                text: 'IO22',
+                value: Pins.IO22
+            },
+            {
+                text: 'IO23',
+                value: Pins.IO23
+            },
+            {
+                text: 'IO25',
+                value: Pins.IO25
+            },
+            {
+                text: 'IO26',
+                value: Pins.IO26
+            },
+            {
+                text: 'IO27',
+                value: Pins.IO27
+            },
+            {
+                text: 'IO32',
+                value: Pins.IO32
+            },
+            {
+                text: 'IO33',
+                value: Pins.IO33
+            }
+        ];
+    }
+
     get MODE_MENU () {
         return [
             {
@@ -825,6 +960,75 @@ class OpenBlockArduinoEsp32Device {
                     description: 'label for low level'
                 }),
                 value: Level.Low
+            }
+        ];
+    }
+
+    get LEDC_CHANNELS_MENU () {
+        return [
+            {
+                text: 'CH0 (LT0)',
+                value: Channels.CH0
+            },
+            {
+                text: 'CH1 (LT0)',
+                value: Channels.CH1
+            },
+            {
+                text: 'CH2 (LT1)',
+                value: Channels.CH2
+            },
+            {
+                text: 'CH3 (LT1)',
+                value: Channels.CH3
+            },
+            {
+                text: 'CH4 (LT2)',
+                value: Channels.CH4
+            },
+            {
+                text: 'CH5 (LT2)',
+                value: Channels.CH5
+            },
+            {
+                text: 'CH6 (LT3)',
+                value: Channels.CH6
+            },
+            {
+                text: 'CH7 (LT3)',
+                value: Channels.CH7
+            },
+            {
+                text: 'CH8 (HT0)',
+                value: Channels.CH8
+            },
+            {
+                text: 'CH9 (HT0)',
+                value: Channels.CH9
+            },
+            {
+                text: 'CH10 (HT1)',
+                value: Channels.CH10
+            },
+            {
+                text: 'CH11 (HT1)',
+                value: Channels.CH11
+            },
+            {
+                text: 'CH12 (HT2)',
+                value: Channels.CH12
+            },
+            {
+                text: 'CH13 (HT2)',
+                value: Channels.CH13
+            },
+            {
+                text: 'CH14 (HT3)',
+                value: Channels.CH14
+            },
+            {
+                text: 'CH15 (HT3)',
+                value: Channels.CH15
             }
         ];
     }
@@ -1071,7 +1275,7 @@ class OpenBlockArduinoEsp32Device {
                         arguments: {
                             PIN: {
                                 type: ArgumentType.STRING,
-                                menu: 'pins',
+                                menu: 'outPins',
                                 defaultValue: Pins.IO2
                             },
                             MODE: {
@@ -1092,7 +1296,7 @@ class OpenBlockArduinoEsp32Device {
                         arguments: {
                             PIN: {
                                 type: ArgumentType.STRING,
-                                menu: 'pins',
+                                menu: 'outPins',
                                 defaultValue: Pins.IO2
                             },
                             LEVEL: {
@@ -1107,19 +1311,24 @@ class OpenBlockArduinoEsp32Device {
                         opcode: 'esp32SetPwmOutput',
                         text: formatMessage({
                             id: 'esp32Arduino.pins.esp32SetPwmOutput',
-                            default: 'set pwm pin [PIN] out [OUT]',
+                            default: 'set pwm pin [PIN] use channel [CH] out [OUT]',
                             description: 'esp32Arduino set pwm pin out'
                         }),
                         blockType: BlockType.COMMAND,
                         arguments: {
                             PIN: {
                                 type: ArgumentType.STRING,
-                                menu: 'pins',
+                                menu: 'outPins',
                                 defaultValue: Pins.IO2
                             },
                             OUT: {
                                 type: ArgumentType.NUMBER,
                                 defaultValue: '0'
+                            },
+                            CH: {
+                                type: ArgumentType.NUMBER,
+                                menu: 'ledcChannels',
+                                defaultValue: Channels.CH0
                             }
                         }
                     },
@@ -1199,19 +1408,24 @@ class OpenBlockArduinoEsp32Device {
                         opcode: 'esp32SetServoOutput',
                         text: formatMessage({
                             id: 'arduinoEsp32.pins.setServoOutput',
-                            default: 'set servo pin [PIN] out [OUT]',
+                            default: 'set servo pin [PIN] use channel [CH] out [OUT]',
                             description: 'arduinoEsp32 set servo pin out'
                         }),
                         blockType: BlockType.COMMAND,
                         arguments: {
                             PIN: {
                                 type: ArgumentType.STRING,
-                                menu: 'pins',
+                                menu: 'outPins',
                                 defaultValue: Pins.IO2
                             },
                             OUT: {
                                 type: ArgumentType.ANGLE,
                                 defaultValue: '0'
+                            },
+                            CH: {
+                                type: ArgumentType.NUMBER,
+                                menu: 'ledcChannels',
+                                defaultValue: Channels.CH0
                             }
                         }
                     },
@@ -1262,6 +1476,9 @@ class OpenBlockArduinoEsp32Device {
                     pins: {
                         items: this.PINS_MENU
                     },
+                    outPins: {
+                        items: this.OUT_PINS_MENU
+                    },
                     mode: {
                         items: this.MODE_MENU
                     },
@@ -1271,6 +1488,9 @@ class OpenBlockArduinoEsp32Device {
                     level: {
                         acceptReporters: true,
                         items: this.LEVEL_MENU
+                    },
+                    ledcChannels: {
+                        items: this.LEDC_CHANNELS_MENU
                     },
                     dacPins: {
                         items: this.DAC_PINS_MENU
@@ -1312,7 +1532,7 @@ class OpenBlockArduinoEsp32Device {
                             VALUE: {
                                 type: ArgumentType.STRING,
                                 menu: 'baudrate',
-                                defaultValue: Buadrate.B9600
+                                defaultValue: Buadrate.B115200
                             }
                         },
                         programMode: [ProgramModeType.UPLOAD]
