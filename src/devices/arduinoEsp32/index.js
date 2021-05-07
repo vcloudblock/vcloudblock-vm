@@ -45,6 +45,7 @@ const DIVECE_OPT = {
  * A string to report connect firmata timeout.
  * @type {formatMessage}
  */
+// eslint-disable-next-line no-unused-vars
 const ConnectFirmataTimeout = formatMessage({
     id: 'arduinoEsp32.connection.connectFirmataTimeout',
     default: 'Timeout when try to connect firmata, please download the firmware first',
@@ -368,7 +369,7 @@ class ArduinoEsp32{
         this._firmataTimeoutID = window.setTimeout(() => {
             this._isFirmataConnected = false;
             if (this._runtime.getCurrentIsRealtimeMode()) {
-                this._serialport.handleRealtimeDisconnectError(ConnectFirmataTimeout);
+                // this._serialport.handleRealtimeDisconnectError(ConnectFirmataTimeout);
             }
         }, FrimataHeartbeatTimeout);
     }
@@ -400,7 +401,7 @@ class ArduinoEsp32{
         this._firmataTimeoutID = window.setTimeout(() => {
             this._isFirmataConnected = false;
             if (this._runtime.getCurrentIsRealtimeMode()) {
-                this._serialport.handleRealtimeDisconnectError(ConnectFirmataTimeout);
+                // this._serialport.handleRealtimeDisconnectError(ConnectFirmataTimeout);
             }
         }, FrimataHeartbeatTimeout);
     }
@@ -410,27 +411,27 @@ class ArduinoEsp32{
      * @private
      */
     _onConnect () {
-        // this._serialport.read(this._onMessage);
-        // this._firmata = new Firmata(this.send.bind(this));
+        this._serialport.read(this._onMessage);
+        this._firmata = new Firmata(this.send.bind(this));
 
-        // if (this._runtime.getCurrentIsRealtimeMode()) {
-        //     this.startHeartbeat();
-        // }
+        if (this._runtime.getCurrentIsRealtimeMode()) {
+            this.startHeartbeat();
+        }
 
-        // this._runtime.on(this._runtime.constructor.PROGRAM_MODE_UPDATE, data => {
-        //     if (data.isRealtimeMode) {
-        //         this.startHeartbeat();
-        //     } else {
-        //         this.stopHeartbeat();
-        //     }
-        // });
-        // this._runtime.on(this._runtime.constructor.PERIPHERAL_UPLOAD_SUCCESS, () => {
-        //     if (this._runtime.getCurrentIsRealtimeMode()) {
-        //         this.startHeartbeat();
-        //     }
-        // });
-        // // Start the heartbeat listener.
-        // this._firmata.on('reportversion', this.listenHeartbeat.bind(this));
+        this._runtime.on(this._runtime.constructor.PROGRAM_MODE_UPDATE, data => {
+            if (data.isRealtimeMode) {
+                this.startHeartbeat();
+            } else {
+                this.stopHeartbeat();
+            }
+        });
+        this._runtime.on(this._runtime.constructor.PERIPHERAL_UPLOAD_SUCCESS, () => {
+            if (this._runtime.getCurrentIsRealtimeMode()) {
+                this.startHeartbeat();
+            }
+        });
+        // Start the heartbeat listener.
+        this._firmata.on('reportversion', this.listenHeartbeat.bind(this));
     }
 
     /**
