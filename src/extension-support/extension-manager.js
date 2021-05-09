@@ -31,12 +31,14 @@ const builtinExtensions = {
 
 const builtinDevices = {
     arduinoUno: () => require('../devices/arduinoUno'),
+    arduinoUnoUltra: () => require('../devices/arduinoUnoUltra'), // Add A6, A7 pins some customized board
     arduinoNano: () => require('../devices/arduinoNano'),
     arduinoMini: () => require('../devices/arduinoMini'),
     arduinoLeonardo: () => require('../devices/arduinoLeonardo'),
     arduinoMega2560: () => require('../devices/arduinoMega2560'),
     arduinoEsp32: () => require('../devices/arduinoEsp32'),
-    microbit: () => require('../devices/microbit')
+    microbit: () => require('../devices/microbit'),
+    microbitV2: () => require('../devices/microbitV2')
 
     // todo transform these to device extension
     // wedo2: () => require('../extensions/scratch3_wedo2'),
