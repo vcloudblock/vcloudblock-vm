@@ -26,7 +26,8 @@ const builtinExtensions = {
     music: () => require('../extensions/scratch3_music'),
     text2speech: () => require('../extensions/scratch3_text2speech'),
     translate: () => require('../extensions/scratch3_translate'),
-    videoSensing: () => require('../extensions/scratch3_video_sensing')
+    videoSensing: () => require('../extensions/scratch3_video_sensing'),
+    makeymakey: () => require('../extensions/scratch3_makeymakey')
 };
 
 const builtinDevices = {
@@ -36,7 +37,8 @@ const builtinDevices = {
     arduinoLeonardo: () => require('../devices/arduinoLeonardo'),
     arduinoMega2560: () => require('../devices/arduinoMega2560'),
     arduinoEsp32: () => require('../devices/arduinoEsp32'),
-    microbit: () => require('../devices/microbit')
+    microbit: () => require('../devices/microbit'),
+    makeyMakey: () => require('../devices/makeymakey')
 
     // todo transform these to device extension
     // wedo2: () => require('../extensions/scratch3_wedo2'),
