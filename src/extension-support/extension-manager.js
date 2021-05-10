@@ -38,6 +38,7 @@ const builtinDevices = {
     arduinoLeonardo: () => require('../devices/arduinoLeonardo'),
     arduinoMega2560: () => require('../devices/arduinoMega2560'),
     arduinoEsp32: () => require('../devices/arduinoEsp32'),
+    arduinoEsp8266: () => require('../devices/arduinoEsp8266'),
     microbit: () => require('../devices/microbit'),
     makeyMakey: () => require('../devices/makeymakey'),
     microbitV2: () => require('../devices/microbitV2')
