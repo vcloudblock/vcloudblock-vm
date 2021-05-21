@@ -212,7 +212,9 @@ class ArduinoUnoUltra{
      */
     uploadFirmware () {
         this.stopHeartbeat();
-        this._serialport.uploadFirmware(DIVECE_OPT);
+        const option = DIVECE_OPT;
+        option.fqbn = 'arduino:avr:unoUltra'; // Use the cost customized firmware.
+        this._serialport.uploadFirmware(option);
     }
 
     /**
