@@ -39,7 +39,8 @@ const SERIAL_CONFIG = {
  */
 const DIVECE_OPT = {
     type: 'arduino',
-    fqbn: 'arduino:avr:uno'
+    fqbn: 'arduino:avr:uno',
+    firmware: 'arduinoUnoUltra.standardFirmata.ino.hex'
 };
 
 /**
@@ -212,9 +213,7 @@ class ArduinoUnoUltra{
      */
     uploadFirmware () {
         this.stopHeartbeat();
-        const option = DIVECE_OPT;
-        option.fqbn = 'arduino:avr:unoUltra'; // Use the cost customized firmware.
-        this._serialport.uploadFirmware(option);
+        this._serialport.uploadFirmware(DIVECE_OPT);
     }
 
     /**

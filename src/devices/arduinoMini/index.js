@@ -40,7 +40,8 @@ const SERIAL_CONFIG = {
  */
 const DIVECE_OPT = {
     type: 'arduino',
-    fqbn: 'arduino:avr:mini:cpu=atmega328'
+    fqbn: 'arduino:avr:mini:cpu=atmega328',
+    firmware: 'arduinoUno.standardFirmata.ino.hex'
 };
 
 /**
