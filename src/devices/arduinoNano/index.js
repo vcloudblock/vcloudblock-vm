@@ -190,6 +190,9 @@ class ArduinoNano{
          * @private
          */
         this._isFirmataConnected = false;
+
+        this._startHeartbeat = this._startHeartbeat.bind(this);
+        this._listenHeartbeat = this._listenHeartbeat.bind(this);
     }
 
     /**
@@ -205,7 +208,7 @@ class ArduinoNano{
      * Called by the runtime when user wants to upload realtime firmware to a peripheral.
      */
     uploadFirmware () {
-        this.stopHeartbeat();
+        this._stopHeartbeat();
         this._serialport.uploadFirmware(DIVECE_OPT);
     }
 
@@ -255,17 +258,13 @@ class ArduinoNano{
      */
     reset () {
         if (this._firmata) {
-            this._firmata.removeListener('reportversion', this.listenHeartbeat.bind(this));
+            this._firmata.removeListener('reportversion', this._listenHeartbeat);
             delete this._firmata;
         }
-        if (this._firmataTimeoutID) {
-            window.clearTimeout(this._firmataTimeoutID);
-            this._firmataTimeoutID = null;
-        }
-        if (this._firmataIntervelID) {
-            window.clearInterval(this._firmataIntervelID);
-            this._firmataIntervelID = null;
-        }
+        this._stopHeartbeat();
+        this._runtime.removeListener(this._runtime.constructor.PROGRAM_MODE_UPDATE, this._startHeartbeat);
+        this._runtime.removeListener(this._runtime.constructor.PERIPHERAL_UPLOAD_SUCCESS, this._startHeartbeat);
+
         this._isFirmataConnected = false;
     }
 
@@ -315,40 +314,47 @@ class ArduinoNano{
      * Start send/recive heartbeat timer.
      * @private
      */
-    startHeartbeat () {
-        this._isFirmataConnected = false;
-
-        this._firmataIntervelID = window.setInterval(() => {
-            if (this._runtime.getCurrentIsRealtimeMode()) {
-                // Send reportVersion request as heartbeat.
-                this._firmata.reportVersion(() => { });
-            }
-        }, FrimataHeartbeatInterval);
-        // Start a timer if heartbeat time out means failed to connect firmata.
-        this._firmataTimeoutID = window.setTimeout(() => {
+    _startHeartbeat () {
+        if (this._runtime.getCurrentIsRealtimeMode()) {
             this._isFirmataConnected = false;
-            if (this._runtime.getCurrentIsRealtimeMode()) {
-                this._serialport.handleRealtimeDisconnectError(ConnectFirmataTimeout);
-            }
-        }, FrimataHeartbeatTimeout);
+
+            this._firmataIntervelID = window.setInterval(() => {
+                if (this._runtime.getCurrentIsRealtimeMode()) {
+                // Send reportVersion request as heartbeat.
+                    this._firmata.reportVersion(() => { });
+                }
+            }, FrimataHeartbeatInterval);
+            // Start a timer if heartbeat time out means failed to connect firmata.
+            this._firmataTimeoutID = window.setTimeout(() => {
+                this._isFirmataConnected = false;
+                if (this._runtime.getCurrentIsRealtimeMode()) {
+                    this._serialport.handleRealtimeDisconnectError(ConnectFirmataTimeout);
+                }
+            }, FrimataHeartbeatTimeout);
+        }
     }
 
     /**
      * Stop send/recive heartbeat timer.
      * @private
      */
-    stopHeartbeat () {
-        window.clearInterval(this._firmataIntervelID);
-        this._firmataIntervelID = null;
-        window.clearTimeout(this._firmataTimeoutID);
-        this._firmataTimeoutID = null;
+    _stopHeartbeat () {
+        if (this._firmataTimeoutID) {
+            window.clearTimeout(this._firmataTimeoutID);
+            this._firmataTimeoutID = null;
+        }
+        if (this._firmataIntervelID) {
+            window.clearInterval(this._firmataIntervelID);
+            this._firmataIntervelID = null;
+        }
+        this._isFirmataConnected = false;
     }
 
     /**
      * Listen the heartbeat and emit connection state event.
      * @private
      */
-    listenHeartbeat () {
+    _listenHeartbeat () {
         if (!this._isFirmataConnected) {
             this._isFirmataConnected = true;
             if (this._runtime.getCurrentIsRealtimeMode()) {
@@ -374,23 +380,13 @@ class ArduinoNano{
         this._firmata = new Firmata(this.send.bind(this));
 
         if (this._runtime.getCurrentIsRealtimeMode()) {
-            this.startHeartbeat();
+            this._startHeartbeat();
         }
 
-        this._runtime.on(this._runtime.constructor.PROGRAM_MODE_UPDATE, data => {
-            if (data.isRealtimeMode) {
-                this.startHeartbeat();
-            } else {
-                this.stopHeartbeat();
-            }
-        });
-        this._runtime.on(this._runtime.constructor.PERIPHERAL_UPLOAD_SUCCESS, () => {
-            if (this._runtime.getCurrentIsRealtimeMode()) {
-                this.startHeartbeat();
-            }
-        });
+        this._runtime.on(this._runtime.constructor.PROGRAM_MODE_UPDATE, this._startHeartbeat);
+        this._runtime.on(this._runtime.constructor.PERIPHERAL_UPLOAD_SUCCESS, this._startHeartbeat);
         // Start the heartbeat listener.
-        this._firmata.on('reportversion', this.listenHeartbeat.bind(this));
+        this._firmata.on('reportversion', this._listenHeartbeat);
     }
 
     /**
