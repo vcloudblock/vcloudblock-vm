@@ -1,6 +1,5 @@
 language: node_js
 node_js:
-- 8
 - 10
 env:
   global:
@@ -19,12 +18,12 @@ script: npm run $NPM_SCRIPT
 jobs:
     include:
     - env: NPM_SCRIPT=lint
-      node_js: 8
+      node_js: 10
     - env: NPM_SCRIPT=build
-      node_js: 8
+      node_js: 10
       if: not (type != pull_request AND (branch =~ /^(develop|master|hotfix\/)/))
     - stage: release
-      node_js: 8
+      node_js: 10
       env: NPM_SCRIPT=build
       before_deploy:
       - >
@@ -60,13 +59,6 @@ jobs:
           condition: $TRAVIS_EVENT_TYPE != cron
         skip_cleanup: true
         script: if npm info | grep -q $RELEASE_VERSION; then git tag $RELEASE_VERSION && git push https://${GH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git $RELEASE_VERSION; fi
-      - provider: pages
-        skip_cleanup: true
-        github_token: $GH_TOKEN
-        keep_history: true
-        on:
-          branch: main
-        local_dir: playground
       - provider: script
         on:
           branch: develop
