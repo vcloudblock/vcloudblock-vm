@@ -944,7 +944,7 @@ class OpenBlockArduinoEsp8266Device {
                                 defaultValue: Pins.A0
                             }
                         }
-                    },
+                    }
                     // '---',
                     // {
 
