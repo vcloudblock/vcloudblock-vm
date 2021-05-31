@@ -16,8 +16,6 @@ const Firmata = require('../../lib/firmata/firmata');
 const PNPID_LIST = [
     // CH340
     'USB\\VID_1A86&PID_7523',
-    // CH9102
-    'USB\\VID_1A86&PID_55D4',
     // CP2102
     'USB\\VID_10C4&PID_EA60'
 ];
@@ -38,7 +36,7 @@ const SERIAL_CONFIG = {
  */
 const DIVECE_OPT = {
     type: 'arduino',
-    fqbn: 'esp8266:esp8266:d1'
+    fqbn: 'esp8266:esp8266:generic'
 };
 
 /**
@@ -63,22 +61,23 @@ const FrimataHeartbeatInterval = 2000;
 const FrimataHeartbeatTimeout = 5000;
 
 const Pins = {
-    D0: 'D0',
-    D1: 'D1',
-    D2: 'D2',
-    D3: 'D3',
-    D4: 'D4',
-    D5: 'D5',
-    D6: 'D6',
-    D7: 'D7',
-    D8: 'D8',
-    D9: 'D9',
-    D10: 'D10',
-    D11: 'D11',
-    D12: 'D12',
-    D13: 'D13',
-    D14: 'D14',
-    D15: 'D15',
+    GPIO0: '0',
+    GPIO1: '1',
+    GPIO2: '2',
+    GPIO3: '3',
+    GPIO4: '4',
+    GPIO5: '5',
+    GPIO6: '6',
+    GPIO7: '7',
+    GPIO8: '8',
+    GPIO9: '9',
+    GPIO10: '10',
+    GPIO11: '11',
+    GPIO12: '12',
+    GPIO13: '13',
+    GPIO14: '14',
+    GPIO15: '15',
+    GPIO16: '16',
     A0: 'A0'
 };
 
@@ -108,12 +107,11 @@ const Mode = {
     InputPullup: 'INPUT_PULLUP'
 };
 
-// const InterrupMode = {
-//     Rising: 'RISING',
-//     Falling: 'FALLING',
-//     Change: 'CHANGE',
-//     Low: 'LOW'
-// };
+const InterrupMode = {
+    Rising: 'RISING',
+    Falling: 'FALLING',
+    Change: 'CHANGE'
+};
 
 const DataType = {
     WholeNumber: 'WHOLE_NUMBER',
@@ -122,7 +120,7 @@ const DataType = {
 };
 
 /**
- * Manage communication with a Arduino Leonardo peripheral over a OpenBlock Link client socket.
+ * Manage communication with a Arduino Esp8266 peripheral over a OpenBlock Link client socket.
  */
 class arduinoEsp8266{
 
@@ -506,7 +504,7 @@ class arduinoEsp8266{
 }
 
 /**
- * OpenBlock blocks to interact with a Arduino Leonardo peripheral.
+ * OpenBlock blocks to interact with a Arduino Esp8266 peripheral.
  */
 class OpenBlockArduinoEsp8266Device {
     /**
@@ -519,68 +517,72 @@ class OpenBlockArduinoEsp8266Device {
     get PINS_MENU () {
         return [
             {
-                text: 'D0',
-                value: Pins.D0
+                text: 'GPIO0',
+                value: Pins.GPIO0
             },
             {
-                text: 'D1',
-                value: Pins.D1
+                text: 'GPIO1',
+                value: Pins.GPIO1
             },
             {
-                text: 'D2',
-                value: Pins.D2
+                text: 'GPIO2',
+                value: Pins.GPIO2
             },
             {
-                text: 'D3',
-                value: Pins.D3
+                text: 'GPIO3',
+                value: Pins.GPIO3
             },
             {
-                text: 'D4',
-                value: Pins.D4
+                text: 'GPIO4',
+                value: Pins.GPIO4
             },
             {
-                text: 'D5',
-                value: Pins.D5
+                text: 'GPIO5',
+                value: Pins.GPIO5
             },
             {
-                text: 'D6',
-                value: Pins.D6
+                text: 'GPIO6',
+                value: Pins.GPIO6
             },
             {
-                text: 'D7',
-                value: Pins.D7
+                text: 'GPIO7',
+                value: Pins.GPIO7
             },
             {
-                text: 'D8',
-                value: Pins.D8
+                text: 'GPIO8',
+                value: Pins.GPIO8
             },
             {
-                text: 'D9',
-                value: Pins.D9
+                text: 'GPIO9',
+                value: Pins.GPIO9
             },
             {
-                text: 'D10',
-                value: Pins.D10
+                text: 'GPIO10',
+                value: Pins.GPIO10
             },
             {
-                text: 'D11',
-                value: Pins.D11
+                text: 'GPIO11',
+                value: Pins.GPIO11
             },
             {
-                text: 'D12',
-                value: Pins.D12
+                text: 'GPIO12',
+                value: Pins.GPIO12
             },
             {
-                text: 'D13',
-                value: Pins.D13
+                text: 'GPIO13',
+                value: Pins.GPIO13
             },
             {
-                text: 'D14',
-                value: Pins.D14
+                text: 'GPIO14',
+                value: Pins.GPIO14
             },
             {
-                text: 'D15',
-                value: Pins.D15
+                text: 'GPIO15',
+                value: Pins.GPIO15
+            },
+            {
+                text: 'GPIO16',
+                value: Pins.GPIO16
             },
             {
                 text: 'A0',
@@ -621,68 +623,72 @@ class OpenBlockArduinoEsp8266Device {
     get DIGITAL_PINS_MENU () {
         return [
             {
-                text: 'D0',
-                value: Pins.D0
+                text: 'GPIO0',
+                value: Pins.GPIO0
             },
             {
-                text: 'D1',
-                value: Pins.D1
+                text: 'GPIO1',
+                value: Pins.GPIO1
             },
             {
-                text: 'D2',
-                value: Pins.D2
+                text: 'GPIO2',
+                value: Pins.GPIO2
             },
             {
-                text: 'D3',
-                value: Pins.D3
+                text: 'GPIO3',
+                value: Pins.GPIO3
             },
             {
-                text: 'D4',
-                value: Pins.D4
+                text: 'GPIO4',
+                value: Pins.GPIO4
             },
             {
-                text: 'D5',
-                value: Pins.D5
+                text: 'GPIO5',
+                value: Pins.GPIO5
             },
             {
-                text: 'D6',
-                value: Pins.D6
+                text: 'GPIO6',
+                value: Pins.GPIO6
             },
             {
-                text: 'D7',
-                value: Pins.D7
+                text: 'GPIO7',
+                value: Pins.GPIO7
             },
             {
-                text: 'D8',
-                value: Pins.D8
+                text: 'GPIO8',
+                value: Pins.GPIO8
             },
             {
-                text: 'D9',
-                value: Pins.D9
+                text: 'GPIO9',
+                value: Pins.GPIO9
             },
             {
-                text: 'D10',
-                value: Pins.D10
+                text: 'GPIO10',
+                value: Pins.GPIO10
             },
             {
-                text: 'D11',
-                value: Pins.D11
+                text: 'GPIO11',
+                value: Pins.GPIO11
             },
             {
-                text: 'D12',
-                value: Pins.D12
+                text: 'GPIO12',
+                value: Pins.GPIO12
             },
             {
-                text: 'D13',
-                value: Pins.D13
+                text: 'GPIO13',
+                value: Pins.GPIO13
             },
             {
-                text: 'D14',
-                value: Pins.D14
+                text: 'GPIO14',
+                value: Pins.GPIO14
             },
             {
-                text: 'D15',
-                value: Pins.D15
+                text: 'GPIO15',
+                value: Pins.GPIO15
+            },
+            {
+                text: 'GPIO16',
+                value: Pins.GPIO15
             }
         ];
     }
@@ -692,6 +698,79 @@ class OpenBlockArduinoEsp8266Device {
             {
                 text: 'A0',
                 value: Pins.A0
+            }
+        ];
+    }
+
+    get PWM_PINS_MENU () {
+        return [
+            {
+                text: 'GPIO0',
+                value: Pins.GPIO0
+            },
+            {
+                text: 'GPIO1',
+                value: Pins.GPIO1
+            },
+            {
+                text: 'GPIO2',
+                value: Pins.GPIO2
+            },
+            {
+                text: 'GPIO3',
+                value: Pins.GPIO3
+            },
+            {
+                text: 'GPIO4',
+                value: Pins.GPIO4
+            },
+            {
+                text: 'GPIO5',
+                value: Pins.GPIO5
+            },
+            {
+                text: 'GPIO6',
+                value: Pins.GPIO6
+            },
+            {
+                text: 'GPIO7',
+                value: Pins.GPIO7
+            },
+            {
+                text: 'GPIO8',
+                value: Pins.GPIO8
+            },
+            {
+                text: 'GPIO9',
+                value: Pins.GPIO9
+            },
+            {
+                text: 'GPIO10',
+                value: Pins.GPIO10
+            },
+            {
+                text: 'GPIO11',
+                value: Pins.GPIO11
+            },
+            {
+                text: 'GPIO12',
+                value: Pins.GPIO12
+            },
+            {
+                text: 'GPIO13',
+                value: Pins.GPIO13
+            },
+            {
+                text: 'GPIO14',
+                value: Pins.GPIO14
+            },
+            {
+                text: 'GPIO15',
+                value: Pins.GPIO15
+            },
+            {
+                text: 'GPIO16',
+                value: Pins.GPIO16
             }
         ];
     }
@@ -717,47 +796,91 @@ class OpenBlockArduinoEsp8266Device {
         ];
     }
 
-    // get INTERRUPT_PINS_MENU () {
-    //     return [
-    //         {
-    //             text: 'D0',
-    //             value: Pins.D0
-    //         },
-    //         {
-    //             text: 'D1',
-    //             value: Pins.D1
-    //         },
-    //         {
-    //             text: 'D2',
-    //             value: Pins.D2
-    //         },
-    //         {
-    //             text: 'D3',
-    //             value: Pins.D3
-    //         }
-    //     ];
-    // }
+    get INTERRUPT_PINS_MENU () {
+        return [
+            {
+                text: 'GPIO0',
+                value: Pins.GPIO0
+            },
+            {
+                text: 'GPIO1',
+                value: Pins.GPIO1
+            },
+            {
+                text: 'GPIO2',
+                value: Pins.GPIO2
+            },
+            {
+                text: 'GPIO3',
+                value: Pins.GPIO3
+            },
+            {
+                text: 'GPIO4',
+                value: Pins.GPIO4
+            },
+            {
+                text: 'GPIO5',
+                value: Pins.GPIO5
+            },
+            {
+                text: 'GPIO6',
+                value: Pins.GPIO6
+            },
+            {
+                text: 'GPIO7',
+                value: Pins.GPIO7
+            },
+            {
+                text: 'GPIO8',
+                value: Pins.GPIO8
+            },
+            {
+                text: 'GPIO9',
+                value: Pins.GPIO9
+            },
+            {
+                text: 'GPIO10',
+                value: Pins.GPIO10
+            },
+            {
+                text: 'GPIO11',
+                value: Pins.GPIO11
+            },
+            {
+                text: 'GPIO12',
+                value: Pins.GPIO12
+            },
+            {
+                text: 'GPIO13',
+                value: Pins.GPIO13
+            },
+            {
+                text: 'GPIO14',
+                value: Pins.GPIO14
+            },
+            {
+                text: 'GPIO15',
+                value: Pins.GPIO15
+            }
+        ];
+    }
 
-    // get INTERRUP_MODE_MENU () {
-    //     return [
-    //         {
-    //             text: 'rising edge',
-    //             value: InterrupMode.Rising
-    //         },
-    //         {
-    //             text: 'falling edge',
-    //             value: InterrupMode.Falling
-    //         },
-    //         {
-    //             text: 'change edge',
-    //             value: InterrupMode.Change
-    //         },
-    //         {
-    //             text: 'low',
-    //             value: InterrupMode.Low
-    //         }
-    //     ];
-    // }
+    get INTERRUP_MODE_MENU () {
+        return [
+            {
+                text: 'rising edge',
+                value: InterrupMode.Rising
+            },
+            {
+                text: 'falling edge',
+                value: InterrupMode.Falling
+            },
+            {
+                text: 'change edge',
+                value: InterrupMode.Change
+            }
+        ];
+    }
 
     get BAUDTATE_MENU () {
         return [
@@ -849,7 +972,7 @@ class OpenBlockArduinoEsp8266Device {
          */
         this.runtime = runtime;
 
-        // Create a new Arduino Leonardo peripheral instance
+        // Create a new Arduino Esp8266 peripheral instance
         this._peripheral = new arduinoEsp8266(this.runtime, OpenBlockArduinoEsp8266Device.DEVICE_ID);
     }
 
@@ -863,7 +986,7 @@ class OpenBlockArduinoEsp8266Device {
                 name: formatMessage({
                     id: 'arduinoUno.category.pins',
                     default: 'Pins',
-                    description: 'The name of the arduino leonardo device pin category'
+                    description: 'The name of the arduino Esp8266 device pin category'
                 }),
                 color1: '#4C97FF',
                 color2: '#3373CC',
@@ -882,7 +1005,7 @@ class OpenBlockArduinoEsp8266Device {
                             PIN: {
                                 type: ArgumentType.STRING,
                                 menu: 'pins',
-                                defaultValue: Pins.D0
+                                defaultValue: Pins.GPIO0
                             },
                             MODE: {
                                 type: ArgumentType.STRING,
@@ -902,13 +1025,34 @@ class OpenBlockArduinoEsp8266Device {
                         arguments: {
                             PIN: {
                                 type: ArgumentType.STRING,
-                                menu: 'pins',
-                                defaultValue: Pins.D0
+                                menu: 'digitalPins',
+                                defaultValue: Pins.GPIO0
                             },
                             LEVEL: {
                                 type: ArgumentType.STRING,
                                 menu: 'level',
                                 defaultValue: Level.High
+                            }
+                        }
+                    },
+                    {
+
+                        opcode: 'setPwmOutput',
+                        text: formatMessage({
+                            id: 'arduinoUno.pins.setPwmOutput',
+                            default: 'set pwm pin [PIN] out [OUT]',
+                            description: 'arduinoUno set pwm pin out'
+                        }),
+                        blockType: BlockType.COMMAND,
+                        arguments: {
+                            PIN: {
+                                type: ArgumentType.STRING,
+                                menu: 'pwmPins',
+                                defaultValue: Pins.GPIO0
+                            },
+                            OUT: {
+                                type: ArgumentType.NUMBER,
+                                defaultValue: '0'
                             }
                         }
                     },
@@ -925,7 +1069,7 @@ class OpenBlockArduinoEsp8266Device {
                             PIN: {
                                 type: ArgumentType.STRING,
                                 menu: 'digitalPins',
-                                defaultValue: Pins.D0
+                                defaultValue: Pins.GPIO0
                             }
                         }
                     },
@@ -944,49 +1088,49 @@ class OpenBlockArduinoEsp8266Device {
                                 defaultValue: Pins.A0
                             }
                         }
+                    },
+                    '---',
+                    {
+
+                        opcode: 'attachInterrupt',
+                        text: formatMessage({
+                            id: 'arduinoUno.pins.attachInterrupt',
+                            default: 'attach interrupt pin [PIN] mode [MODE] executes',
+                            description: 'arduinoEsp8266 attach interrupt'
+                        }),
+                        blockType: BlockType.CONDITIONAL,
+                        arguments: {
+                            PIN: {
+                                type: ArgumentType.STRING,
+                                menu: 'interruptPins',
+                                defaultValue: Pins.GPIO0
+                            },
+                            MODE: {
+                                type: ArgumentType.STRING,
+                                menu: 'interruptMode',
+                                defaultValue: InterrupMode.Rising
+                            }
+                        },
+                        programMode: [ProgramModeType.UPLOAD]
+                    },
+                    {
+
+                        opcode: 'detachInterrupt',
+                        text: formatMessage({
+                            id: 'arduinoUno.pins.detachInterrupt',
+                            default: 'detach interrupt pin [PIN]',
+                            description: 'arduinoEsp8266 detach interrupt'
+                        }),
+                        blockType: BlockType.COMMAND,
+                        arguments: {
+                            PIN: {
+                                type: ArgumentType.STRING,
+                                menu: 'interruptPins',
+                                defaultValue: Pins.GPIO0
+                            }
+                        },
+                        programMode: [ProgramModeType.UPLOAD]
                     }
-                    // '---',
-                    // {
-
-                    //     opcode: 'attachInterrupt',
-                    //     text: formatMessage({
-                    //         id: 'arduinoUno.pins.attachInterrupt',
-                    //         default: 'attach interrupt pin [PIN] mode [MODE] executes',
-                    //         description: 'arduinoEsp8266 attach interrupt'
-                    //     }),
-                    //     blockType: BlockType.CONDITIONAL,
-                    //     arguments: {
-                    //         PIN: {
-                    //             type: ArgumentType.STRING,
-                    //             menu: 'interruptPins',
-                    //             defaultValue: Pins.D3
-                    //         },
-                    //         MODE: {
-                    //             type: ArgumentType.STRING,
-                    //             menu: 'interruptMode',
-                    //             defaultValue: InterrupMode.Rising
-                    //         }
-                    //     },
-                    //     programMode: [ProgramModeType.UPLOAD]
-                    // },
-                    // {
-
-                    //     opcode: 'detachInterrupt',
-                    //     text: formatMessage({
-                    //         id: 'arduinoUno.pins.detachInterrupt',
-                    //         default: 'detach interrupt pin [PIN]',
-                    //         description: 'arduinoEsp8266 detach interrupt'
-                    //     }),
-                    //     blockType: BlockType.COMMAND,
-                    //     arguments: {
-                    //         PIN: {
-                    //             type: ArgumentType.STRING,
-                    //             menu: 'interruptPins',
-                    //             defaultValue: Pins.D3
-                    //         }
-                    //     },
-                    //     programMode: [ProgramModeType.UPLOAD]
-                    // }
                 ],
                 menus: {
                     pins: {
@@ -1004,12 +1148,15 @@ class OpenBlockArduinoEsp8266Device {
                     level: {
                         acceptReporters: true,
                         items: this.LEVEL_MENU
-                    // },
-                    // interruptPins: {
-                    //     items: this.INTERRUPT_PINS_MENU
-                    // },
-                    // interruptMode: {
-                    //     items: this.INTERRUP_MODE_MENU
+                    },
+                    pwmPins: {
+                        items: this.PWM_PINS_MENU
+                    },
+                    interruptPins: {
+                        items: this.INTERRUPT_PINS_MENU
+                    },
+                    interruptMode: {
+                        items: this.INTERRUP_MODE_MENU
                     }
                 }
             },
@@ -1018,7 +1165,7 @@ class OpenBlockArduinoEsp8266Device {
                 name: formatMessage({
                     id: 'arduinoUno.category.serial',
                     default: 'Serial',
-                    description: 'The name of the arduino leonardo device serial category'
+                    description: 'The name of the arduino Esp8266 device serial category'
                 }),
                 color1: '#9966FF',
                 color2: '#774DCB',
