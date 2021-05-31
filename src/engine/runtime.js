@@ -1736,12 +1736,13 @@ class Runtime extends EventEmitter {
     /**
      * Tell the specified extension to scan for a peripheral.
      * @param {string} deviceId - the id of the device.
+     * @param {bool} listAll - wether list all connectable device.
      */
-    scanForPeripheral (deviceId) {
+    scanForPeripheral (deviceId, listAll) {
         deviceId = this.analysisRealDeviceId(deviceId);
 
         if (this.peripheralExtensions[deviceId]) {
-            this.peripheralExtensions[deviceId].scan(this.getPnpIdList());
+            this.peripheralExtensions[deviceId].scan(this.getPnpIdList(), listAll);
         }
     }
 

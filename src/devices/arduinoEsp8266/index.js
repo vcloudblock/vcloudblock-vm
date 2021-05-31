@@ -210,14 +210,15 @@ class arduinoEsp8266{
     /**
      * Called by the runtime when user wants to scan for a peripheral.
      * @param {Array.<string>} pnpidList - the array of pnp id list
+     * @param {bool} listAll - wether list all connectable device
      */
-    scan (pnpidList) {
+    scan (pnpidList, listAll) {
         if (this._serialport) {
             this._serialport.disconnect();
         }
         this._serialport = new Serialport(this._runtime, this._deviceId, {
             filters: {
-                pnpid: pnpidList ? pnpidList : PNPID_LIST
+                pnpid: listAll ? ['*'] : (pnpidList ? pnpidList : PNPID_LIST)
             }
         }, this._onConnect, this.reset);
     }
