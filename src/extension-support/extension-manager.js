@@ -272,9 +272,26 @@ class ExtensionManager {
             this.unloadAllDeviceExtension();
 
             return Promise.resolve();
-        }
-        return Promise.reject(`Error while load device can not find device ${deviceId}`);
+        } else if (realDeviceId === 'unselectDevice') { // unload the device return to pure realtime programming mode.
+            this.runtime.setDevice(null);
+            this.runtime.setDeviceType(null);
+            this.runtime.setPnpIdList([]);
+            this._loadedDevice.clear();
 
+            // Clear current extentions.
+            this.runtime.clearCurrentExtension();
+            this._loadedExtensions.clear();
+            this.unloadAllDeviceExtension();
+
+            this.runtime.emit(this.runtime.constructor.DEVICE_ADDED, {
+                device: null,
+                categoryInfoArray: []
+            });
+
+            return Promise.resolve();
+        }
+
+        return Promise.reject(`Error while load device can not find device ${deviceId}`);
     }
 
     /**
