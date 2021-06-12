@@ -291,7 +291,7 @@ class ExtensionManager {
             return Promise.resolve();
         }
 
-        return Promise.reject(`Error while load device can not find device ${deviceId}`);
+        return Promise.reject(`Error while load device can not find device: ${deviceId}`);
     }
 
     /**
@@ -338,7 +338,7 @@ class ExtensionManager {
             const deviceExtension = this._deviceExtensions.find(ext => ext.extensionId === deviceExtensionId);
             if (typeof deviceExtension === 'undefined') {
                 return reject(`Error while loadDeviceExtension device extension ` +
-                    `can not find device extension ${deviceExtensionId}`);
+                    `can not find device extension: ${deviceExtensionId}`);
             }
 
             const url = localDeviceExtensionsUrl;

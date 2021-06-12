@@ -582,14 +582,9 @@ class VirtualMachine extends EventEmitter {
                 this.emit('installDeviceExtensionsSync.success');
                 return;
             }
-            try {
-                this.extensionManager.loadDeviceExtension(this.runtime._pendingDeviceExtensions.shift()).then(() => {
-                    this.installDeviceExtensionsSync();
-                });
-            } catch (e) {
-                this.emit('installDeviceExtensionsSync.error', e);
-                return;
-            }
+            this.extensionManager.loadDeviceExtension(this.runtime._pendingDeviceExtensions.shift())
+                .then(() => this.installDeviceExtensionsSync())
+                .catch(e => this.emit('installDeviceExtensionsSync.error', e));
         }
     }
 
