@@ -1664,7 +1664,9 @@ class Runtime extends EventEmitter {
             _loadedDeviceExtensionsXML.push({id: id, xml: value.xml});
         });
 
-        if (this.getCurrentIsRealtimeMode()) {
+        if (this.getCurrentDevice() === null) {
+            return this.generateXMLfromBlockInfo(target, this._blockInfo);
+        } else if (this.getCurrentIsRealtimeMode()) {
             return this.generateXMLfromBlockInfo(target, this._deviceBlockInfo.concat(this._blockInfo));
         }
         return this.generateXMLfromBlockInfo(target, this._deviceBlockInfo).concat(_loadedDeviceExtensionsXML);
