@@ -942,6 +942,29 @@ class Runtime extends EventEmitter {
     }
 
     /**
+     * Clear all blocks in monitor.
+     */
+    clearMonitor () {
+        // uncheck all checkbox.
+        this.monitorBlocks.getAllIds().forEach(block => {
+            this.monitorBlocks.changeBlock({
+                id: block,
+                element: 'checkbox',
+                value: false
+            }, this.runtime);
+        });
+
+        // delet current monitors
+        this.targets.forEach(target => {
+            if (target.isOriginal) target.deleteMonitors();
+        });
+        this._monitorState = OrderedMap({});
+
+        // Update gui
+        this.emit(Runtime.MONITORS_UPDATE, this._monitorState);
+    }
+
+    /**
      * Generate an extension-specific menu ID.
      * @param {string} menuName - the name of the menu.
      * @param {string} extensionId - the ID of the extension hosting the menu.

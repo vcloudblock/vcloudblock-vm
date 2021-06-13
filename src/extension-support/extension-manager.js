@@ -259,6 +259,7 @@ class ExtensionManager {
             this.runtime.setDevice(deviceId);
             this.runtime.setDeviceType(deviceType);
             this.runtime.setPnpIdList(pnpidList);
+            this.runtime.clearMonitor();
             const device = builtinDevices[realDeviceId]();
             const deviceInstance = new device(this.runtime);
             const serviceName = this._registerInternalDevice(deviceInstance);
@@ -276,7 +277,10 @@ class ExtensionManager {
             this.runtime.setDevice(null);
             this.runtime.setDeviceType(null);
             this.runtime.setPnpIdList([]);
+            this.runtime.clearMonitor();
             this._loadedDevice.clear();
+
+            this._loadedDevice.set(deviceId, null);
 
             // Clear current extentions.
             this.runtime.clearCurrentExtension();

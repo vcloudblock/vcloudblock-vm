@@ -115,6 +115,14 @@ class Blocks {
     }
 
     /**
+     * Get all known blocks ids.
+     * @return {Array.<string>} List of block IDs.
+     */
+    getAllIds () {
+        return Object.keys(this._blocks);
+    }
+
+    /**
      * Get all known top-level blocks that start scripts.
      * @return {Array.<string>} List of block IDs.
      */
