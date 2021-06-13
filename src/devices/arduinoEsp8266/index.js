@@ -689,7 +689,7 @@ class OpenBlockArduinoEsp8266Device {
             },
             {
                 text: 'GPIO16',
-                value: Pins.GPIO15
+                value: Pins.GPIO16
             }
         ];
     }
