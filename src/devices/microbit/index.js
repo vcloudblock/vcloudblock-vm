@@ -352,35 +352,67 @@ class OpenBlockMicrobitDevice {
     get GESTRUES_MENU () {
         return [
             {
-                text: 'shaken',
+                text: formatMessage({
+                    id: 'microbit.gestruesMenu.shaken',
+                    default: 'shaken',
+                    description: 'label for shaken gestrue'
+                }),
                 value: Gestrue.Shake
             },
             {
-                text: 'tilted upward',
+                text: formatMessage({
+                    id: 'microbit.gestruesMenu.tiltedUpward',
+                    default: 'tilted upward',
+                    description: 'label for tilted upward gestrue'
+                }),
                 value: Gestrue.Up
             },
             {
-                text: 'tilted downward',
+                text: formatMessage({
+                    id: 'microbit.gestruesMenu.tiltedDownward',
+                    default: 'tilted downward',
+                    description: 'label for tilted downward gestrue'
+                }),
                 value: Gestrue.Down
             },
             {
-                text: 'tilted leftward',
+                text: formatMessage({
+                    id: 'microbit.gestruesMenu.tiltedLeftward',
+                    default: 'tilted leftward',
+                    description: 'label for tilted leftward gestrue'
+                }),
                 value: Gestrue.Left
             },
             {
-                text: 'tilted rightward',
+                text: formatMessage({
+                    id: 'microbit.gestruesMenu.tiltedRightward',
+                    default: 'tilted rightward',
+                    description: 'label for tilted rightward gestrue'
+                }),
                 value: Gestrue.Right
             },
             {
-                text: 'face up',
+                text: formatMessage({
+                    id: 'microbit.gestruesMenu.faceUp',
+                    default: 'face up',
+                    description: 'label for face up gestrue'
+                }),
                 value: Gestrue.Faceup
             },
             {
-                text: 'face down',
+                text: formatMessage({
+                    id: 'microbit.gestruesMenu.faceDown',
+                    default: 'face down',
+                    description: 'label for face down gestrue'
+                }),
                 value: Gestrue.Facedown
             },
             {
-                text: 'freefall',
+                text: formatMessage({
+                    id: 'microbit.gestruesMenu.freefall',
+                    default: 'freefall',
+                    description: 'label for freefall gestrue'
+                }),
                 value: Gestrue.Freefall
             },
             {
@@ -401,15 +433,27 @@ class OpenBlockMicrobitDevice {
     get AXIS_MENU () {
         return [
             {
-                text: 'x-axis',
+                text: formatMessage({
+                    id: 'microbit.axisMenu.xAxis',
+                    default: 'x-axis',
+                    description: 'label for x axis'
+                }),
                 value: Axis.X
             },
             {
-                text: 'y-axis',
+                text: formatMessage({
+                    id: 'microbit.axisMenu.yAxis',
+                    default: 'y-axis',
+                    description: 'label for y axis'
+                }),
                 value: Axis.Y
             },
             {
-                text: 'z-axis',
+                text: formatMessage({
+                    id: 'microbit.axisMenu.zAxis',
+                    default: 'z-axis',
+                    description: 'label for z axis'
+                }),
                 value: Axis.Z
             }
         ];
@@ -494,7 +538,7 @@ class OpenBlockMicrobitDevice {
             {
                 text: formatMessage({
                     id: 'microbit.levelMenu.high',
-                    default: 'High',
+                    default: 'high',
                     description: 'label for high level'
                 }),
                 value: Level.High
@@ -502,7 +546,7 @@ class OpenBlockMicrobitDevice {
             {
                 text: formatMessage({
                     id: 'microbit.levelMenu.low',
-                    default: 'Low',
+                    default: 'low',
                     description: 'label for low level'
                 }),
                 value: Level.Low
@@ -787,7 +831,7 @@ class OpenBlockMicrobitDevice {
                     arguments: {
                         TEXT: {
                             type: ArgumentType.STRING,
-                            defaultValue: 'hello'
+                            defaultValue: 'Hello OpenBlock'
                         }
                     }
                 },
@@ -802,7 +846,7 @@ class OpenBlockMicrobitDevice {
                     arguments: {
                         TEXT: {
                             type: ArgumentType.STRING,
-                            defaultValue: 'hello'
+                            defaultValue: 'Hello OpenBlock'
                         }
                     }
                 },
@@ -1064,7 +1108,7 @@ class OpenBlockMicrobitDevice {
                     arguments: {
                         TEXT: {
                             type: ArgumentType.STRING,
-                            defaultValue: 'hello'
+                            defaultValue: 'Hello OpenBlock'
                         }
                     }
                 },
@@ -1124,7 +1168,7 @@ class OpenBlockMicrobitDevice {
                     arguments: {
                         TEXT: {
                             type: ArgumentType.STRING,
-                            defaultValue: 'hello'
+                            defaultValue: 'Hello OpenBlock'
                         }
                     }
                 }

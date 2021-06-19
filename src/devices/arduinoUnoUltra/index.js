@@ -649,7 +649,7 @@ class OpenBlockArduinoUnoUltraDevice {
             {
                 text: formatMessage({
                     id: 'arduinoUno.modeMenu.input',
-                    default: 'Input',
+                    default: 'input',
                     description: 'label for input pin mode'
                 }),
                 value: Mode.Input
@@ -657,7 +657,7 @@ class OpenBlockArduinoUnoUltraDevice {
             {
                 text: formatMessage({
                     id: 'arduinoUno.modeMenu.output',
-                    default: 'Output',
+                    default: 'output',
                     description: 'label for output pin mode'
                 }),
                 value: Mode.Output
@@ -665,7 +665,7 @@ class OpenBlockArduinoUnoUltraDevice {
             {
                 text: formatMessage({
                     id: 'arduinoUno.modeMenu.inputPullup',
-                    default: 'Input-pullup',
+                    default: 'input-pullup',
                     description: 'label for input-pullup pin mode'
                 }),
                 value: Mode.InputPullup
@@ -776,7 +776,7 @@ class OpenBlockArduinoUnoUltraDevice {
             {
                 text: formatMessage({
                     id: 'arduinoUno.levelMenu.high',
-                    default: 'High',
+                    default: 'high',
                     description: 'label for high level'
                 }),
                 value: Level.High
@@ -784,7 +784,7 @@ class OpenBlockArduinoUnoUltraDevice {
             {
                 text: formatMessage({
                     id: 'arduinoUno.levelMenu.low',
-                    default: 'Low',
+                    default: 'low',
                     description: 'label for low level'
                 }),
                 value: Level.Low
@@ -905,7 +905,7 @@ class OpenBlockArduinoUnoUltraDevice {
             {
                 text: formatMessage({
                     id: 'arduinoUno.eolMenu.warp',
-                    default: 'Warp',
+                    default: 'warp',
                     description: 'label for warp print'
                 }),
                 value: Eol.Warp
@@ -913,7 +913,7 @@ class OpenBlockArduinoUnoUltraDevice {
             {
                 text: formatMessage({
                     id: 'arduinoUno.eolMenu.noWarp',
-                    default: 'No warp',
+                    default: 'no-warp',
                     description: 'label for no warp print'
                 }),
                 value: Eol.NoWarp
@@ -1211,7 +1211,7 @@ class OpenBlockArduinoUnoUltraDevice {
                         arguments: {
                             VALUE: {
                                 type: ArgumentType.STRING,
-                                defaultValue: 'hello'
+                                defaultValue: 'Hello OpenBlock'
                             },
                             EOL: {
                                 type: ArgumentType.STRING,

@@ -852,7 +852,7 @@ class OpenBlockArduinoEsp32Device {
             {
                 text: formatMessage({
                     id: 'arduinoEsp32.modeMenu.input',
-                    default: 'Input',
+                    default: 'input',
                     description: 'label for input pin mode'
                 }),
                 value: Mode.Input
@@ -860,7 +860,7 @@ class OpenBlockArduinoEsp32Device {
             {
                 text: formatMessage({
                     id: 'arduinoEsp32.modeMenu.output',
-                    default: 'Output',
+                    default: 'output',
                     description: 'label for output pin mode'
                 }),
                 value: Mode.Output
@@ -868,7 +868,7 @@ class OpenBlockArduinoEsp32Device {
             {
                 text: formatMessage({
                     id: 'arduinoEsp32.modeMenu.inputPullup',
-                    default: 'Input-pullup',
+                    default: 'input-pullup',
                     description: 'label for input-pullup pin mode'
                 }),
                 value: Mode.InputPullup
@@ -950,7 +950,7 @@ class OpenBlockArduinoEsp32Device {
             {
                 text: formatMessage({
                     id: 'arduinoEsp32.levelMenu.high',
-                    default: 'High',
+                    default: 'high',
                     description: 'label for high level'
                 }),
                 value: Level.High
@@ -958,7 +958,7 @@ class OpenBlockArduinoEsp32Device {
             {
                 text: formatMessage({
                     id: 'arduinoEsp32.levelMenu.low',
-                    default: 'Low',
+                    default: 'low',
                     description: 'label for low level'
                 }),
                 value: Level.Low
@@ -1189,7 +1189,7 @@ class OpenBlockArduinoEsp32Device {
             {
                 text: formatMessage({
                     id: 'arduinoEsp32.eolMenu.warp',
-                    default: 'Warp',
+                    default: 'warp',
                     description: 'label for warp print'
                 }),
                 value: Eol.Warp
@@ -1197,7 +1197,7 @@ class OpenBlockArduinoEsp32Device {
             {
                 text: formatMessage({
                     id: 'arduinoEsp32.eolMenu.noWarp',
-                    default: 'No warp',
+                    default: 'no-warp',
                     description: 'label for no warp print'
                 }),
                 value: Eol.NoWarp
@@ -1309,7 +1309,6 @@ class OpenBlockArduinoEsp32Device {
                         }
                     },
                     {
-
                         opcode: 'esp32SetPwmOutput',
                         text: formatMessage({
                             id: 'esp32Arduino.pins.esp32SetPwmOutput',
@@ -1555,7 +1554,7 @@ class OpenBlockArduinoEsp32Device {
                             },
                             VALUE: {
                                 type: ArgumentType.STRING,
-                                defaultValue: 'hello'
+                                defaultValue: 'Hello OpenBlock'
                             },
                             EOL: {
                                 type: ArgumentType.STRING,

@@ -906,7 +906,7 @@ class OpenBlockArduinoMega2560Device {
             {
                 text: formatMessage({
                     id: 'arduinoMega2560.modeMenu.input',
-                    default: 'Input',
+                    default: 'input',
                     description: 'label for input pin mode'
                 }),
                 value: Mode.Input
@@ -914,7 +914,7 @@ class OpenBlockArduinoMega2560Device {
             {
                 text: formatMessage({
                     id: 'arduinoMega2560.modeMenu.output',
-                    default: 'Output',
+                    default: 'output',
                     description: 'label for output pin mode'
                 }),
                 value: Mode.Output
@@ -922,7 +922,7 @@ class OpenBlockArduinoMega2560Device {
             {
                 text: formatMessage({
                     id: 'arduinoMega2560.modeMenu.inputPullup',
-                    default: 'Input-pullup',
+                    default: 'input-pullup',
                     description: 'label for input-pullup pin mode'
                 }),
                 value: Mode.InputPullup
@@ -1225,7 +1225,7 @@ class OpenBlockArduinoMega2560Device {
             {
                 text: formatMessage({
                     id: 'arduinoMega2560.levelMenu.high',
-                    default: 'High',
+                    default: 'high',
                     description: 'label for high level'
                 }),
                 value: Level.High
@@ -1233,7 +1233,7 @@ class OpenBlockArduinoMega2560Device {
             {
                 text: formatMessage({
                     id: 'arduinoMega2560.levelMenu.low',
-                    default: 'Low',
+                    default: 'low',
                     description: 'label for low level'
                 }),
                 value: Level.Low
@@ -1427,7 +1427,7 @@ class OpenBlockArduinoMega2560Device {
             {
                 text: formatMessage({
                     id: 'arduinoUno.eolMenu.warp',
-                    default: 'Warp',
+                    default: 'warp',
                     description: 'label for warp print'
                 }),
                 value: Eol.Warp
@@ -1435,7 +1435,7 @@ class OpenBlockArduinoMega2560Device {
             {
                 text: formatMessage({
                     id: 'arduinoUno.eolMenu.noWarp',
-                    default: 'No warp',
+                    default: 'no-warp',
                     description: 'label for no warp print'
                 }),
                 value: Eol.NoWarp
@@ -1743,7 +1743,7 @@ class OpenBlockArduinoMega2560Device {
                             },
                             VALUE: {
                                 type: ArgumentType.STRING,
-                                defaultValue: 'hello'
+                                defaultValue: 'Hello OpenBlock'
                             },
                             EOL: {
                                 type: ArgumentType.STRING,
