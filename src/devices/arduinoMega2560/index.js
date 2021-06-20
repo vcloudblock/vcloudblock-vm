@@ -1562,8 +1562,8 @@ class OpenBlockArduinoMega2560Device {
                                 defaultValue: Pins.D3
                             },
                             OUT: {
-                                type: ArgumentType.NUMBER,
-                                defaultValue: '0'
+                                type: ArgumentType.UINT8_NUMBER,
+                                defaultValue: '255'
                             }
                         }
                     },
@@ -1618,7 +1618,7 @@ class OpenBlockArduinoMega2560Device {
                             },
                             OUT: {
                                 type: ArgumentType.ANGLE,
-                                defaultValue: '0'
+                                defaultValue: '90'
                             }
                         }
                     },

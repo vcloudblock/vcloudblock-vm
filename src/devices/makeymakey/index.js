@@ -968,8 +968,8 @@ class OpenBlockMakeyMakeyDevice {
                                 defaultValue: Pins.D3
                             },
                             OUT: {
-                                type: ArgumentType.NUMBER,
-                                defaultValue: '0'
+                                type: ArgumentType.UINT8_NUMBER,
+                                defaultValue: '255'
                             }
                         }
                     },

@@ -39,6 +39,16 @@ const ArgumentType = {
     NOTE: 'note',
 
     /**
+     * Numeric value with slider field. from 0 to 255
+     */
+    UINT8_NUMBER: 'uint8_number',
+
+    /**
+     * Numeric value with slider field. from 0 to 1024
+     */
+    UINT10_NUMBER: 'uint10_number',
+
+    /**
      * Inline image on block (as part of the label)
      */
     IMAGE: 'image'

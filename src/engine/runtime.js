@@ -97,6 +97,18 @@ const ArgumentTypeMap = (() => {
             fieldName: 'NOTE'
         }
     };
+    map[ArgumentType.UINT8_NUMBER] = {
+        shadow: {
+            type: 'math_uint8_number',
+            fieldName: 'NUM'
+        }
+    };
+    map[ArgumentType.UINT10_NUMBER] = {
+        shadow: {
+            type: 'math_uint10_number',
+            fieldName: 'NUM'
+        }
+    };
     map[ArgumentType.IMAGE] = {
         // Inline images are weird because they're not actually "arguments".
         // They are more analagous to the label on a block.

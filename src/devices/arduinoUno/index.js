@@ -1030,8 +1030,8 @@ class OpenBlockArduinoUnoDevice {
                                 defaultValue: Pins.D3
                             },
                             OUT: {
-                                type: ArgumentType.NUMBER,
-                                defaultValue: '0'
+                                type: ArgumentType.UINT8_NUMBER,
+                                defaultValue: '255'
                             }
                         }
                     },
@@ -1086,7 +1086,7 @@ class OpenBlockArduinoUnoDevice {
                             },
                             OUT: {
                                 type: ArgumentType.ANGLE,
-                                defaultValue: '0'
+                                defaultValue: '90'
                             }
                         }
                     },

@@ -1052,8 +1052,8 @@ class OpenBlockArduinoEsp8266Device {
                                 defaultValue: Pins.GPIO0
                             },
                             OUT: {
-                                type: ArgumentType.NUMBER,
-                                defaultValue: '0'
+                                type: ArgumentType.UINT8_NUMBER,
+                                defaultValue: '255'
                             }
                         }
                     },

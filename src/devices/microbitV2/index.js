@@ -680,7 +680,7 @@ class OpenBlockMicrobitV2Device {
                             defaultValue: Pins.P0
                         },
                         OUT: {
-                            type: ArgumentType.NUMBER,
+                            type: ArgumentType.UINT10_NUMBER,
                             defaultValue: '1023'
                         }
                     }
@@ -735,29 +735,6 @@ class OpenBlockMicrobitV2Device {
                         }
                     }
                 }
-                // '---',
-                // {
-
-                //     opcode: 'setServoOutput',
-                //     text: formatMessage({
-                //         id: 'microbit.pins.setServoOutput',
-                //         default: 'set servo pin [PIN] out [OUT]',
-                //         description: 'microbit set servo pin out'
-                //     }),
-                //     blockType: BlockType.COMMAND,
-                //     arguments: {
-                //         PIN: {
-                //             type: ArgumentType.STRING,
-                //             menu: 'pins',
-                //             defaultValue: Pins.P0
-                //         },
-                //         OUT: {
-                //             type: ArgumentType.ANGLE,
-                //             defaultValue: '0'
-                //         }
-                //     }
-                // }
-
             ],
             menus: {
                 pins: {
