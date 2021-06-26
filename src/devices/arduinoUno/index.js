@@ -4,7 +4,7 @@ const ArgumentType = require('../../extension-support/argument-type');
 const BlockType = require('../../extension-support/block-type');
 const ProgramModeType = require('../../extension-support/program-mode-type');
 
-const ArduinoPeripheral = require('../arduino/arduino-peripheral');
+const ArduinoPeripheral = require('../arduinoCommen/arduino-peripheral');
 
 /**
  * The list of USB device filters.
@@ -110,9 +110,10 @@ class ArduinoUno extends ArduinoPeripheral{
      * Construct a Arduino communication object.
      * @param {Runtime} runtime - the OpenBlock runtime
      * @param {string} deviceId - the id of the extension
+     * @param {string} originalDeviceId - the original id of the peripheral, like xxx_arduinoUno
      */
-    constructor (runtime, deviceId) {
-        super(runtime, deviceId, PNPID_LIST, SERIAL_CONFIG, DIVECE_OPT);
+    constructor (runtime, deviceId, originalDeviceId) {
+        super(runtime, deviceId, originalDeviceId, PNPID_LIST, SERIAL_CONFIG, DIVECE_OPT);
     }
 }
 
@@ -513,8 +514,9 @@ class OpenBlockArduinoUnoDevice {
     /**
      * Construct a set of Arduino blocks.
      * @param {Runtime} runtime - the OpenBlock runtime.
+     * @param {string} originalDeviceId - the original id of the peripheral, like xxx_arduinoUno
      */
-    constructor (runtime) {
+    constructor (runtime, originalDeviceId) {
         /**
          * The OpenBlock runtime.
          * @type {Runtime}
@@ -522,7 +524,7 @@ class OpenBlockArduinoUnoDevice {
         this.runtime = runtime;
 
         // Create a new Arduino uno peripheral instance
-        this._peripheral = new ArduinoUno(this.runtime, OpenBlockArduinoUnoDevice.DEVICE_ID);
+        this._peripheral = new ArduinoUno(this.runtime, OpenBlockArduinoUnoDevice.DEVICE_ID, originalDeviceId);
     }
 
     /**

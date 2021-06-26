@@ -261,7 +261,7 @@ class ExtensionManager {
             this.runtime.setPnpIdList(pnpidList);
             this.runtime.clearMonitor();
             const device = builtinDevices[realDeviceId]();
-            const deviceInstance = new device(this.runtime);
+            const deviceInstance = new device(this.runtime, deviceId);
             const serviceName = this._registerInternalDevice(deviceInstance);
             this._loadedDevice.clear();
 

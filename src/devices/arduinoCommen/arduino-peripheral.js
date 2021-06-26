@@ -4,7 +4,7 @@ const Buffer = require('buffer').Buffer;
 const Serialport = require('../../io/serialport');
 const Base64Util = require('../../util/base64-util');
 
-const Firmata = require('../firmata/firmata');
+const Firmata = require('../../lib/firmata/firmata');
 
 /**
  * A string to report connect firmata timeout.
@@ -47,11 +47,12 @@ class ArduinoPeripheral{
      * Construct a Arduino communication object.
      * @param {Runtime} runtime - the OpenBlock runtime
      * @param {string} deviceId - the id of the peripheral
+     * @param {string} originalDeviceId - the original id of the peripheral, like xxx_arduinoUno
      * @param {object} pnpidList - the pnp id of the peripheral
      * @param {object} serialConfig - the serial config of the peripheral
      * @param {object} diveceOpt - the device optione of the peripheral
      */
-    constructor (runtime, deviceId, pnpidList, serialConfig, diveceOpt) {
+    constructor (runtime, deviceId, originalDeviceId, pnpidList, serialConfig, diveceOpt) {
         /**
          * The OpenBlock runtime used to trigger the green flag button.
          * @type {Runtime}
@@ -76,6 +77,8 @@ class ArduinoPeripheral{
          * The id of the peripheral this peripheral belongs to.
          */
         this._deviceId = deviceId;
+
+        this._originalDeviceId = originalDeviceId;
 
         /**
         * Pending data list. If busy is set when send, the data will push into this array to
@@ -146,7 +149,7 @@ class ArduinoPeripheral{
         if (this._serialport) {
             this._serialport.disconnect();
         }
-        this._serialport = new Serialport(this._runtime, this._deviceId, {
+        this._serialport = new Serialport(this._runtime, this._originalDeviceId, {
             filters: {
                 pnpid: listAll ? ['*'] : (pnpidList ? pnpidList : this.pnpidList)
             }
