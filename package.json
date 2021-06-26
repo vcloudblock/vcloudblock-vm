@@ -16,7 +16,7 @@
     "coverage": "tap ./test/{unit,integration}/*.js --coverage --coverage-report=lcov",
     "deploy": "touch playground/.nojekyll",
     "docs": "jsdoc -c .jsdoc.json",
-    "i18n:src": "mkdirp translations/core && format-message extract --out-file translations/core/en.json src/extensions/**/index.js src/devices/**/index.js",
+    "i18n:src": "mkdirp translations/core && format-message extract --out-file translations/core/en.json src/extensions/**/**.js src/devices/**/**.js",
     "i18n:push": "tx-push-src openblock-editor extensions translations/core/en.json",
     "lint": "eslint . && format-message lint src/**/*.js",
     "prepublish": "in-publish && npm run build || not-in-publish",
