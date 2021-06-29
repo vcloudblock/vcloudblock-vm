@@ -666,7 +666,7 @@ class Blocks {
 
             // Variable blocks may be sprite specific depending on the owner of the variable
             let isSpriteLocalVariable = false;
-            if (block.opcode === 'data_variable') {
+            if (block.opcode === 'data_variable' && this.runtime.getTargetForStage()) {
                 isSpriteLocalVariable = !(this.runtime.getTargetForStage().variables[block.fields.VARIABLE.id]);
             } else if (block.opcode === 'data_listcontents') {
                 isSpriteLocalVariable = !(this.runtime.getTargetForStage().variables[block.fields.LIST.id]);
