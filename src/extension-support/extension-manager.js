@@ -212,6 +212,8 @@ class ExtensionManager {
 
             this.pendingExtensions.push({extensionURL, resolve, reject});
             dispatch.addWorker(new ExtensionWorker());
+            // TODO dispatch.addWorker(new ExtensionWorker(this.runtime)); ?
+            // TODO or Loadjs?
         });
     }
 

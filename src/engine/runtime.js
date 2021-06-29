@@ -2658,6 +2658,15 @@ class Runtime extends EventEmitter {
         if (sta && this.getPeripheralIsConnected(this._device)) {
             this.setPeripheralBaudrate(this._device, this._realtimeBaudrate);
         }
+
+        // todo 此处扫描更新blocks属性?
+        // this.flyoutBlocks;
+
+        // getblock 获取全部 要删除的方块属性 opcode: data_showvariable
+        // deleteBlock 删除他们
+
+        // else creat 恢复全部删除的方块
+
         this.emit(Runtime.PROGRAM_MODE_UPDATE, {isRealtimeMode: this._isRealtimeMode});
     }
 
