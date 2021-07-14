@@ -724,7 +724,7 @@ class Runtime extends EventEmitter {
     static get PERIPHERAL_LIST_UPDATE () {
         return 'PERIPHERAL_LIST_UPDATE';
     }
-    
+
     /**
      * Event name for when the user picks a bluetooth device to connect to
      * via Companion Device Manager (CDM)
@@ -2662,11 +2662,13 @@ class Runtime extends EventEmitter {
      * @param {string} sta state of current program mode to set.
      */
     setRealtimeMode (sta) {
-        this._isRealtimeMode = sta;
-        if (sta && this.getPeripheralIsConnected(this._device)) {
-            this.setPeripheralBaudrate(this._device, this._realtimeBaudrate);
+        if (this._isRealtimeMode !== sta){
+            this._isRealtimeMode = sta;
+            if (sta && this.getPeripheralIsConnected(this._device)) {
+                this.setPeripheralBaudrate(this._device, this._realtimeBaudrate);
+            }
+            this.emit(Runtime.PROGRAM_MODE_UPDATE, {isRealtimeMode: this._isRealtimeMode});
         }
-        this.emit(Runtime.PROGRAM_MODE_UPDATE, {isRealtimeMode: this._isRealtimeMode});
     }
 
     /**
