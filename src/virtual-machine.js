@@ -629,7 +629,19 @@ class VirtualMachine extends EventEmitter {
         const allPromises = [];
 
         if (device) {
-            allPromises.push(this.extensionManager.loadDeviceURL(device, deviceType, pnpIdList));
+            allPromises.push(
+                new Promise((resolve, reject) => {
+                    this.extensionManager.loadDeviceURL(device, deviceType, pnpIdList)
+                        .then(() => {
+                            if (deviceExtensions) {
+                                this.installDeviceExtensions(deviceExtensions)
+                                    .then(() => resolve())
+                                    .catch(err => reject(err));
+                            }
+                            return resolve();
+                        })
+                        .catch(err => reject(err));
+                }));
         }
 
         if (extensions) {
@@ -649,10 +661,6 @@ class VirtualMachine extends EventEmitter {
                     }
                 });
             }
-        }
-
-        if (deviceExtensions) {
-            allPromises.push(this.installDeviceExtensions(deviceExtensions));
         }
 
         targets = targets.filter(target => !!target);
