@@ -162,7 +162,7 @@ class ArduinoPeripheral{
      * @param {?number} baudrate - the baudrate.
      */
     connect (id, baudrate = null) {
-        const config = this.serialConfig;
+        const config = Object.assign({}, this.serialConfig);
         if (baudrate) {
             config.baudRate = baudrate;
         }
@@ -245,15 +245,20 @@ class ArduinoPeripheral{
      */
     _startHeartbeat () {
         if (this._runtime.getCurrentIsRealtimeMode()) {
+            if (!this._firmata) {
+                this._firmata = new Firmata(this.send.bind(this)); this._startHeartbeat();
+                // Start the heartbeat listener.
+                this._firmata.on('reportversion', this._listenHeartbeat);
+            }
+
             this._stopHeartbeat();
 
             this._firmataIntervelID = window.setInterval(() => {
-                if (this._runtime.getCurrentIsRealtimeMode()) {
                 // Send reportVersion request as heartbeat.
-                    this._firmata.reportVersion(() => { });
-                }
+                this._firmata.reportVersion(() => { });
             }, FrimataHeartbeatInterval);
-            // Start a timer if heartbeat time out means failed to connect firmata.
+
+            // Start a timer if heartbeat timeout means failed to connect firmata.
             this._firmataTimeoutID = window.setTimeout(() => {
                 this._isFirmataConnected = false;
                 this._serialport.handleRealtimeDisconnectError(ConnectFirmataTimeout);
@@ -284,9 +289,7 @@ class ArduinoPeripheral{
     _listenHeartbeat () {
         if (!this._isFirmataConnected) {
             this._isFirmataConnected = true;
-            if (this._runtime.getCurrentIsRealtimeMode()) {
-                this._serialport.handleRealtimeConnectSucess();
-            }
+            this._serialport.handleRealtimeConnectSucess();
         }
         // Reset the timeout timer
         window.clearTimeout(this._firmataTimeoutID);
@@ -313,14 +316,11 @@ class ArduinoPeripheral{
      */
     _onConnect () {
         this._serialport.read(this._onMessage);
-        this._firmata = new Firmata(this.send.bind(this));
 
         this._startHeartbeat();
 
         this._runtime.on(this._runtime.constructor.PROGRAM_MODE_UPDATE, this._handleProgramModeUpdate);
         this._runtime.on(this._runtime.constructor.PERIPHERAL_UPLOAD_SUCCESS, this._startHeartbeat);
-        // Start the heartbeat listener.
-        this._firmata.on('reportversion', this._listenHeartbeat);
     }
 
     /**
