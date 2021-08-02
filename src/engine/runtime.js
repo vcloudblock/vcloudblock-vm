@@ -974,22 +974,30 @@ class Runtime extends EventEmitter {
      */
     clearMonitor () {
         // uncheck all checkbox.
-        this.monitorBlocks.getAllIds().forEach(block => {
-            this.monitorBlocks.changeBlock({
-                id: block,
-                element: 'checkbox',
-                value: false
-            }, this.runtime);
-        });
+        this.monitorBlocks.getAllIds()
+            .filter(blockId => this.monitorBlocks.getBlock(blockId).isMonitored)
+            .forEach(id => {
+                this.monitorBlocks.changeBlock({
+                    id: id,
+                    element: 'checkbox',
+                    value: false
+                }, this.runtime);
+            });
 
         // delet current monitors
         this.targets.forEach(target => {
             if (target.isOriginal) target.deleteMonitors();
         });
         this._monitorState = OrderedMap({});
+        this.monitorBlockInfo = {};
+
+        this._pushMonitors();
 
         // Update gui
-        this.emit(Runtime.MONITORS_UPDATE, this._monitorState);
+        if (!this._prevMonitorState.equals(this._monitorState)) {
+            this.emit(Runtime.MONITORS_UPDATE, this._monitorState);
+            this._prevMonitorState = this._monitorState;
+        }
     }
 
     /**
