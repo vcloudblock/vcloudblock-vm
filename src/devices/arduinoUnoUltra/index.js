@@ -302,6 +302,30 @@ class OpenBlockArduinoUnoUltraDevice {
             {
                 text: '13',
                 value: Pins.D13
+            },
+            {
+                text: 'A0',
+                value: Pins.A0
+            },
+            {
+                text: 'A1',
+                value: Pins.A1
+            },
+            {
+                text: 'A2',
+                value: Pins.A2
+            },
+            {
+                text: 'A3',
+                value: Pins.A3
+            },
+            {
+                text: 'A4',
+                value: Pins.A4
+            },
+            {
+                text: 'A5',
+                value: Pins.A5
             }
         ];
     }

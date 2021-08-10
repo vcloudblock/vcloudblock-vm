@@ -217,47 +217,6 @@ class OpenBlockMakeyMakeyDevice {
         ];
     }
 
-    get DIGITAL_PINS_MENU () {
-        return [
-            {
-                text: 'D0',
-                value: Pins.D0
-            },
-            {
-                text: 'D1',
-                value: Pins.D1
-            },
-            {
-                text: 'D2',
-                value: Pins.D2
-            },
-            {
-                text: 'D3',
-                value: Pins.D3
-            },
-            {
-                text: 'D4',
-                value: Pins.D4
-            },
-            {
-                text: 'D5',
-                value: Pins.D5
-            },
-            {
-                text: 'D14',
-                value: Pins.D14
-            },
-            {
-                text: 'D15',
-                value: Pins.D15
-            },
-            {
-                text: 'D16',
-                value: Pins.D16
-            }
-        ];
-    }
-
     get ANALOG_PINS_MENU () {
         return [
             {
@@ -579,7 +538,7 @@ class OpenBlockMakeyMakeyDevice {
                         arguments: {
                             PIN: {
                                 type: ArgumentType.STRING,
-                                menu: 'digitalPins',
+                                menu: 'pins',
                                 defaultValue: Pins.D0
                             }
                         }
@@ -671,9 +630,6 @@ class OpenBlockMakeyMakeyDevice {
                     },
                     mode: {
                         items: this.MODE_MENU
-                    },
-                    digitalPins: {
-                        items: this.DIGITAL_PINS_MENU
                     },
                     analogPins: {
                         items: this.ANALOG_PINS_MENU
