@@ -353,6 +353,7 @@ class Blocks {
                 newInput: e.newInputName,
                 newCoordinate: e.newCoordinate
             });
+            this.runtime.requestCodeUpdate();
             break;
         case 'toolBoxFinish':
             this.runtime.emitToolboxUploadFinish();
