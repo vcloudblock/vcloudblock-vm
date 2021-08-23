@@ -867,7 +867,8 @@ class Firmata extends Emitter {
 
     analogRead (pin, callback) {
         this.reportAnalogPin(pin, 1);
-        this.addListener(`analog-read-${pin}`, callback);
+        this.removeAllListeners(`analog-read-${pin}`);
+        this.once(`analog-read-${pin}`, callback);
     }
 
     /**
@@ -1077,7 +1078,8 @@ class Firmata extends Emitter {
 
     digitalRead (pin, callback) {
         this.reportDigitalPin(pin, 1);
-        this.addListener(`digital-read-${pin}`, callback);
+        this.removeAllListeners(`digital-read-${pin}`);
+        this.once(`digital-read-${pin}`, callback);
     }
 
     /**
