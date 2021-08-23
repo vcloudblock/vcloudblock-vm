@@ -246,7 +246,7 @@ class ArduinoPeripheral{
     _startHeartbeat () {
         if (this._runtime.getCurrentIsRealtimeMode()) {
             if (!this._firmata) {
-                this._firmata = new Firmata(this.send.bind(this)); this._startHeartbeat();
+                this._firmata = new Firmata(this.send.bind(this));
                 // Start the heartbeat listener.
                 this._firmata.on('reportversion', this._listenHeartbeat);
             }
