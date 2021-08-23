@@ -27,6 +27,11 @@ const FrimataHeartbeatInterval = 2000;
  */
 const FrimataHeartbeatTimeout = 5000;
 
+/**
+ * A time interval to wait deivce report data.
+ */
+const FrimataReadTimeout = 2000;
+
 const Level = {
     High: 'HIGH',
     Low: 'LOW'
@@ -245,24 +250,38 @@ class ArduinoPeripheral{
      */
     _startHeartbeat () {
         if (this._runtime.getCurrentIsRealtimeMode()) {
+            // eslint-disable-next-line no-negated-condition
             if (!this._firmata) {
                 this._firmata = new Firmata(this.send.bind(this));
-                // Start the heartbeat listener.
-                this._firmata.on('reportversion', this._listenHeartbeat);
+                this._firmata.on('ready', () => {
+                    // Start the heartbeat listener.
+                    this._firmata.on('reportversion', this._listenHeartbeat);
+
+                    this._firmataIntervelID = window.setInterval(() => {
+                        // Send reportVersion request as heartbeat.
+                        this._firmata.reportVersion(() => { });
+                    }, FrimataHeartbeatInterval);
+
+                    // Start a timer if heartbeat timeout means failed to connect firmata.
+                    this._firmataTimeoutID = window.setTimeout(() => {
+                        this._isFirmataConnected = false;
+                        this._serialport.handleRealtimeDisconnectError(ConnectFirmataTimeout);
+                    }, FrimataHeartbeatTimeout);
+                });
+            } else {
+                this._stopHeartbeat();
+
+                this._firmataIntervelID = window.setInterval(() => {
+                    // Send reportVersion request as heartbeat.
+                    this._firmata.reportVersion(() => { });
+                }, FrimataHeartbeatInterval);
+
+                // Start a timer if heartbeat timeout means failed to connect firmata.
+                this._firmataTimeoutID = window.setTimeout(() => {
+                    this._isFirmataConnected = false;
+                    this._serialport.handleRealtimeDisconnectError(ConnectFirmataTimeout);
+                }, FrimataHeartbeatTimeout);
             }
-
-            this._stopHeartbeat();
-
-            this._firmataIntervelID = window.setInterval(() => {
-                // Send reportVersion request as heartbeat.
-                this._firmata.reportVersion(() => { });
-            }, FrimataHeartbeatInterval);
-
-            // Start a timer if heartbeat timeout means failed to connect firmata.
-            this._firmataTimeoutID = window.setTimeout(() => {
-                this._isFirmataConnected = false;
-                this._serialport.handleRealtimeDisconnectError(ConnectFirmataTimeout);
-            }, FrimataHeartbeatTimeout);
         }
     }
 
@@ -430,6 +449,9 @@ class ArduinoPeripheral{
                 this._firmata.digitalRead(pin, value => {
                     resolve(value);
                 });
+                window.setTimeout(() => {
+                    resolve();
+                }, FrimataReadTimeout);
             });
         }
     }
@@ -448,6 +470,9 @@ class ArduinoPeripheral{
                 this._firmata.analogRead(pin, value => {
                     resolve(value);
                 });
+                window.setTimeout(() => {
+                    resolve();
+                }, FrimataReadTimeout);
             });
         }
     }

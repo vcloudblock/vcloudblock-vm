@@ -562,11 +562,15 @@ class Firmata extends Emitter {
     constructor (transportWrite, options) {
         super();
 
+        if (typeof options === 'function' || typeof options === 'undefined') {
+            options = {};
+        }
+
         this.transportWrite = transportWrite;
 
         const board = this;
         const defaults = {
-            reportVersionTimeout: 2000,
+            reportVersionTimeout: 5000,
             samplingInterval: 19
         };
 
@@ -698,8 +702,8 @@ class Firmata extends Emitter {
             this.once('queryfirmware', () => {
                 // Only preemptively set the sampling interval if `samplingInterval`
                 // property was _explicitly_ set as a constructor option.
-                if (settings.samplingInterval !== null) {
-                    this.setSamplingInterval(settings.samplingInterval);
+                if (typeof options.samplingInterval !== 'undefined') {
+                    this.setSamplingInterval(options.samplingInterval);
                 }
                 if (settings.skipCapabilities) {
                     this.analogPins = settings.analogPins || this.analogPins;
