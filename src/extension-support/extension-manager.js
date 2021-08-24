@@ -1,5 +1,6 @@
 const fetch = require('node-fetch');
 const loadjs = require('loadjs');
+const formatMessage = require('format-message');
 
 const dispatch = require('../dispatch/central-dispatch');
 const log = require('../util/log');
@@ -7,11 +8,8 @@ const maybeFormatMessage = require('../util/maybe-format-message');
 
 const BlockType = require('./block-type');
 
-// Local device server address
-const localDevicesUrl = 'http://127.0.0.1:20122/';
-
-// Local device extension server address
-const localDeviceExtensionsUrl = 'http://127.0.0.1:20120/';
+// Local resources server address
+const localResourcesServerUrl = 'http://127.0.0.1:20120/';
 
 // These extensions are currently built into the VM repository but should not be loaded at startup.
 // TODO: move these out into a separate repository?
@@ -219,13 +217,13 @@ class ExtensionManager {
      */
     getDeviceList () {
         return new Promise(resolve => {
-            fetch(localDevicesUrl)
+            fetch(`${localResourcesServerUrl}devices/${formatMessage.setup().locale}.json`)
                 .then(response => response.json())
                 .then(devices => {
                     devices = devices.map(dev => {
-                        dev.iconURL = localDevicesUrl + dev.iconURL;
-                        dev.connectionIconURL = localDevicesUrl + dev.connectionIconURL;
-                        dev.connectionSmallIconURL = localDevicesUrl + dev.connectionSmallIconURL;
+                        dev.iconURL = localResourcesServerUrl + dev.iconURL;
+                        dev.connectionIconURL = localResourcesServerUrl + dev.connectionIconURL;
+                        dev.connectionSmallIconURL = localResourcesServerUrl + dev.connectionSmallIconURL;
                         return dev;
                     });
                     return resolve(devices);
@@ -302,11 +300,11 @@ class ExtensionManager {
      */
     getDeviceExtensionsList () {
         return new Promise(resolve => {
-            fetch(localDeviceExtensionsUrl)
+            fetch(`${localResourcesServerUrl}extensions/${formatMessage.setup().locale}.json`)
                 .then(response => response.json())
                 .then(extensions => {
                     extensions = extensions.map(extension => {
-                        extension.iconURL = localDeviceExtensionsUrl + extension.iconURL;
+                        extension.iconURL = localResourcesServerUrl + extension.iconURL;
                         if (this.isDeviceExtensionLoaded(extension.extensionId)) {
                             extension.isLoaded = true;
                         }
@@ -343,7 +341,7 @@ class ExtensionManager {
                     `can not find device extension: ${deviceExtensionId}`);
             }
 
-            const url = localDeviceExtensionsUrl;
+            const url = localResourcesServerUrl;
             const toolboxUrl = url + deviceExtension.toolbox;
             const blockUrl = url + deviceExtension.blocks;
             const generatorUrl = url + deviceExtension.generator;
