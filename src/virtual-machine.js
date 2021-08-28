@@ -626,6 +626,8 @@ class VirtualMachine extends EventEmitter {
 
         if (device) {
             allPromises.push(this.extensionManager.loadDeviceURL(device, deviceType, pnpIdList));
+        } else {
+            allPromises.push(this.extensionManager.loadDeviceURL('unselectDevice'));
         }
 
         if (extensions) {
