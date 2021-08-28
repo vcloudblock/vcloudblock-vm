@@ -276,8 +276,6 @@ class ExtensionManager {
             this.runtime.clearMonitor();
             this._loadedDevice.clear();
 
-            this._loadedDevice.set(deviceId, null);
-
             // Clear current extentions.
             this.runtime.clearCurrentExtension();
             this._loadedExtensions.clear();
