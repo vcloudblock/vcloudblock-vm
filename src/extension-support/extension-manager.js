@@ -243,6 +243,11 @@ class ExtensionManager {
      * @returns {Promise} resolved once the device is loaded and initialized or rejected on failure
      */
     loadDeviceURL (deviceId, deviceType, pnpidList) {
+        // if no deviceid return
+        if (deviceId === null) {
+            return Promise.resolve();
+        }
+
         const realDeviceId = this.runtime.analysisRealDeviceId(deviceId);
 
         // Try to disconnect the old device before change device.
@@ -273,26 +278,32 @@ class ExtensionManager {
 
             return Promise.resolve();
         } else if (realDeviceId === 'unselectDevice') { // unload the device return to pure realtime programming mode.
-            this.runtime.setDevice(null);
-            this.runtime.setDeviceType(null);
-            this.runtime.setPnpIdList([]);
-            this.runtime.clearMonitor();
-            this._loadedDevice.clear();
-
-            // Clear current extentions.
-            this.runtime.clearCurrentExtension();
-            this._loadedExtensions.clear();
-            this.unloadAllDeviceExtension();
-
-            this.runtime.emit(this.runtime.constructor.DEVICE_ADDED, {
-                device: null,
-                categoryInfoArray: []
-            });
-
+            this.clearDevice();
             return Promise.resolve();
         }
 
         return Promise.reject(`Error while load device can not find device: ${deviceId}`);
+    }
+
+    /**
+     * Clear curent device
+     */
+    clearDevice () {
+        this.runtime.setDevice(null);
+        this.runtime.setDeviceType(null);
+        this.runtime.setPnpIdList([]);
+        this.runtime.clearMonitor();
+        this._loadedDevice.clear();
+
+        // Clear current extentions.
+        this.runtime.clearCurrentExtension();
+        this._loadedExtensions.clear();
+        this.unloadAllDeviceExtension();
+
+        this.runtime.emit(this.runtime.constructor.DEVICE_ADDED, {
+            device: null,
+            categoryInfoArray: []
+        });
     }
 
     /**
@@ -353,9 +364,10 @@ class ExtensionManager {
                     const toolboxXML = addToolbox(); // eslint-disable-line no-undef
                     this.runtime.addDeviceExtension(deviceExtensionId, toolboxXML, deviceExtension.library);
 
-                    const addExts = {addBlocks, addGenerator, addMsg};// eslint-disable-line no-undef
+                    // eslint-disable-next-line no-undef
+                    const deviceExtensionsRegister = {addBlocks, addGenerator, addMsg};
 
-                    this.runtime.emit(this.runtime.constructor.DEVICE_EXTENSION_ADDED, addExts);
+                    this.runtime.emit(this.runtime.constructor.DEVICE_EXTENSION_ADDED, deviceExtensionsRegister);
                     return resolve();
                 })
                 .catch(err => reject(`Error while load device extension ` +
