@@ -571,10 +571,15 @@ class VirtualMachine extends EventEmitter {
             return Promise.reject('Unable to verify Scratch Project version.');
         };
         return deserializePromise()
+            // Step1: Install device first.
             .then(({targets}) => this.installDevice(targets, projectJSON.device, projectJSON.deviceType,
                 projectJSON.pnpIdList, projectJSON.programMode, projectJSON.deviceExtensions))
-            .then(targets => this.installTargets(targets, projectJSON.extensions, true)
-            );
+            // Step2: Install target and if there has deivce setting, set the editing target to stage incase there is
+            // device extensions block in sprite workspace, it will cause error.
+            .then(targets => this.installTargets(targets, projectJSON.extensions, true, !!projectJSON.device))
+            // Step3: Install device extension. it can get flyout blocks because the toolbox has been updated in the
+            // previous step. After loaded set the editing target to firset sprite if it has one.
+            .then(targets => this.installDeviceExtensions(targets, projectJSON.deviceExtensions));
     }
 
     /**
@@ -593,10 +598,11 @@ class VirtualMachine extends EventEmitter {
 
     /**
      * Install `deserialize` results: deviceExtensions.
+     * @param {Array.<Target>} targets - the targets to be installed
      * @param {Array.<DeviceExtension>} deviceExtensions - the deivce extensions to be installed
      * @returns {Promise} Promise that resolves after all device extensions has loaded
      */
-    installDeviceExtensions (deviceExtensions) {
+    installDeviceExtensions (targets, deviceExtensions) {
         if (!deviceExtensions) {
             return Promise.resolve();
         }
@@ -604,48 +610,38 @@ class VirtualMachine extends EventEmitter {
         this.runtime._pendingDeviceExtensions = deviceExtensions;
 
         return this.extensionManager.getDeviceExtensionsList()
-            .then(() => this.installDeviceExtensionsSync());
+            .then(() => this.installDeviceExtensionsSync())
+            .then(() => {
+                // After loaded all device extension. set the default target to first sprite.
+                if (targets.length > 1) {
+                    this.editingTarget = targets[1];
+                } else {
+                    this.editingTarget = targets[0];
+                }
+
+                this.emitTargetsUpdate(false /* Don't emit project change */);
+                this.emitWorkspaceUpdate();
+                this.runtime.setEditingTarget(this.editingTarget);
+            });
 
     }
 
-    installDevice (targets, device = null, deviceType = null, pnpIdList = null,
-        programMode = 'realtime', deviceExtensions = null) {
+    /**
+     * Install `deserialize` results: device.
+     * @param {Array.<Target>} targets - the targets to be installed
+     * @param {string} device - the deivce to be installed
+     * @param {string} deviceType - the type of deivce to be installed
+     * @param {Array.<string>} pnpIdList - the pnp id filter list of the device
+     * @param {string} programMode - the program mode
+     * @returns {Promise} Promise that resolves after all device extensions has loaded
+     */
+    installDevice (targets, device = null, deviceType = null, pnpIdList = null, programMode = 'realtime') {
+        targets = targets.filter(target => !!target);
 
         if (device) {
             this.runtime.setRealtimeMode(programMode === 'realtime');
 
             return this.extensionManager.loadDeviceURL(device, deviceType, pnpIdList)
-                .then(() => {
-                    const wholeProject = false;
-                    targets.forEach(target => {
-                        this.runtime.addTarget(target);
-                        (/** @type RenderedTarget */ target).updateAllDrawableProperties();
-                        // Ensure unique sprite name
-                        if (target.isSprite()) this.renameSprite(target.id, target.getName());
-                    });
-                    // Sort the executable targets by layerOrder.
-                    // Remove layerOrder property after use.
-                    this.runtime.executableTargets.sort((a, b) => a.layerOrder - b.layerOrder);
-                    targets.forEach(target => {
-                        delete target.layerOrder;
-                    });
-
-                    // Select the first target for editing, e.g., the first sprite.
-                    if (wholeProject && (targets.length > 1)) {
-                        this.editingTarget = targets[1];
-                    } else {
-                        this.editingTarget = targets[0];
-                    }
-
-                    if (!wholeProject) {
-                        this.editingTarget.fixUpVariableReferences();
-                    }
-                    this.emitTargetsUpdate(false /* Don't emit project change */);
-                    this.emitWorkspaceUpdate();
-                    this.runtime.setEditingTarget(this.editingTarget);
-                    this.runtime.ioDevices.cloud.setStage(this.runtime.getTargetForStage());
-                })
-                .then(() => this.installDeviceExtensions(deviceExtensions))
                 .then(() => targets);
         }
         return targets;
@@ -656,9 +652,10 @@ class VirtualMachine extends EventEmitter {
      * @param {Array.<Target>} targets - the targets to be installed
      * @param {ImportedExtensionsInfo} extensions - metadata about extensions used by these targets
      * @param {boolean} wholeProject - set to true if installing a whole project, as opposed to a single sprite.
+     * @param {boolean} hasDevice - wether the project has device param
      * @returns {Promise} resolved once targets have been installed
      */
-    installTargets (targets, extensions, wholeProject) {
+    installTargets (targets, extensions, wholeProject, hasDevice) {
         const allPromises = [];
 
         if (extensions) {
@@ -680,8 +677,6 @@ class VirtualMachine extends EventEmitter {
             }
         }
 
-        targets = targets.filter(target => !!target);
-
         return Promise.all(allPromises).then(() => {
             targets.forEach(target => {
                 this.runtime.addTarget(target);
@@ -697,7 +692,8 @@ class VirtualMachine extends EventEmitter {
             });
 
             // Select the first target for editing, e.g., the first sprite.
-            if (wholeProject && (targets.length > 1)) {
+            // If has device to be loaded, set stage as the editing target.
+            if (wholeProject && (targets.length > 1) && !hasDevice) {
                 this.editingTarget = targets[1];
             } else {
                 this.editingTarget = targets[0];
@@ -710,6 +706,8 @@ class VirtualMachine extends EventEmitter {
             this.emitWorkspaceUpdate();
             this.runtime.setEditingTarget(this.editingTarget);
             this.runtime.ioDevices.cloud.setStage(this.runtime.getTargetForStage());
+
+            return targets;
         });
     }
 
