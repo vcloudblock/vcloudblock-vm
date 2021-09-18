@@ -579,7 +579,7 @@ class VirtualMachine extends EventEmitter {
             .then(targets => this.installTargets(targets, projectJSON.extensions, true, !!projectJSON.device))
             // Step3: Install device extension. it can get flyout blocks because the toolbox has been updated in the
             // previous step. After loaded set the editing target to firset sprite if it has one.
-            .then(targets => this.installDeviceExtensions(targets, projectJSON.deviceExtensions));
+            .then(targets => this.installDeviceExtensions(projectJSON.deviceExtensions, targets));
     }
 
     /**
@@ -598,11 +598,11 @@ class VirtualMachine extends EventEmitter {
 
     /**
      * Install `deserialize` results: deviceExtensions.
-     * @param {Array.<Target>} targets - the targets to be installed
      * @param {Array.<DeviceExtension>} deviceExtensions - the deivce extensions to be installed
+     * @param {Array.<Target>} targets - the targets to be installed
      * @returns {Promise} Promise that resolves after all device extensions has loaded
      */
-    installDeviceExtensions (targets, deviceExtensions) {
+    installDeviceExtensions (deviceExtensions, targets) {
         if (!deviceExtensions) {
             return Promise.resolve();
         }
@@ -612,16 +612,18 @@ class VirtualMachine extends EventEmitter {
         return this.extensionManager.getDeviceExtensionsList()
             .then(() => this.installDeviceExtensionsSync())
             .then(() => {
-                // After loaded all device extension. set the default target to first sprite.
-                if (targets.length > 1) {
-                    this.editingTarget = targets[1];
-                } else {
-                    this.editingTarget = targets[0];
-                }
+                if (targets) {
+                    // After loaded all device extension. set the default target to first sprite.
+                    if (targets.length > 1) {
+                        this.editingTarget = targets[1];
+                    } else {
+                        this.editingTarget = targets[0];
+                    }
 
-                this.emitTargetsUpdate(false /* Don't emit project change */);
-                this.emitWorkspaceUpdate();
-                this.runtime.setEditingTarget(this.editingTarget);
+                    this.emitTargetsUpdate(false /* Don't emit project change */);
+                    this.emitWorkspaceUpdate();
+                    this.runtime.setEditingTarget(this.editingTarget);
+                }
             });
 
     }
