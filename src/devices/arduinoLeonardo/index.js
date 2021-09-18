@@ -95,7 +95,7 @@ const InterrupMode = {
 };
 
 const DataType = {
-    WholeNumber: 'WHOLE_NUMBER',
+    Integer: 'INTEGER',
     Decimal: 'DECIMAL',
     String: 'STRING'
 };
@@ -435,11 +435,11 @@ class OpenBlockArduinoLeonardoDevice {
         return [
             {
                 text: formatMessage({
-                    id: 'arduinoLeonardo.dataTypeMenu.wholeNumber',
-                    default: 'whole number',
-                    description: 'label for whole number'
+                    id: 'arduinoLeonardo.dataTypeMenu.integer',
+                    default: 'integer',
+                    description: 'label for integer'
                 }),
-                value: DataType.WholeNumber
+                value: DataType.Integer
             },
             {
                 text: formatMessage({
@@ -846,7 +846,7 @@ class OpenBlockArduinoLeonardoDevice {
                             TYPE: {
                                 type: ArgumentType.STRING,
                                 menu: 'dataType',
-                                defaultValue: DataType.WholeNumber
+                                defaultValue: DataType.Integer
                             }
                         },
                         programMode: [ProgramModeType.UPLOAD]
