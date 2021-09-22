@@ -4,7 +4,7 @@ const ArgumentType = require('../../extension-support/argument-type');
 const BlockType = require('../../extension-support/block-type');
 const ProgramModeType = require('../../extension-support/program-mode-type');
 
-const EspPeripheral = require('../arduinoCommen/esp-peripheral');
+const EspPeripheral = require('../arduinoCommon/esp-peripheral');
 
 /**
  * The list of USB device filters.
