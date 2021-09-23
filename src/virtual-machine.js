@@ -597,6 +597,25 @@ class VirtualMachine extends EventEmitter {
     }
 
     /**
+     * Update targets and workspace after installed device extensions
+     * @param {Array.<Target>} targets - the targets to be installed
+     */
+    updateTargetsAndWorkspace (targets) {
+        if (targets) {
+            // After loaded all device extension. set the default target to first sprite.
+            if (targets.length > 1) {
+                this.editingTarget = targets[1];
+            } else {
+                this.editingTarget = targets[0];
+            }
+
+            this.emitTargetsUpdate(false /* Don't emit project change */);
+            this.emitWorkspaceUpdate();
+            this.runtime.setEditingTarget(this.editingTarget);
+        }
+    }
+
+    /**
      * Install `deserialize` results: deviceExtensions.
      * @param {Array.<DeviceExtension>} deviceExtensions - the deivce extensions to be installed
      * @param {Array.<Target>} targets - the targets to be installed
@@ -604,6 +623,7 @@ class VirtualMachine extends EventEmitter {
      */
     installDeviceExtensions (deviceExtensions, targets) {
         if (!deviceExtensions) {
+            this.updateTargetsAndWorkspace(targets);
             return Promise.resolve();
         }
 
@@ -612,20 +632,8 @@ class VirtualMachine extends EventEmitter {
         return this.extensionManager.getDeviceExtensionsList()
             .then(() => this.installDeviceExtensionsSync())
             .then(() => {
-                if (targets) {
-                    // After loaded all device extension. set the default target to first sprite.
-                    if (targets.length > 1) {
-                        this.editingTarget = targets[1];
-                    } else {
-                        this.editingTarget = targets[0];
-                    }
-
-                    this.emitTargetsUpdate(false /* Don't emit project change */);
-                    this.emitWorkspaceUpdate();
-                    this.runtime.setEditingTarget(this.editingTarget);
-                }
+                this.updateTargetsAndWorkspace(targets);
             });
-
     }
 
     /**
