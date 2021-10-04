@@ -1,5 +1,4 @@
 const JSONRPC = require('../util/jsonrpc');
-const Buffer = require('buffer').Buffer;
 
 class Serialport extends JSONRPC {
 
@@ -194,14 +193,8 @@ class Serialport extends JSONRPC {
             this.handleDisconnectError();
             break;
         case 'onMessage':
-            if (this._runtime.getCurrentIsRealtimeMode()){
-                if (this._onMessage) {
-                    this._onMessage(params.message);
-                }
-            } else {
-                const data = Buffer.from(params.message, params.encoding);
-                this._runtime.emit(
-                    this._runtime.constructor.PERIPHERAL_RECIVE_DATA, data);
+            if (this._onMessage) {
+                this._onMessage(params.message);
             }
             break;
         case 'uploadStdout':

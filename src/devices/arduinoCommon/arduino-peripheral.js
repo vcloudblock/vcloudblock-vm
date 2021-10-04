@@ -19,13 +19,19 @@ const ConnectFirmataTimeout = formatMessage({
 /**
  * A time interval to send firmata heartbeat(in milliseconds).
  */
-const FrimataHeartbeatInterval = 2000;
+const FrimataHeartbeatInterval = 1000;
 
 /**
  * A time interval to wait (in milliseconds) before reporting to the serialport socket
  * that heartbeat has stopped coming from the peripheral.
  */
-const FrimataHeartbeatTimeout = 5000;
+const FrimataHeartbeatTimeout = 2200;
+
+/**
+ * A time interval wait (in milliseconds) before reporting to the serialport socket
+ * that firmata still hasn't received the ready event.
+ */
+const FirmataReadyTimeout = 6500;
 
 /**
  * A time interval to wait deivce report data.
@@ -110,6 +116,13 @@ class ArduinoPeripheral{
         this._firmataTimeoutID = null;
 
         /**
+         * Timeout ID for firmata get ready event timeout.
+         * @type {number}
+         * @private
+         */
+        this._firmataReadyTimeoutID = null;
+
+        /**
          * Interval ID for firmata send heartbeat.
          * @type {number}
          * @private
@@ -133,6 +146,15 @@ class ArduinoPeripheral{
      * @param {string} code - the code want to upload.
      */
     upload (code) {
+        // Delete curent firmata. Otherwise, after uploading a new program in upload mode,
+        // when returning to real time mode, since the old fimata service still exists,
+        // an RealtimeDisconnectErrorerror will be reported quickly.
+        if (this._firmata) {
+            this._firmata.removeAllListeners('reportversion');
+            this._firmata.removeAllListeners('ready');
+            delete this._firmata;
+        }
+
         const base64Str = Buffer.from(code).toString('base64');
         this._serialport.upload(base64Str, this.diveceOpt, 'base64');
     }
@@ -141,6 +163,15 @@ class ArduinoPeripheral{
      * Called by the runtime when user wants to upload realtime firmware to a peripheral.
      */
     uploadFirmware () {
+        if (this._firmata) {
+            this._firmata.removeAllListeners('reportversion');
+            this._firmata.removeAllListeners('ready');
+            delete this._firmata;
+        }
+        if (this._firmataReadyTimeoutID) {
+            window.clearTimeout(this._firmataReadyTimeoutID);
+            this._firmataReadyTimeoutID = null;
+        }
         this._stopHeartbeat();
         this._serialport.uploadFirmware(this.diveceOpt);
     }
@@ -192,14 +223,17 @@ class ArduinoPeripheral{
      */
     reset () {
         if (this._firmata) {
-            this._firmata.removeListener('reportversion', this._listenHeartbeat);
+            this._firmata.removeAllListeners('reportversion');
+            this._firmata.removeAllListeners('ready');
             delete this._firmata;
+        }
+        if (this._firmataReadyTimeoutID) {
+            window.clearTimeout(this._firmataReadyTimeoutID);
+            this._firmataReadyTimeoutID = null;
         }
         this._stopHeartbeat();
         this._runtime.removeListener(this._runtime.constructor.PROGRAM_MODE_UPDATE, this._handleProgramModeUpdate);
         this._runtime.removeListener(this._runtime.constructor.PERIPHERAL_UPLOAD_SUCCESS, this._startHeartbeat);
-
-        this._isFirmataConnected = false;
     }
 
     /**
@@ -252,8 +286,23 @@ class ArduinoPeripheral{
         if (this._runtime.getCurrentIsRealtimeMode()) {
             // eslint-disable-next-line no-negated-condition
             if (!this._firmata) {
+                // Start a timeout to report that firmata did not receive the ready event.
+                // This happens after connecting to a device that is not running the firmata service.
+                this._firmataReadyTimeoutID = window.setTimeout(() => {
+                    this._serialport.handleRealtimeDisconnectError(ConnectFirmataTimeout);
+                }, FirmataReadyTimeout);
+
                 this._firmata = new Firmata(this.send.bind(this));
-                this._firmata.on('ready', () => {
+                this._firmata.once('ready', () => {
+                    if (this._firmataReadyTimeoutID) {
+                        window.clearTimeout(this._firmataReadyTimeoutID);
+                        this._firmataReadyTimeoutID = null;
+                    }
+
+                    // Receiving a ready event indicates that the firmata service has been initialized.
+                    this._isFirmataConnected = true;
+                    this._serialport.handleRealtimeConnectSucess();
+
                     // Start the heartbeat listener.
                     this._firmata.on('reportversion', this._listenHeartbeat);
 
@@ -325,6 +374,20 @@ class ArduinoPeripheral{
         if (this._runtime.getCurrentIsRealtimeMode()) {
             this._startHeartbeat();
         } else {
+            // If _firmataReadyTimeoutID is still not null when switching to upload mode, it means
+            // that the Firmata protocol has not completed the initial communication, reset the
+            // firmata and wait for the next connection.
+            if (this._firmataReadyTimeoutID) {
+                if (this._firmata) {
+                    this._firmata.removeAllListeners('reportversion');
+                    this._firmata.removeAllListeners('ready');
+                    delete this._firmata;
+                }
+                if (this._firmataReadyTimeoutID) {
+                    window.clearTimeout(this._firmataReadyTimeoutID);
+                    this._firmataReadyTimeoutID = null;
+                }
+            }
             this._stopHeartbeat();
         }
     }
@@ -348,9 +411,13 @@ class ArduinoPeripheral{
      * @private
      */
     _onMessage (base64) {
-        // parse data
-        const data = Base64Util.base64ToUint8Array(base64);
-        this._firmata.onReciveData(data);
+        if (this._runtime.getCurrentIsRealtimeMode()) {
+            const data = Base64Util.base64ToUint8Array(base64);
+            this._firmata.onReciveData(data);
+        } else {
+            const consoleData = Buffer.from(base64, 'base64');
+            this._runtime.emit(this._runtime.constructor.PERIPHERAL_RECIVE_DATA, consoleData);
+        }
     }
 
     /**
