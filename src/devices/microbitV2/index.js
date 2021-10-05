@@ -28,7 +28,7 @@ const SERIAL_CONFIG = {
  * @readonly
  */
 const DIVECE_OPT = {
-    type: 'microbitV2'
+    type: 'microbit'
 };
 
 const LedState = {
