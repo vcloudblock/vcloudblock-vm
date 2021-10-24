@@ -176,7 +176,9 @@ class EspPeripheral{
      * @param {object} base64 - the incoming serialport data.
      * @private
      */
-    _onMessage () {
+    _onMessage (base64) {
+        const consoleData = Buffer.from(base64, 'base64');
+        this._runtime.emit(this._runtime.constructor.PERIPHERAL_RECIVE_DATA, consoleData);
     }
 }
 
