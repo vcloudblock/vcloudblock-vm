@@ -32,8 +32,8 @@ class ScratchLinkWebSocket {
             this._ws = new WebSocket('wss://device-manager.scratch.mit.edu:20110/scratch/bt');
             break;
         case 'SERIALPORT':
-            this._ws = new WebSocket('ws://127.0.0.1:20111/scratch/serialport');
-            // this._ws = new WebSocket('ws://192.168.1.11:20111/scratch/serialport');
+            // this._ws = new WebSocket('ws://127.0.0.1:20111/scratch/serialport');
+            this._ws = new WebSocket('ws://192.168.31.102:20111/scratch/serialport');
             break;
         default:
             throw new Error(`Unknown ScratchLink socket Type: ${this._type}`);
