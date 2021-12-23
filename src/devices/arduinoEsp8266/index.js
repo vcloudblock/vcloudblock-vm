@@ -707,9 +707,9 @@ class OpenBlockArduinoEsp8266Device {
                     '---',
                     {
 
-                        opcode: 'attachInterrupt',
+                        opcode: 'esp8266AttachInterrupt',
                         text: formatMessage({
-                            id: 'arduinoUno.pins.attachInterrupt',
+                            id: 'arduinoUno.pins.esp8266AttachInterrupt',
                             default: 'attach interrupt pin [PIN] mode [MODE] executes',
                             description: 'arduinoEsp8266 attach interrupt'
                         }),

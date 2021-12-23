@@ -1007,9 +1007,9 @@ class OpenBlockArduinoEsp32Device {
                     '---',
                     {
 
-                        opcode: 'attachInterrupt',
+                        opcode: 'esp32AttachInterrupt',
                         text: formatMessage({
-                            id: 'arduinoEsp32.pins.attachInterrupt',
+                            id: 'arduinoEsp32.pins.esp32AttachInterrupt',
                             default: 'attach interrupt pin [PIN] mode [MODE] executes',
                             description: 'arduinoEsp32 attach interrupt'
                         }),
@@ -1030,9 +1030,9 @@ class OpenBlockArduinoEsp32Device {
                     },
                     {
 
-                        opcode: 'detachInterrupt',
+                        opcode: 'esp32DetachInterrupt',
                         text: formatMessage({
-                            id: 'arduinoEsp32.pins.detachInterrupt',
+                            id: 'arduinoEsp32.pins.esp32DetachInterrupt',
                             default: 'detach interrupt pin [PIN]',
                             description: 'arduinoEsp32 detach interrupt'
                         }),
