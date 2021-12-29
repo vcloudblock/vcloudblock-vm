@@ -1,0 +1,37 @@
+name: Publish
+
+on:
+  push:
+    branches: [ develop ]
+    paths-ignore:
+      - 'README.md'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      NPM_TAG: latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14.x'
+
+      - run: npm ci
+
+      - run: npm test
+
+      - run: npm build
+
+      - name: get-npm-version
+        id: package-version
+        uses: martinbeentjes/npm-get-version-action@master
+
+      - run: |
+          export RELEASE_VERSION=${{ steps.package-version.outputs.current-version }}-prerelease.$(date +'%Y%m%d%H%M%S')
+          npm --no-git-tag-version version $RELEASE_VERSION
+
+      - uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
