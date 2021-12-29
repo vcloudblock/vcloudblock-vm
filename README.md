@@ -1,5 +1,5 @@
 # openblock-vm
-![](https://img.shields.io/travis/com/openblockcc/openblock-vm) ![](https://img.shields.io/github/license/openblockcc/openblock-vm)
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/openblockcc/openblock-vm/Publish) ![](https://img.shields.io/github/license/openblockcc/openblock-vm)
 
 ## Getting Start
 
