@@ -74,7 +74,7 @@ jobs:
             npm run i18n:src
             npm run i18n:push
 
-      - run: npm build
+      - run: npm run build
 
       - name: Get package main version
         id: package-version
