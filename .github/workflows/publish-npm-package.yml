@@ -20,7 +20,7 @@ jobs:
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
-        with:5
+        with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
 
@@ -68,7 +68,11 @@ jobs:
 
       - run: npm ci
 
-      - run: npm test
+      - name: Push i18n
+        run: |
+            export TX_TOKEN=${{ secrets.TX_TOKEN }}
+            npm run i18n:src
+            npm run i18n:push
 
       - run: npm build
 
