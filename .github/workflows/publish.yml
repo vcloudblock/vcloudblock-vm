@@ -1,10 +1,11 @@
-name: Publish
+name: Publish Npm Package
 
 on:
   push:
     branches: [ develop ]
     paths-ignore:
       - 'README.md'
+      - '.github/*'
 
 jobs:
   publish:
