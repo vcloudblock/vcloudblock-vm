@@ -10,11 +10,9 @@ on:
 jobs:
   check:
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
         node-version: [12.x, 14.x, 16.x]
-
     steps:
       - uses: actions/checkout@v2
 
@@ -45,8 +43,6 @@ jobs:
   publish:
     needs: check
     runs-on: ubuntu-latest
-    env:
-      NPM_TAG: latest
     steps:
       - uses: actions/checkout@v2
 
