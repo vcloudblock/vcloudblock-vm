@@ -2,7 +2,7 @@ name: Publish Npm Package
 
 on:
   push:
-    branches: [ develop ]
+    branches: [ main ]
     paths-ignore:
       - 'README.md'
       - '.github/*'
@@ -64,11 +64,12 @@ jobs:
 
       - run: npm ci
 
-      - name: Push i18n
-        run: |
-            export TX_TOKEN=${{ secrets.TX_TOKEN }}
-            npm run i18n:src
-            npm run i18n:push
+    # Don't push translations to TX, the push step will be run by the enterprise edition repository.
+    #   - name: Push i18n
+    #     run: |
+    #         export TX_TOKEN=${{ secrets.TX_TOKEN }}
+    #         npm run i18n:src
+    #         npm run i18n:push
 
       - run: npm run build
 
