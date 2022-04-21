@@ -14,7 +14,10 @@ const PNPID_LIST = [
     // CH340
     'USB\\VID_1A86&PID_7523',
     // CP2102
-    'USB\\VID_10C4&PID_EA60'
+    'USB\\VID_10C4&PID_EA60',
+    // FTDI
+    'USB\\VID_0403&PID_6001'
+
 ];
 
 /**
@@ -148,30 +151,31 @@ class OpenBlockArduinoEsp8266Device {
                 text: 'GPIO5',
                 value: Pins.GPIO5
             },
-            {
-                text: 'GPIO6',
-                value: Pins.GPIO6
-            },
-            {
-                text: 'GPIO7',
-                value: Pins.GPIO7
-            },
-            {
-                text: 'GPIO8',
-                value: Pins.GPIO8
-            },
-            {
-                text: 'GPIO9',
-                value: Pins.GPIO9
-            },
-            {
-                text: 'GPIO10',
-                value: Pins.GPIO10
-            },
-            {
-                text: 'GPIO11',
-                value: Pins.GPIO11
-            },
+            // Pins 6 to 11 are used by the Esp8266 flash, not recommended for general use.
+            // {
+            //     text: 'GPIO6',
+            //     value: Pins.GPIO6
+            // },
+            // {
+            //     text: 'GPIO7',
+            //     value: Pins.GPIO7
+            // },
+            // {
+            //     text: 'GPIO8',
+            //     value: Pins.GPIO8
+            // },
+            // {
+            //     text: 'GPIO9',
+            //     value: Pins.GPIO9
+            // },
+            // {
+            //     text: 'GPIO10',
+            //     value: Pins.GPIO10
+            // },
+            // {
+            //     text: 'GPIO11',
+            //     value: Pins.GPIO11
+            // },
             {
                 text: 'GPIO12',
                 value: Pins.GPIO12
@@ -254,30 +258,31 @@ class OpenBlockArduinoEsp8266Device {
                 text: 'GPIO5',
                 value: Pins.GPIO5
             },
-            {
-                text: 'GPIO6',
-                value: Pins.GPIO6
-            },
-            {
-                text: 'GPIO7',
-                value: Pins.GPIO7
-            },
-            {
-                text: 'GPIO8',
-                value: Pins.GPIO8
-            },
-            {
-                text: 'GPIO9',
-                value: Pins.GPIO9
-            },
-            {
-                text: 'GPIO10',
-                value: Pins.GPIO10
-            },
-            {
-                text: 'GPIO11',
-                value: Pins.GPIO11
-            },
+            // Pins 6 to 11 are used by the Esp8266 flash, not recommended for general use.
+            // {
+            //     text: 'GPIO6',
+            //     value: Pins.GPIO6
+            // },
+            // {
+            //     text: 'GPIO7',
+            //     value: Pins.GPIO7
+            // },
+            // {
+            //     text: 'GPIO8',
+            //     value: Pins.GPIO8
+            // },
+            // {
+            //     text: 'GPIO9',
+            //     value: Pins.GPIO9
+            // },
+            // {
+            //     text: 'GPIO10',
+            //     value: Pins.GPIO10
+            // },
+            // {
+            //     text: 'GPIO11',
+            //     value: Pins.GPIO11
+            // },
             {
                 text: 'GPIO12',
                 value: Pins.GPIO12
@@ -310,7 +315,7 @@ class OpenBlockArduinoEsp8266Device {
         ];
     }
 
-    get PWM_PINS_MENU () {
+    get PWM_AND_INTERRUPT_PINS_MENU () {
         return [
             {
                 text: 'GPIO0',
@@ -336,30 +341,31 @@ class OpenBlockArduinoEsp8266Device {
                 text: 'GPIO5',
                 value: Pins.GPIO5
             },
-            {
-                text: 'GPIO6',
-                value: Pins.GPIO6
-            },
-            {
-                text: 'GPIO7',
-                value: Pins.GPIO7
-            },
-            {
-                text: 'GPIO8',
-                value: Pins.GPIO8
-            },
-            {
-                text: 'GPIO9',
-                value: Pins.GPIO9
-            },
-            {
-                text: 'GPIO10',
-                value: Pins.GPIO10
-            },
-            {
-                text: 'GPIO11',
-                value: Pins.GPIO11
-            },
+            // Pins 6 to 11 are used by the Esp8266 flash, not recommended for general use.
+            // {
+            //     text: 'GPIO6',
+            //     value: Pins.GPIO6
+            // },
+            // {
+            //     text: 'GPIO7',
+            //     value: Pins.GPIO7
+            // },
+            // {
+            //     text: 'GPIO8',
+            //     value: Pins.GPIO8
+            // },
+            // {
+            //     text: 'GPIO9',
+            //     value: Pins.GPIO9
+            // },
+            // {
+            //     text: 'GPIO10',
+            //     value: Pins.GPIO10
+            // },
+            // {
+            //     text: 'GPIO11',
+            //     value: Pins.GPIO11
+            // },
             {
                 text: 'GPIO12',
                 value: Pins.GPIO12
@@ -375,10 +381,6 @@ class OpenBlockArduinoEsp8266Device {
             {
                 text: 'GPIO15',
                 value: Pins.GPIO15
-            },
-            {
-                text: 'GPIO16',
-                value: Pins.GPIO16
             }
         ];
     }
@@ -400,75 +402,6 @@ class OpenBlockArduinoEsp8266Device {
                     description: 'label for low level'
                 }),
                 value: Level.Low
-            }
-        ];
-    }
-
-    get INTERRUPT_PINS_MENU () {
-        return [
-            {
-                text: 'GPIO0',
-                value: Pins.GPIO0
-            },
-            {
-                text: 'GPIO1',
-                value: Pins.GPIO1
-            },
-            {
-                text: 'GPIO2',
-                value: Pins.GPIO2
-            },
-            {
-                text: 'GPIO3',
-                value: Pins.GPIO3
-            },
-            {
-                text: 'GPIO4',
-                value: Pins.GPIO4
-            },
-            {
-                text: 'GPIO5',
-                value: Pins.GPIO5
-            },
-            {
-                text: 'GPIO6',
-                value: Pins.GPIO6
-            },
-            {
-                text: 'GPIO7',
-                value: Pins.GPIO7
-            },
-            {
-                text: 'GPIO8',
-                value: Pins.GPIO8
-            },
-            {
-                text: 'GPIO9',
-                value: Pins.GPIO9
-            },
-            {
-                text: 'GPIO10',
-                value: Pins.GPIO10
-            },
-            {
-                text: 'GPIO11',
-                value: Pins.GPIO11
-            },
-            {
-                text: 'GPIO12',
-                value: Pins.GPIO12
-            },
-            {
-                text: 'GPIO13',
-                value: Pins.GPIO13
-            },
-            {
-                text: 'GPIO14',
-                value: Pins.GPIO14
-            },
-            {
-                text: 'GPIO15',
-                value: Pins.GPIO15
             }
         ];
     }
@@ -619,7 +552,7 @@ class OpenBlockArduinoEsp8266Device {
                             PIN: {
                                 type: ArgumentType.STRING,
                                 menu: 'pins',
-                                defaultValue: Pins.GPIO0
+                                defaultValue: Pins.GPIO4
                             },
                             MODE: {
                                 type: ArgumentType.STRING,
@@ -640,7 +573,7 @@ class OpenBlockArduinoEsp8266Device {
                             PIN: {
                                 type: ArgumentType.STRING,
                                 menu: 'digitalPins',
-                                defaultValue: Pins.GPIO0
+                                defaultValue: Pins.GPIO4
                             },
                             LEVEL: {
                                 type: ArgumentType.STRING,
@@ -662,7 +595,7 @@ class OpenBlockArduinoEsp8266Device {
                             PIN: {
                                 type: ArgumentType.STRING,
                                 menu: 'pwmPins',
-                                defaultValue: Pins.GPIO0
+                                defaultValue: Pins.GPIO4
                             },
                             OUT: {
                                 type: ArgumentType.UINT8_NUMBER,
@@ -683,7 +616,7 @@ class OpenBlockArduinoEsp8266Device {
                             PIN: {
                                 type: ArgumentType.STRING,
                                 menu: 'digitalPins',
-                                defaultValue: Pins.GPIO0
+                                defaultValue: Pins.GPIO4
                             }
                         }
                     },
@@ -717,7 +650,7 @@ class OpenBlockArduinoEsp8266Device {
                             PIN: {
                                 type: ArgumentType.STRING,
                                 menu: 'interruptPins',
-                                defaultValue: Pins.GPIO0
+                                defaultValue: Pins.GPIO4
                             },
                             MODE: {
                                 type: ArgumentType.STRING,
@@ -740,7 +673,7 @@ class OpenBlockArduinoEsp8266Device {
                             PIN: {
                                 type: ArgumentType.STRING,
                                 menu: 'interruptPins',
-                                defaultValue: Pins.GPIO0
+                                defaultValue: Pins.GPIO4
                             }
                         },
                         programMode: [ProgramModeType.UPLOAD]
@@ -764,10 +697,10 @@ class OpenBlockArduinoEsp8266Device {
                         items: this.LEVEL_MENU
                     },
                     pwmPins: {
-                        items: this.PWM_PINS_MENU
+                        items: this.PWM_AND_INTERRUPT_PINS_MENU
                     },
                     interruptPins: {
-                        items: this.INTERRUPT_PINS_MENU
+                        items: this.PWM_AND_INTERRUPT_PINS_MENU
                     },
                     interruptMode: {
                         items: this.INTERRUP_MODE_MENU
