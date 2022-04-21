@@ -121,15 +121,16 @@ const Eol = {
 const Mode = {
     Input: 'INPUT',
     Output: 'OUTPUT',
-    InputPullup: 'INPUT_PULLUP'
+    InputPullup: 'INPUT_PULLUP',
+    InputPulldown: 'INPUT_PULLDOWN'
 };
 
 const InterrupMode = {
     Rising: 'RISING',
     Falling: 'FALLING',
     Change: 'CHANGE',
-    Low: 'LOW',
-    High: 'High'
+    LowLevel: 'LOW',
+    HighLevel: 'HIGH'
 };
 
 const DataType = {
@@ -190,30 +191,31 @@ class OpenBlockArduinoEsp32Device {
                 text: 'IO5',
                 value: Pins.IO5
             },
-            {
-                text: 'IO6',
-                value: Pins.IO6
-            },
-            {
-                text: 'IO7',
-                value: Pins.IO7
-            },
-            {
-                text: 'IO8',
-                value: Pins.IO8
-            },
-            {
-                text: 'IO9',
-                value: Pins.IO9
-            },
-            {
-                text: 'IO10',
-                value: Pins.IO10
-            },
-            {
-                text: 'IO11',
-                value: Pins.IO11
-            },
+            // Pins 6 to 11 are used by the ESP32 Flash, not recommended for general use.
+            // {
+            //     text: 'IO6',
+            //     value: Pins.IO6
+            // },
+            // {
+            //     text: 'IO7',
+            //     value: Pins.IO7
+            // },
+            // {
+            //     text: 'IO8',
+            //     value: Pins.IO8
+            // },
+            // {
+            //     text: 'IO9',
+            //     value: Pins.IO9
+            // },
+            // {
+            //     text: 'IO10',
+            //     value: Pins.IO10
+            // },
+            // {
+            //     text: 'IO11',
+            //     value: Pins.IO11
+            // },
             {
                 text: 'IO12',
                 value: Pins.IO12
@@ -323,30 +325,31 @@ class OpenBlockArduinoEsp32Device {
                 text: 'IO5',
                 value: Pins.IO5
             },
-            {
-                text: 'IO6',
-                value: Pins.IO6
-            },
-            {
-                text: 'IO7',
-                value: Pins.IO7
-            },
-            {
-                text: 'IO8',
-                value: Pins.IO8
-            },
-            {
-                text: 'IO9',
-                value: Pins.IO9
-            },
-            {
-                text: 'IO10',
-                value: Pins.IO10
-            },
-            {
-                text: 'IO11',
-                value: Pins.IO11
-            },
+            // Pins 6 to 11 are used by the ESP32 Flash, not recommended for general use.
+            // {
+            //     text: 'IO6',
+            //     value: Pins.IO6
+            // },
+            // {
+            //     text: 'IO7',
+            //     value: Pins.IO7
+            // },
+            // {
+            //     text: 'IO8',
+            //     value: Pins.IO8
+            // },
+            // {
+            //     text: 'IO9',
+            //     value: Pins.IO9
+            // },
+            // {
+            //     text: 'IO10',
+            //     value: Pins.IO10
+            // },
+            // {
+            //     text: 'IO11',
+            //     value: Pins.IO11
+            // },
             {
                 text: 'IO12',
                 value: Pins.IO12
@@ -439,6 +442,14 @@ class OpenBlockArduinoEsp32Device {
                     description: 'label for input-pullup pin mode'
                 }),
                 value: Mode.InputPullup
+            },
+            {
+                text: formatMessage({
+                    id: 'arduinoEsp32.modeMenu.inputPulldown',
+                    default: 'input-pulldown',
+                    description: 'label for input-pulldown pin mode'
+                }),
+                value: Mode.InputPulldown
             }
         ];
     }
@@ -689,18 +700,18 @@ class OpenBlockArduinoEsp32Device {
             {
                 text: formatMessage({
                     id: 'arduinoEsp32.InterrupModeMenu.low',
-                    default: 'low',
-                    description: 'label for low interrup'
+                    default: 'low level',
+                    description: 'label for low level interrup'
                 }),
-                value: InterrupMode.Low
+                value: InterrupMode.LowLevel
             },
             {
                 text: formatMessage({
                     id: 'arduinoEsp32.InterrupModeMenu.high',
-                    default: 'high',
-                    description: 'label for high interrup'
+                    default: 'high level',
+                    description: 'label for high level interrup'
                 }),
-                value: InterrupMode.High
+                value: InterrupMode.HighLevel
             }
         ];
     }
@@ -711,6 +722,7 @@ class OpenBlockArduinoEsp32Device {
                 text: '0',
                 value: SerialNo.Serial0
             },
+            // Usually IO9/10 is reserved for flash chip.
             // {
             //     text: '1',
             //     value: SerialNo.Serial1
@@ -896,8 +908,8 @@ class OpenBlockArduinoEsp32Device {
                                 defaultValue: Pins.IO2
                             },
                             OUT: {
-                                type: ArgumentType.NUMBER,
-                                defaultValue: '0'
+                                type: ArgumentType.UINT8_NUMBER,
+                                defaultValue: '255'
                             },
                             CH: {
                                 type: ArgumentType.NUMBER,
@@ -922,7 +934,7 @@ class OpenBlockArduinoEsp32Device {
                                 defaultValue: Pins.IO25
                             },
                             OUT: {
-                                type: ArgumentType.NUMBER,
+                                type: ArgumentType.UINT8_NUMBER,
                                 defaultValue: '0'
                             }
                         }
@@ -994,7 +1006,7 @@ class OpenBlockArduinoEsp32Device {
                             },
                             OUT: {
                                 type: ArgumentType.ANGLE,
-                                defaultValue: '0'
+                                defaultValue: '90'
                             },
                             CH: {
                                 type: ArgumentType.NUMBER,
@@ -1183,41 +1195,6 @@ class OpenBlockArduinoEsp32Device {
                         items: this.EOL_MENU
                     }
                 }
-            },
-            {
-                id: 'sensor',
-                name: formatMessage({
-                    id: 'arduinoEsp32.category.sensor',
-                    default: 'Sensor',
-                    description: 'The name of the arduino esp32 device sensor category'
-                }),
-                color1: '#4CBFE6',
-                color2: '#2E8EB8',
-                color3: '#2E8EB8',
-
-                blocks: [
-                    {
-                        opcode: 'esp32ReadHallSensor',
-                        text: formatMessage({
-                            id: 'arduinoEsp32.sensor.readHallSensor',
-                            default: 'read hall sensor',
-                            description: 'arduino esp32 read hall sensor'
-                        }),
-                        blockType: BlockType.REPORTER,
-                        disableMonitor: true
-                    },
-                    '---',
-                    {
-                        opcode: 'runningTime',
-                        text: formatMessage({
-                            id: 'arduinoEsp32.sensor.runningTime',
-                            default: 'running time (millis)',
-                            description: 'arduino esp32 running time'
-                        }),
-                        blockType: BlockType.REPORTER,
-                        disableMonitor: true
-                    }
-                ]
             },
             {
                 id: 'data',
