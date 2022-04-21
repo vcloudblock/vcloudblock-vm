@@ -972,8 +972,8 @@ class OpenBlockMicrobitDevice {
                 description: 'The name of the microbit device console category'
             }),
             color1: '#FF3399',
-            color2: '#FF3399',
-            color3: '#FF3399',
+            color2: '#CC297A',
+            color3: '#CC297A',
 
             blocks: [
                 {
