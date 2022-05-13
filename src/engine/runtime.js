@@ -109,6 +109,12 @@ const ArgumentTypeMap = (() => {
             fieldName: 'NUM'
         }
     };
+    map[ArgumentType.OTO100_NUMBER] = {
+        shadow: {
+            type: 'math_0to100_number',
+            fieldName: 'NUM'
+        }
+    };
     map[ArgumentType.IMAGE] = {
         // Inline images are weird because they're not actually "arguments".
         // They are more analagous to the label on a block.
