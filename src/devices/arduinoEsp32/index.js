@@ -842,7 +842,7 @@ class OpenBlockArduinoEsp32Device {
             {
                 id: 'pin',
                 name: formatMessage({
-                    id: 'esp32Arduino.category.pins',
+                    id: 'arduinoEsp32.category.pins',
                     default: 'Pins',
                     description: 'The name of the esp32 arduino device pin category'
                 }),
@@ -854,9 +854,9 @@ class OpenBlockArduinoEsp32Device {
                     {
                         opcode: 'setPinMode',
                         text: formatMessage({
-                            id: 'esp32Arduino.pins.setPinMode',
+                            id: 'arduinoEsp32.pins.setPinMode',
                             default: 'set pin [PIN] mode [MODE]',
-                            description: 'esp32Arduino set pin mode'
+                            description: 'arduinoEsp32 set pin mode'
                         }),
                         blockType: BlockType.COMMAND,
                         arguments: {
@@ -875,9 +875,9 @@ class OpenBlockArduinoEsp32Device {
                     {
                         opcode: 'setDigitalOutput',
                         text: formatMessage({
-                            id: 'esp32Arduino.pins.setDigitalOutput',
+                            id: 'arduinoEsp32.pins.setDigitalOutput',
                             default: 'set digital pin [PIN] out [LEVEL]',
-                            description: 'esp32Arduino set digital pin out'
+                            description: 'arduinoEsp32 set digital pin out'
                         }),
                         blockType: BlockType.COMMAND,
                         arguments: {
@@ -896,9 +896,9 @@ class OpenBlockArduinoEsp32Device {
                     {
                         opcode: 'esp32SetPwmOutput',
                         text: formatMessage({
-                            id: 'esp32Arduino.pins.esp32SetPwmOutput',
+                            id: 'arduinoEsp32.pins.esp32SetPwmOutput',
                             default: 'set pwm pin [PIN] use channel [CH] out [OUT]',
-                            description: 'esp32Arduino set pwm pin out'
+                            description: 'arduinoEsp32 set pwm pin out'
                         }),
                         blockType: BlockType.COMMAND,
                         arguments: {
@@ -922,9 +922,9 @@ class OpenBlockArduinoEsp32Device {
 
                         opcode: 'esp32SetDACOutput',
                         text: formatMessage({
-                            id: 'esp32Arduino.pins.esp32SetDACOutput',
+                            id: 'arduinoEsp32.pins.esp32SetDACOutput',
                             default: 'set dac pin [PIN] out [OUT]',
-                            description: 'esp32Arduino set dac pin out'
+                            description: 'arduinoEsp32 set dac pin out'
                         }),
                         blockType: BlockType.COMMAND,
                         arguments: {
