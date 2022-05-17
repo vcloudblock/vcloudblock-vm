@@ -974,7 +974,7 @@ class OpenBlockArduinoMega2560Device {
                                 defaultValue: Pins.D3
                             },
                             OUT: {
-                                type: ArgumentType.ANGLE,
+                                type: ArgumentType.HALF_ANGLE,
                                 defaultValue: '90'
                             }
                         }

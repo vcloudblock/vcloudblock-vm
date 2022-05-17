@@ -1005,7 +1005,7 @@ class OpenBlockArduinoEsp32Device {
                                 defaultValue: Pins.IO2
                             },
                             OUT: {
-                                type: ArgumentType.ANGLE,
+                                type: ArgumentType.HALF_ANGLE,
                                 defaultValue: '90'
                             },
                             CH: {
