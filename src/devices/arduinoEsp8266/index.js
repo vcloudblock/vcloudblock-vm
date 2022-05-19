@@ -830,7 +830,6 @@ class OpenBlockArduinoEsp8266Device {
                         },
                         programMode: [ProgramModeType.UPLOAD]
                     },
-                    '---',
                     {
                         opcode: 'dataConstrain',
                         text: formatMessage({
@@ -855,6 +854,7 @@ class OpenBlockArduinoEsp8266Device {
                         },
                         programMode: [ProgramModeType.UPLOAD]
                     },
+                    '---',
                     {
                         opcode: 'dataConvert',
                         text: formatMessage({

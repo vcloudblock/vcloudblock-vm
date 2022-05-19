@@ -775,7 +775,6 @@ class OpenBlockMakeyMakeyDevice {
                         },
                         programMode: [ProgramModeType.UPLOAD]
                     },
-                    '---',
                     {
                         opcode: 'dataConstrain',
                         text: formatMessage({
@@ -800,6 +799,7 @@ class OpenBlockMakeyMakeyDevice {
                         },
                         programMode: [ProgramModeType.UPLOAD]
                     },
+                    '---',
                     {
                         opcode: 'dataConvert',
                         text: formatMessage({

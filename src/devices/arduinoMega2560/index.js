@@ -1197,7 +1197,6 @@ class OpenBlockArduinoMega2560Device {
                         },
                         programMode: [ProgramModeType.UPLOAD]
                     },
-                    '---',
                     {
                         opcode: 'dataConstrain',
                         text: formatMessage({
@@ -1222,6 +1221,7 @@ class OpenBlockArduinoMega2560Device {
                         },
                         programMode: [ProgramModeType.UPLOAD]
                     },
+                    '---',
                     {
                         opcode: 'dataConvert',
                         text: formatMessage({

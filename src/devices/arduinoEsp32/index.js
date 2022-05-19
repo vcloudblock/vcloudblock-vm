@@ -1240,7 +1240,6 @@ class OpenBlockArduinoEsp32Device {
                         },
                         programMode: [ProgramModeType.UPLOAD]
                     },
-                    '---',
                     {
                         opcode: 'dataConstrain',
                         text: formatMessage({
@@ -1265,6 +1264,7 @@ class OpenBlockArduinoEsp32Device {
                         },
                         programMode: [ProgramModeType.UPLOAD]
                     },
+                    '---',
                     {
                         opcode: 'dataConvert',
                         text: formatMessage({
