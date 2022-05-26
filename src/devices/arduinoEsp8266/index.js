@@ -638,6 +638,27 @@ class OpenBlockArduinoEsp8266Device {
                     },
                     '---',
                     {
+                        opcode: 'setServoOutput',
+                        text: formatMessage({
+                            id: 'arduinoUno.pins.setServoOutput',
+                            default: 'set servo pin [PIN] out [OUT]',
+                            description: 'arduinoUno set servo pin out'
+                        }),
+                        blockType: BlockType.COMMAND,
+                        arguments: {
+                            PIN: {
+                                type: ArgumentType.STRING,
+                                menu: 'pwmPins',
+                                defaultValue: Pins.GPIO4
+                            },
+                            OUT: {
+                                type: ArgumentType.HALF_ANGLE,
+                                defaultValue: '90'
+                            }
+                        }
+                    },
+                    '---',
+                    {
 
                         opcode: 'esp8266AttachInterrupt',
                         text: formatMessage({
