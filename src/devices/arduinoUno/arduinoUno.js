@@ -125,7 +125,7 @@ class OpenBlockArduinoUnoDevice {
     /**
      * @return {string} - the ID of this extension.
      */
-    static get DEVICE_ID () {
+    get DEVICE_ID () {
         return 'arduinoUno';
     }
 
@@ -468,7 +468,7 @@ class OpenBlockArduinoUnoDevice {
         this.runtime = runtime;
 
         // Create a new Arduino uno peripheral instance
-        this._peripheral = new ArduinoUno(this.runtime, OpenBlockArduinoUnoDevice.DEVICE_ID, originalDeviceId);
+        this._peripheral = new ArduinoUno(this.runtime, this.DEVICE_ID, originalDeviceId);
     }
 
     /**

@@ -29,23 +29,30 @@ const builtinExtensions = {
 };
 
 const builtinDevices = {
-    arduinoUno: () => require('../devices/arduinoUno'),
-    arduinoNano: () => require('../devices/arduinoNano'),
-    arduinoUnoUltra: () => require('../devices/arduinoUnoUltra'), // Add A6, A7 pins some customized board
-    arduinoLeonardo: () => require('../devices/arduinoLeonardo'),
-    arduinoMega2560: () => require('../devices/arduinoMega2560'),
-    arduinoEsp32: () => require('../devices/arduinoEsp32'),
-    arduinoEsp8266: () => require('../devices/arduinoEsp8266'),
-    microbit: () => require('../devices/microbit'),
-    makeyMakey: () => require('../devices/makeymakey'),
-    microbitV2: () => require('../devices/microbitV2')
+    // Arduino Uno
+    arduinoUno: () => require('../devices/arduinoUno/arduinoUno'),
+    arduinoNano: () => require('../devices/arduinoUno/arduinoNano'),
+    arduinoUnoUltra: () => require('../devices/arduinoUno/arduinoUnoUltra'),
+    arduinoUnoSE: () => require('../devices/arduinoUno/arduinoUnoSE'),
+    // Arduino Leonardo
+    arduinoLeonardo: () => require('../devices/arduinoLeonardo/arduinoLeonardo'),
+    makeyMakey: () => require('../devices/arduinoLeonardo/makeyMakey'),
+    // Arduino Mega2560
+    arduinoMega2560: () => require('../devices/arduinoMega2560/arduinoMega2560'),
+    // Esp32
+    arduinoEsp32: () => require('../devices/arduinoEsp32/arduinoEsp32'),
+    // Esp8266
+    arduinoEsp8266: () => require('../devices/arduinoEsp8266/arduinoEsp8266'),
+    arduinoEsp8266NodeMCU: () => require('../devices/arduinoEsp8266/arduinoEsp8266NodeMCU'),
+    // Microbit
+    microbit: () => require('../devices/microbit/microbit'),
+    microbitV2: () => require('../devices/microbit/microbitV2')
 
-    // todo transform these to device extension
+    // TODO: transform these to device extension.
     // wedo2: () => require('../extensions/scratch3_wedo2'),
     // ev3: () => require('../extensions/scratch3_ev3'),
     // boost: () => require('../extensions/scratch3_boost'),
-    // gdxfor: () => require('../extensions/scratch3_gdx_for'),
-    // makeymakey: () => require('../extensions/scratch3_makeymakey')
+    // gdxfor: () => require('../extensions/scratch3_gdx_for')
 };
 
 /**

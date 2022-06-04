@@ -122,7 +122,7 @@ class OpenBlockArduinoLeonardoDevice {
     /**
      * @return {string} - the ID of this extension.
      */
-    static get DEVICE_ID () {
+    get DEVICE_ID () {
         return 'arduinoLeonardo';
     }
 
@@ -473,8 +473,7 @@ class OpenBlockArduinoLeonardoDevice {
         this.runtime = runtime;
 
         // Create a new Arduino leonardo peripheral instance
-        this._peripheral = new ArduinoLeonardo(this.runtime,
-            OpenBlockArduinoLeonardoDevice.DEVICE_ID, originalDeviceId);
+        this._peripheral = new ArduinoLeonardo(this.runtime, this.DEVICE_ID, originalDeviceId);
     }
 
     /**
