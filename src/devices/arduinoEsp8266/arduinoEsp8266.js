@@ -306,6 +306,10 @@ class OpenBlockArduinoEsp8266Device {
         ];
     }
 
+    get DEFAULT_DIGITAL_PIN () {
+        return Pins.GPIO4;
+    }
+
     get ANALOG_PINS_MENU () {
         return [
             {
@@ -313,6 +317,10 @@ class OpenBlockArduinoEsp8266Device {
                 value: Pins.A0
             }
         ];
+    }
+
+    get DEFAULT_ANALOG_PIN () {
+        return Pins.A0;
     }
 
     get PWM_AND_INTERRUPT_PINS_MENU () {
@@ -383,6 +391,10 @@ class OpenBlockArduinoEsp8266Device {
                 value: Pins.GPIO15
             }
         ];
+    }
+
+    get DEFAULT_PWM_AND_INTERRUPT_PIN () {
+        return Pins.GPIO4;
     }
 
     get LEVEL_MENU () {
@@ -518,18 +530,6 @@ class OpenBlockArduinoEsp8266Device {
         ];
     }
 
-    get DefaultDigitalPin () {
-        return Pins.GPIO4;
-    }
-
-    get DefaultPwmAndInterruptPin () {
-        return Pins.GPIO4;
-    }
-
-    get DefaultAnalogPin () {
-        return Pins.A0;
-    }
-
     /**
      * Construct a set of Arduino blocks.
      * @param {Runtime} runtime - the OpenBlock runtime.
@@ -575,7 +575,7 @@ class OpenBlockArduinoEsp8266Device {
                             PIN: {
                                 type: ArgumentType.STRING,
                                 menu: 'pins',
-                                defaultValue: this.DefaultDigitalPin
+                                defaultValue: this.DEFAULT_DIGITAL_PIN
                             },
                             MODE: {
                                 type: ArgumentType.STRING,
@@ -596,7 +596,7 @@ class OpenBlockArduinoEsp8266Device {
                             PIN: {
                                 type: ArgumentType.STRING,
                                 menu: 'digitalPins',
-                                defaultValue: this.DefaultDigitalPin
+                                defaultValue: this.DEFAULT_DIGITAL_PIN
                             },
                             LEVEL: {
                                 type: ArgumentType.STRING,
@@ -618,7 +618,7 @@ class OpenBlockArduinoEsp8266Device {
                             PIN: {
                                 type: ArgumentType.STRING,
                                 menu: 'pwmPins',
-                                defaultValue: this.DefaultPwmAndInterruptPin
+                                defaultValue: this.DEFAULT_PWM_AND_INTERRUPT_PIN
                             },
                             OUT: {
                                 type: ArgumentType.UINT8_NUMBER,
@@ -639,7 +639,7 @@ class OpenBlockArduinoEsp8266Device {
                             PIN: {
                                 type: ArgumentType.STRING,
                                 menu: 'digitalPins',
-                                defaultValue: this.DefaultDigitalPin
+                                defaultValue: this.DEFAULT_DIGITAL_PIN
                             }
                         }
                     },
@@ -655,7 +655,7 @@ class OpenBlockArduinoEsp8266Device {
                             PIN: {
                                 type: ArgumentType.STRING,
                                 menu: 'analogPins',
-                                defaultValue: this.DefaultAnalogPin
+                                defaultValue: this.DEFAULT_ANALOG_PIN
                             }
                         }
                     },
@@ -672,7 +672,7 @@ class OpenBlockArduinoEsp8266Device {
                             PIN: {
                                 type: ArgumentType.STRING,
                                 menu: 'pwmPins',
-                                defaultValue: this.DefaultPwmAndInterruptPin
+                                defaultValue: this.DEFAULT_PWM_AND_INTERRUPT_PIN
                             },
                             OUT: {
                                 type: ArgumentType.HALF_ANGLE,
@@ -694,7 +694,7 @@ class OpenBlockArduinoEsp8266Device {
                             PIN: {
                                 type: ArgumentType.STRING,
                                 menu: 'interruptPins',
-                                defaultValue: this.DefaultPwmAndInterruptPin
+                                defaultValue: this.DEFAULT_PWM_AND_INTERRUPT_PIN
                             },
                             MODE: {
                                 type: ArgumentType.STRING,
@@ -717,7 +717,7 @@ class OpenBlockArduinoEsp8266Device {
                             PIN: {
                                 type: ArgumentType.STRING,
                                 menu: 'interruptPins',
-                                defaultValue: this.DefaultPwmAndInterruptPin
+                                defaultValue: this.DEFAULT_PWM_AND_INTERRUPT_PIN
                             }
                         },
                         programMode: [ProgramModeType.UPLOAD]

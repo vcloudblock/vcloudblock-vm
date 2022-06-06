@@ -180,6 +180,10 @@ class OpenBlockArduinoEsp8266NodeMCUDevice extends OpenBlockArduinoEsp8266Device
         ];
     }
 
+    get DEFAULT_DIGITAL_PIN () {
+        return Pins.D0;
+    }
+
     get ANALOG_PINS_MENU () {
         return [
             {
@@ -234,11 +238,7 @@ class OpenBlockArduinoEsp8266NodeMCUDevice extends OpenBlockArduinoEsp8266Device
         ];
     }
 
-    get DefaultDigitalPin () {
-        return Pins.D0;
-    }
-
-    get DefaultPwmAndInterruptPin () {
+    get DEFAULT_PWM_AND_INTERRUPT_PIN () {
         return Pins.D1;
     }
 
