@@ -30,7 +30,7 @@ const SERIAL_CONFIG = {
  */
 const DIVECE_OPT = {
     type: 'arduino',
-    fqbn: 'esp8266:esp8266:generic:baud=512000'
+    fqbn: 'esp8266:esp8266:generic:baud=115200'
 };
 
 
