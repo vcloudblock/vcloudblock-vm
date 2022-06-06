@@ -1,4 +1,4 @@
-const OpenBlockArduinoUnoDevice = require('../arduinoLeonardo/arduinoLeonardo');
+const OpenBlockArduinoLeonardoDevice = require('../arduinoLeonardo/arduinoLeonardo');
 
 const ArduinoPeripheral = require('../common/arduino-peripheral');
 
@@ -72,7 +72,7 @@ class MakeyMakey extends ArduinoPeripheral{
 /**
    * OpenBlock blocks to interact with a Arduino MakeyMakey peripheral.
    */
-class OpenBlockMakeyMakeyDevice extends OpenBlockArduinoUnoDevice{
+class OpenBlockMakeyMakeyDevice extends OpenBlockArduinoLeonardoDevice{
 
     /**
        * @return {string} - the ID of this extension.

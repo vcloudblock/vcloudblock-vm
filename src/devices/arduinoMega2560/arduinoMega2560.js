@@ -690,7 +690,7 @@ class OpenBlockArduinoMega2560Device {
         return [
             {
                 text: formatMessage({
-                    id: 'arduinoUno.InterrupModeMenu.risingEdge',
+                    id: 'arduinoMega2560.InterrupModeMenu.risingEdge',
                     default: 'rising edge',
                     description: 'label for rising edge interrup'
                 }),
@@ -698,7 +698,7 @@ class OpenBlockArduinoMega2560Device {
             },
             {
                 text: formatMessage({
-                    id: 'arduinoUno.InterrupModeMenu.fallingEdge',
+                    id: 'arduinoMega2560.InterrupModeMenu.fallingEdge',
                     default: 'falling edge',
                     description: 'label for falling edge interrup'
                 }),
@@ -706,7 +706,7 @@ class OpenBlockArduinoMega2560Device {
             },
             {
                 text: formatMessage({
-                    id: 'arduinoUno.InterrupModeMenu.changeEdge',
+                    id: 'arduinoMega2560.InterrupModeMenu.changeEdge',
                     default: 'change edge',
                     description: 'label for change edge interrup'
                 }),
@@ -714,7 +714,7 @@ class OpenBlockArduinoMega2560Device {
             },
             {
                 text: formatMessage({
-                    id: 'arduinoUno.InterrupModeMenu.low',
+                    id: 'arduinoMega2560.InterrupModeMenu.low',
                     default: 'low',
                     description: 'label for low interrup'
                 }),
@@ -781,7 +781,7 @@ class OpenBlockArduinoMega2560Device {
         return [
             {
                 text: formatMessage({
-                    id: 'arduinoUno.eolMenu.warp',
+                    id: 'arduinoMega2560.eolMenu.warp',
                     default: 'warp',
                     description: 'label for warp print'
                 }),
@@ -789,7 +789,7 @@ class OpenBlockArduinoMega2560Device {
             },
             {
                 text: formatMessage({
-                    id: 'arduinoUno.eolMenu.noWarp',
+                    id: 'arduinoMega2560.eolMenu.noWarp',
                     default: 'no-warp',
                     description: 'label for no warp print'
                 }),

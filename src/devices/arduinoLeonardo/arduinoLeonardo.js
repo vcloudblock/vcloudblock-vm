@@ -344,7 +344,7 @@ class OpenBlockArduinoLeonardoDevice {
         return [
             {
                 text: formatMessage({
-                    id: 'arduinoUno.InterrupModeMenu.risingEdge',
+                    id: 'arduinoLeonardo.InterrupModeMenu.risingEdge',
                     default: 'rising edge',
                     description: 'label for rising edge interrup'
                 }),
@@ -352,7 +352,7 @@ class OpenBlockArduinoLeonardoDevice {
             },
             {
                 text: formatMessage({
-                    id: 'arduinoUno.InterrupModeMenu.fallingEdge',
+                    id: 'arduinoLeonardo.InterrupModeMenu.fallingEdge',
                     default: 'falling edge',
                     description: 'label for falling edge interrup'
                 }),
@@ -360,7 +360,7 @@ class OpenBlockArduinoLeonardoDevice {
             },
             {
                 text: formatMessage({
-                    id: 'arduinoUno.InterrupModeMenu.changeEdge',
+                    id: 'arduinoLeonardo.InterrupModeMenu.changeEdge',
                     default: 'change edge',
                     description: 'label for change edge interrup'
                 }),
@@ -368,7 +368,7 @@ class OpenBlockArduinoLeonardoDevice {
             },
             {
                 text: formatMessage({
-                    id: 'arduinoUno.InterrupModeMenu.low',
+                    id: 'arduinoLeonardo.InterrupModeMenu.low',
                     default: 'low',
                     description: 'label for low interrup'
                 }),
@@ -414,7 +414,7 @@ class OpenBlockArduinoLeonardoDevice {
         return [
             {
                 text: formatMessage({
-                    id: 'arduinoUno.eolMenu.warp',
+                    id: 'arduinoLeonardo.eolMenu.warp',
                     default: 'warp',
                     description: 'label for warp print'
                 }),
@@ -422,7 +422,7 @@ class OpenBlockArduinoLeonardoDevice {
             },
             {
                 text: formatMessage({
-                    id: 'arduinoUno.eolMenu.noWarp',
+                    id: 'arduinoLeonardo.eolMenu.noWarp',
                     default: 'no-warp',
                     description: 'label for no warp print'
                 }),
@@ -682,7 +682,7 @@ class OpenBlockArduinoLeonardoDevice {
             {
                 id: 'serial',
                 name: formatMessage({
-                    id: 'arduinoUno.category.serial',
+                    id: 'arduinoLeonardo.category.serial',
                     default: 'Serial',
                     description: 'The name of the arduino uno device serial category'
                 }),
@@ -694,9 +694,9 @@ class OpenBlockArduinoLeonardoDevice {
                     {
                         opcode: 'serialBegin',
                         text: formatMessage({
-                            id: 'arduinoUno.serial.serialBegin',
+                            id: 'arduinoLeonardo.serial.serialBegin',
                             default: 'serial begin baudrate [VALUE]',
-                            description: 'arduinoUno serial begin'
+                            description: 'arduinoLeonardo serial begin'
                         }),
                         blockType: BlockType.COMMAND,
                         arguments: {
@@ -711,9 +711,9 @@ class OpenBlockArduinoLeonardoDevice {
                     {
                         opcode: 'serialPrint',
                         text: formatMessage({
-                            id: 'arduinoUno.serial.serialPrint',
+                            id: 'arduinoLeonardo.serial.serialPrint',
                             default: 'serial print [VALUE] [EOL]',
-                            description: 'arduinoUno serial print'
+                            description: 'arduinoLeonardo serial print'
                         }),
                         blockType: BlockType.COMMAND,
                         arguments: {
@@ -732,9 +732,9 @@ class OpenBlockArduinoLeonardoDevice {
                     {
                         opcode: 'serialAvailable',
                         text: formatMessage({
-                            id: 'arduinoUno.serial.serialAvailable',
+                            id: 'arduinoLeonardo.serial.serialAvailable',
                             default: 'serial available data length',
-                            description: 'arduinoUno serial available data length'
+                            description: 'arduinoLeonardo serial available data length'
                         }),
                         blockType: BlockType.REPORTER,
                         disableMonitor: true,
@@ -743,9 +743,9 @@ class OpenBlockArduinoLeonardoDevice {
                     {
                         opcode: 'serialReadData',
                         text: formatMessage({
-                            id: 'arduinoUno.serial.serialReadData',
+                            id: 'arduinoLeonardo.serial.serialReadData',
                             default: 'serial read data',
-                            description: 'arduinoUno serial read data'
+                            description: 'arduinoLeonardo serial read data'
                         }),
                         blockType: BlockType.REPORTER,
                         disableMonitor: true,
