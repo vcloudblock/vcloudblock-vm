@@ -79,8 +79,6 @@ class OpenBlockArduinoUnoUltraDevice extends OpenBlockArduinoUnoDevice{
             }
         ];
     }
-
-    // TODO 需要看看 this._peripheral 的 deviceID是 arduinoUnoUltra 还是 arduinoUno
 }
 
 module.exports = OpenBlockArduinoUnoUltraDevice;
