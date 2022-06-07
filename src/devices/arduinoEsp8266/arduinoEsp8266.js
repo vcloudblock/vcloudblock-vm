@@ -36,7 +36,11 @@ const SERIAL_CONFIG = {
  */
 const DIVECE_OPT = {
     type: 'arduino',
-    fqbn: 'esp8266:esp8266:generic:baud=115200'
+    fqbn: {
+        darwin: 'esp8266:esp8266:generic:baud=460800',
+        linux: 'esp8266:esp8266:generic:baud=460800',
+        win32: 'esp8266:esp8266:generic:baud=921600'
+    }
 };
 
 const Pins = {

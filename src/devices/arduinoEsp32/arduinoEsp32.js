@@ -35,7 +35,11 @@ const SERIAL_CONFIG = {
  */
 const DIVECE_OPT = {
     type: 'arduino',
-    fqbn: 'esp32:esp32:esp32:UploadSpeed=115200'
+    fqbn: {
+        darwin: 'esp32:esp32:esp32:UploadSpeed=460800',
+        linux: 'esp32:esp32:esp32:UploadSpeed=460800',
+        win32: 'esp32:esp32:esp32:UploadSpeed=921600'
+    }
 };
 
 const Pins = {
