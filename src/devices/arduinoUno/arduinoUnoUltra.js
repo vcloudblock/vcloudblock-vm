@@ -1,7 +1,7 @@
 /**
  * Arduino Uno Ultra
  *
- * @abstract Compared with Arduino Uno, there are more A6 and A7 pin options for
+ * @overview Compared with Arduino Uno, there are more A6 and A7 pin options for
  * those customized board.
  */
 const OpenBlockArduinoUnoDevice = require('./arduinoUno');

@@ -1,7 +1,7 @@
 /**
  * Arduino Uno SE
  *
- * @abstract Compared to the Arduino Uno, this control board does not contain
+ * @overview Compared to the Arduino Uno, this control board does not contain
  * any basic hardware blocks. This is used as a mothor board for those custom
  * control boards that do not use standard interfaces.
  */

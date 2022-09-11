@@ -1,7 +1,7 @@
 /**
  * Arduino Nano
  *
- * @abstract Compared to the Arduino Uno, this control board use CH340 as
+ * @overview Compared to the Arduino Uno, this control board use CH340 as
  * use to uart chip, uese oldbootloader to flash the firmware, and there are
  * more A6 and A7 pin options.
  */
