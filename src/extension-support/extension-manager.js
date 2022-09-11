@@ -44,6 +44,10 @@ const builtinDevices = {
     // Esp8266
     arduinoEsp8266: () => require('../devices/arduinoEsp8266/arduinoEsp8266'),
     arduinoEsp8266NodeMCU: () => require('../devices/arduinoEsp8266/arduinoEsp8266NodeMCU'),
+    // K210
+    arduinoK210: () => require('../devices/arduinoK210/arduinoK210'),
+    arduinoK210MaixDock: () => require('../devices/arduinoK210/arduinoK210MaixDock'),
+    arduinoK210Maixduino: () => require('../devices/arduinoK210/arduinoK210Maixduino'),
     // Microbit
     microbit: () => require('../devices/microbit/microbit'),
     microbitV2: () => require('../devices/microbit/microbitV2')
