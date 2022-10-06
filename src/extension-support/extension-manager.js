@@ -48,6 +48,8 @@ const builtinDevices = {
     arduinoK210: () => require('../devices/arduinoK210/arduinoK210'),
     arduinoK210MaixDock: () => require('../devices/arduinoK210/arduinoK210MaixDock'),
     arduinoK210Maixduino: () => require('../devices/arduinoK210/arduinoK210Maixduino'),
+    // Raspberry Pi Pico
+    arduinoRaspberryPiPico: () => require('../devices/arduinoRaspberryPiPico/arduinoRaspberryPiPico'),
     // Microbit
     microbit: () => require('../devices/microbit/microbit'),
     microbitV2: () => require('../devices/microbit/microbitV2')
