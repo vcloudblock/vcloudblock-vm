@@ -242,16 +242,16 @@ class OpenBlockArduinoRaspberryPiPicoDevice {
                 text: 'GP22',
                 value: Pins.GP22
             },
+            // {
+            //     text: 'GP23',
+            //     value: Pins.GP23
+            // },
+            // {
+            //     text: 'GP24',
+            //     value: Pins.GP24
+            // },
             {
-                text: 'GP23',
-                value: Pins.GP23
-            },
-            {
-                text: 'GP24',
-                value: Pins.GP24
-            },
-            {
-                text: 'GP25',
+                text: 'LED',
                 value: Pins.GP25
             },
             {
