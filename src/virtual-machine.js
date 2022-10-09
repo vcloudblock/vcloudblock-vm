@@ -586,7 +586,7 @@ class VirtualMachine extends EventEmitter {
             })
             // Step2: Install target and if there has deivce setting, set the editing target to stage incase there is
             // device extensions block in sprite workspace, it will cause error.
-            .then(targets => this.installTargets(targets, projectJSON.extensions, true, !!projectJSON.device))
+            .then(targets => this.installTargets(targets, projectJSON.extensions, true))
             // Step3: Install device extension. it can get flyout blocks because the toolbox has been updated in the
             // previous step. After loaded set the editing target to firset sprite if it has one.
             .then(targets => this.installDeviceExtensions(projectJSON.deviceExtensions, targets));
@@ -608,21 +608,12 @@ class VirtualMachine extends EventEmitter {
 
     /**
      * Update targets and workspace after installed device extensions
-     * @param {Array.<Target>} targets - the targets to be installed
      */
-    updateTargetsAndWorkspace (targets) {
-        if (targets) {
-            // After loaded all device extension. set the default target to first sprite.
-            if (targets.length > 1) {
-                this.editingTarget = targets[1];
-            } else {
-                this.editingTarget = targets[0];
-            }
-
-            this.emitTargetsUpdate(false /* Don't emit project change */);
-            this.emitWorkspaceUpdate();
-            this.runtime.setEditingTarget(this.editingTarget);
-        }
+    updateTargetsAndWorkspace () {
+        this.emitTargetsUpdate(false /* Don't emit project change */);
+        this.emitWorkspaceUpdate();
+        this.runtime.setEditingTarget(this.editingTarget);
+        this.runtime.ioDevices.cloud.setStage(this.runtime.getTargetForStage());
     }
 
     /**
@@ -631,9 +622,12 @@ class VirtualMachine extends EventEmitter {
      * @param {Array.<Target>} targets - the targets to be installed
      * @returns {Promise} Promise that resolves after all device extensions has loaded
      */
-    installDeviceExtensions (deviceExtensions, targets) {
-        if (!deviceExtensions) {
-            this.updateTargetsAndWorkspace(targets);
+    installDeviceExtensions (deviceExtensions, targets = null) {
+        if (!deviceExtensions || deviceExtensions.length === 0) {
+            // Check taget incase this fuc is called by gui.
+            if (targets) {
+                this.updateTargetsAndWorkspace(targets);
+            }
             return Promise.resolve();
         }
 
@@ -642,7 +636,10 @@ class VirtualMachine extends EventEmitter {
         return this.extensionManager.getDeviceExtensionsList()
             .then(() => this.installDeviceExtensionsSync())
             .then(() => {
-                this.updateTargetsAndWorkspace(targets);
+                // Check taget incase this fuc is called by gui.
+                if (targets) {
+                    this.updateTargetsAndWorkspace(targets);
+                }
             });
     }
 
@@ -672,10 +669,9 @@ class VirtualMachine extends EventEmitter {
      * @param {Array.<Target>} targets - the targets to be installed
      * @param {ImportedExtensionsInfo} extensions - metadata about extensions used by these targets
      * @param {boolean} wholeProject - set to true if installing a whole project, as opposed to a single sprite.
-     * @param {boolean} hasDevice - wether the project has device param
      * @returns {Promise} resolved once targets have been installed
      */
-    installTargets (targets, extensions, wholeProject, hasDevice) {
+    installTargets (targets, extensions, wholeProject) {
         const allPromises = [];
 
         if (extensions) {
@@ -712,8 +708,7 @@ class VirtualMachine extends EventEmitter {
             });
 
             // Select the first target for editing, e.g., the first sprite.
-            // If has device to be loaded, set stage as the editing target.
-            if (wholeProject && (targets.length > 1) && !hasDevice) {
+            if (wholeProject && (targets.length > 1)) {
                 this.editingTarget = targets[1];
             } else {
                 this.editingTarget = targets[0];
@@ -722,10 +717,6 @@ class VirtualMachine extends EventEmitter {
             if (!wholeProject) {
                 this.editingTarget.fixUpVariableReferences();
             }
-            this.emitTargetsUpdate(false /* Don't emit project change */);
-            this.emitWorkspaceUpdate();
-            this.runtime.setEditingTarget(this.editingTarget);
-            this.runtime.ioDevices.cloud.setStage(this.runtime.getTargetForStage());
 
             return targets;
         });
