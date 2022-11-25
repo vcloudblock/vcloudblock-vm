@@ -112,6 +112,13 @@ class Scratch3VideoSensingBlocks {
     }
 
     /**
+     * @return {string} - the ID of this extension.
+     */
+    get EXTENSION_ID () {
+        return 'videoSensing';
+    }
+
+    /**
      * After analyzing a frame the amount of milliseconds until another frame
      * is analyzed.
      * @type {number}

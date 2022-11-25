@@ -139,6 +139,13 @@ class Scratch3Text2SpeechBlocks {
     }
 
     /**
+     * @return {string} - the ID of this extension.
+     */
+    get EXTENSION_ID () {
+        return 'text2speech';
+    }
+
+    /**
      * An object with info for each voice.
      */
     get VOICE_INFO () {

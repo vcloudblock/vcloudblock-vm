@@ -115,26 +115,23 @@ class VirtualMachine extends EventEmitter {
         this.runtime.on(Runtime.PROGRAM_MODE_UPDATE, data => {
             this.emit(Runtime.PROGRAM_MODE_UPDATE, data);
         });
-        this.runtime.on(Runtime.EXTENSION_ADDED, categoryInfo => {
-            this.emit(Runtime.EXTENSION_ADDED, categoryInfo);
+        this.runtime.on(Runtime.SCRATCH_EXTENSION_ADDED, extensionInfo => {
+            this.emit(Runtime.SCRATCH_EXTENSION_ADDED, extensionInfo);
         });
-        this.runtime.on(Runtime.EXTENSION_FIELD_ADDED, (fieldName, fieldImplementation) => {
-            this.emit(Runtime.EXTENSION_FIELD_ADDED, fieldName, fieldImplementation);
+        this.runtime.on(Runtime.SCRATCH_EXTENSION_FIELD_ADDED, (fieldName, fieldImplementation) => {
+            this.emit(Runtime.SCRATCH_EXTENSION_FIELD_ADDED, fieldName, fieldImplementation);
         });
-        this.runtime.on(Runtime.DEVICE_ADDED, (device, categoryInfoArray) => {
-            this.emit(Runtime.DEVICE_ADDED, device, categoryInfoArray);
+        this.runtime.on(Runtime.SCRATCH_EXTENSION_REMOVED, extensionInfo => {
+            this.emit(Runtime.SCRATCH_EXTENSION_REMOVED, extensionInfo);
         });
-        this.runtime.on(Runtime.DEVICE_FIELD_ADDED, (fieldName, fieldImplementation) => {
-            this.emit(Runtime.DEVICE_FIELD_ADDED, fieldName, fieldImplementation);
+        this.runtime.on(Runtime.DEVICE_EXTENSION_ADDED, deviceExtensionsRegister => {
+            this.emit(Runtime.DEVICE_EXTENSION_ADDED, deviceExtensionsRegister);
         });
-        this.runtime.on(Runtime.DEVICE_EXTENSION_ADDED, addExts => {
-            this.emit(Runtime.DEVICE_EXTENSION_ADDED, addExts);
+        this.runtime.on(Runtime.DEVICE_EXTENSION_REMOVED, () => {
+            this.emit(Runtime.DEVICE_EXTENSION_REMOVED);
         });
-        this.runtime.on(Runtime.DEVICE_EXTENSION_REMOVED, data => {
-            this.emit(Runtime.DEVICE_EXTENSION_REMOVED, data);
-        });
-        this.runtime.on(Runtime.BLOCKSINFO_UPDATE, categoryInfo => {
-            this.emit(Runtime.BLOCKSINFO_UPDATE, categoryInfo);
+        this.runtime.on(Runtime.BLOCKSINFO_UPDATE, extensionInfo => {
+            this.emit(Runtime.BLOCKSINFO_UPDATE, extensionInfo);
         });
         this.runtime.on(Runtime.BLOCKS_NEED_UPDATE, () => {
             this.emitWorkspaceUpdate();

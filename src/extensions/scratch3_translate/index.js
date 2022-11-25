@@ -85,6 +85,13 @@ class Scratch3TranslateBlocks {
     }
 
     /**
+     * @return {string} - the ID of this extension.
+     */
+    get EXTENSION_ID () {
+        return 'translate';
+    }
+
+    /**
      * The key to load & store a target's translate state.
      * @return {string} The key.
      */
