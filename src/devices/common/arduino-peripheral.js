@@ -177,6 +177,13 @@ class ArduinoPeripheral{
     }
 
     /**
+     * Called by the runtime when user wants to abort the uploading process.
+     */
+    abortUpload () {
+        this._serialport.abortUpload();
+    }
+
+    /**
      * Called by the runtime when user wants to scan for a peripheral.
      * @param {Array.<string>} pnpidList - the array of pnp id list
      * @param {bool} listAll - wether list all connectable device

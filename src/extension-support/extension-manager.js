@@ -506,8 +506,17 @@ class ExtensionManager {
      * @private
      */
     _registerExtensionInfo (serviceName, extensionInfo) {
-        extensionInfo = this._prepareExtensionInfo(serviceName, extensionInfo);
-        dispatch.call('runtime', '_registerExtensionPrimitives', extensionInfo, serviceName)
+        let extensionId = null;
+        let deviceId = null;
+        // Get deviceId or extensions Id
+        if (serviceName.startsWith('device')) {
+            deviceId = serviceName.split('_')[2];
+        } else {
+            extensionId = serviceName.split('_')[2];
+        }
+
+        extensionInfo = this._prepareExtensionInfo(serviceName, extensionInfo, {extensionId, deviceId});
+        dispatch.call('runtime', '_registerExtensionPrimitives', extensionInfo, {extensionId, deviceId})
             .catch(e => {
                 log.error(`Failed to register primitives for extension on service ${serviceName}:`, e);
             });
@@ -528,13 +537,19 @@ class ExtensionManager {
      * TODO: make the ID unique in cases where two copies of the same extension are loaded.
      * @param {string} serviceName - the name of the service hosting this extension block
      * @param {ExtensionInfo} extensionInfo - the extension info to be sanitized
+     * @param {object} id - the id of oringal extensions or device.
      * @returns {ExtensionInfo} - a new extension info object with cleaned-up values
      * @private
      */
-    _prepareExtensionInfo (serviceName, extensionInfo) {
+    _prepareExtensionInfo (serviceName, extensionInfo, id) {
+        extensionInfo = Object.assign({}, extensionInfo);
         extensionInfo.map(category => {
             if (!/^[a-z0-9]+$/i.test(category.id)) {
                 throw new Error('Invalid category id');
+            }
+            if (id.deviceId) {
+                category.id = `${this.runtime.getDeviceType()}_${category.id}`;
+
             }
             category.name = category.name || category.id;
             category.blocks = category.blocks || [];
