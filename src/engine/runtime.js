@@ -1012,10 +1012,6 @@ class Runtime extends EventEmitter {
      * @private
      */
     _makeExtensionMenuId (menuName, extensionId) {
-        const deviceType = this.getDeviceType();
-        if (deviceType) {
-            return `${deviceType}_${extensionId}_menu_${xmlEscape(menuName)}`;
-        }
         return `${extensionId}_menu_${xmlEscape(menuName)}`;
     }
 
@@ -1035,18 +1031,11 @@ class Runtime extends EventEmitter {
     /**
      * Register the primitives provided by an extension.
      * @param {ExtensionMetadata} extensionInfo - information about the extension (id, blocks, etc.)
-     * @param {string} serviceName - the service name of the extension
+     * @param {object} id - the id of oringal extensions or device.
      * @private
      */
-    _registerExtensionPrimitives (extensionInfo, serviceName) {
-        let extensionId = null;
-        let deviceId = null;
-        // Get deviceId or extensions Id
-        if (serviceName.startsWith('device')) {
-            deviceId = serviceName.split('_')[2];
-        } else {
-            extensionId = serviceName.split('_')[2];
-        }
+    _registerExtensionPrimitives (extensionInfo, id) {
+        const {extensionId, deviceId} = id;
 
         if (deviceId) {
             this._deviceBlockInfo = [];
@@ -1309,15 +1298,7 @@ class Runtime extends EventEmitter {
      * @private
      */
     _convertBlockForScratchBlocks (blockInfo, categoryInfo) {
-        const deviceType = this.getDeviceType();
-        let extendedOpcode;
-        if (deviceType) {
-            extendedOpcode = `${deviceType}_${categoryInfo.id}_${blockInfo.opcode}`;
-        } else {
-            extendedOpcode = `${categoryInfo.id}_${blockInfo.opcode}`;
-        }
-
-
+        const extendedOpcode = `${categoryInfo.id}_${blockInfo.opcode}`;
         const blockJSON = {
             type: extendedOpcode,
             inputsInline: true,
@@ -1869,6 +1850,18 @@ class Runtime extends EventEmitter {
 
         if (this.peripheralExtensions[deviceId]) {
             this.peripheralExtensions[deviceId].upload(code);
+        }
+    }
+
+    /**
+     * Abort upload process.
+     * @param {string} deviceId - the id of the extension.
+     */
+    abortUploadToPeripheral (deviceId) {
+        deviceId = this.analysisRealDeviceId(deviceId);
+
+        if (this.peripheralExtensions[deviceId]) {
+            this.peripheralExtensions[deviceId].abortUpload();
         }
     }
 
@@ -3034,12 +3027,7 @@ class Runtime extends EventEmitter {
      * @property {string} [label] - the label for this opcode if `labelFn` is absent
      */
     getLabelForOpcode (extendedOpcode) {
-        let categoryAndOpcode;
-        if (this.getDeviceType()) {
-            categoryAndOpcode = StringUtil.splitFirst(extendedOpcode, '_')[1];
-        } else {
-            categoryAndOpcode = extendedOpcode;
-        }
+        const categoryAndOpcode = extendedOpcode;
         const [category, opcode] = StringUtil.splitFirst(categoryAndOpcode, '_');
 
         if (!(category && opcode)) return;
