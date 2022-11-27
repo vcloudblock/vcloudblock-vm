@@ -214,6 +214,10 @@ class Serialport extends JSONRPC {
                     message: params.message
                 });
             break;
+        case 'setUploadAbortEnabled':
+            this._runtime.emit(
+                this._runtime.constructor.PERIPHERAL_SET_UPLOAD_ABORT_ENABLED, params);
+            break;
         case 'uploadError':
             this._runtime.emit(
                 this._runtime.constructor.PERIPHERAL_UPLOAD_ERROR, {

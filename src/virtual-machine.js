@@ -175,6 +175,9 @@ class VirtualMachine extends EventEmitter {
         this.runtime.on(Runtime.PERIPHERAL_UPLOAD_STDOUT, info =>
             this.emit(Runtime.PERIPHERAL_UPLOAD_STDOUT, info)
         );
+        this.runtime.on(Runtime.PERIPHERAL_SET_UPLOAD_ABORT_ENABLED, enabled =>
+            this.emit(Runtime.PERIPHERAL_SET_UPLOAD_ABORT_ENABLED, enabled)
+        );
         this.runtime.on(Runtime.PERIPHERAL_UPLOAD_ERROR, info =>
             this.emit(Runtime.PERIPHERAL_UPLOAD_ERROR, info)
         );
