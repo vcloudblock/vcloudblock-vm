@@ -200,6 +200,11 @@ class Serialport extends JSONRPC {
                 window.clearTimeout(this._discoverTimeoutID);
             }
             break;
+        case 'connectError':
+            this._runtime.emit(this._runtime.constructor.PERIPHERAL_REQUEST_ERROR, {
+                message: params.message
+            });
+            break;
         case 'peripheralUnplug':
             this.handleDisconnectError();
             break;

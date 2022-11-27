@@ -820,7 +820,7 @@ class Runtime extends EventEmitter {
 
     /**
      * Event name for reporting whether peripheral is able to abort upload operations.
-     * This causes by link set during upload.
+     * This causes lock the abort button.
      * @const {string}
      */
     static get PERIPHERAL_SET_UPLOAD_ABORT_ENABLED () {
