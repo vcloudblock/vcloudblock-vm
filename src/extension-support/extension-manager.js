@@ -379,8 +379,8 @@ class ExtensionManager {
 
                     const deviceExtensionsRegister = {
                         defineBlocks: global.registerBlocks || global.addBlocks,
-                        defineGenerator: global.registerGenerators || global.addGenerator,
-                        defineMsg: global.registerMessages || global.addMsg
+                        defineGenerators: global.registerGenerators || global.addGenerator,
+                        defineMessages: global.registerMessages || global.addMsg
                     };
 
                     this.runtime.emit(this.runtime.constructor.DEVICE_EXTENSION_ADDED, deviceExtensionsRegister);
@@ -542,7 +542,7 @@ class ExtensionManager {
      * @private
      */
     _prepareExtensionInfo (serviceName, extensionInfo, id) {
-        extensionInfo = Object.assign({}, extensionInfo);
+        extensionInfo = Object.assign([], extensionInfo);
         extensionInfo.map(category => {
             if (!/^[a-z0-9]+$/i.test(category.id)) {
                 throw new Error('Invalid category id');
