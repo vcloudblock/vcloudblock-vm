@@ -181,8 +181,8 @@ class VirtualMachine extends EventEmitter {
         this.runtime.on(Runtime.PERIPHERAL_UPLOAD_ERROR, info =>
             this.emit(Runtime.PERIPHERAL_UPLOAD_ERROR, info)
         );
-        this.runtime.on(Runtime.PERIPHERAL_UPLOAD_SUCCESS, () =>
-            this.emit(Runtime.PERIPHERAL_UPLOAD_SUCCESS)
+        this.runtime.on(Runtime.PERIPHERAL_UPLOAD_SUCCESS, aborted =>
+            this.emit(Runtime.PERIPHERAL_UPLOAD_SUCCESS, aborted)
         );
         this.runtime.on(Runtime.MIC_LISTENING, listening => {
             this.emit(Runtime.MIC_LISTENING, listening);

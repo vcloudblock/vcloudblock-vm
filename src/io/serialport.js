@@ -231,7 +231,7 @@ class Serialport extends JSONRPC {
             break;
         case 'uploadSuccess':
             this._runtime.emit(
-                this._runtime.constructor.PERIPHERAL_UPLOAD_SUCCESS);
+                this._runtime.constructor.PERIPHERAL_UPLOAD_SUCCESS, params ? params.aborted : false);
             break;
         case 'ping':
             return 42;
