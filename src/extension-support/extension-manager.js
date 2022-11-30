@@ -372,10 +372,20 @@ class ExtensionManager {
             const generatorUrl = url + deviceExtension.generator;
             const msgUrl = url + deviceExtension.msg;
 
+            // clear global register before load external extension.
+            global.addToolbox = null;
+            global.registerToolboxs = null;
+            global.addBlocks = null;
+            global.registerBlocks = null;
+            global.addGenerator = null;
+            global.registerGenerators = null;
+            global.addMsg = null;
+            global.registerMessages = null;
+
             loadjs([toolboxUrl, blockUrl, generatorUrl, msgUrl], {returnPromise: true})
                 .then(() => {
-                    const toolboxXML = global.registerToolboxs() || global.addToolbox();
-                    this.runtime.addDeviceExtension(deviceExtensionId, toolboxXML, deviceExtension.library);
+                    const getToolboxXML = global.registerToolboxs || global.addToolbox;
+                    this.runtime.addDeviceExtension(deviceExtensionId, getToolboxXML(), deviceExtension.library);
 
                     const deviceExtensionsRegister = {
                         defineBlocks: global.registerBlocks || global.addBlocks,
@@ -420,6 +430,26 @@ class ExtensionManager {
     }
 
     /**
+     * Get id of extension or device from service name
+     * @param {string} serviceName - the name of service
+     * @returns {object} the id of extension or device
+     */
+    getIdFromServiceName (serviceName) {
+        if (serviceName) {
+            let extensionId = null;
+            let deviceId = null;
+            // get deviceId or extensions Id
+            if (serviceName.startsWith('device')) {
+                deviceId = serviceName.split('_')[2];
+            } else {
+                extensionId = serviceName.split('_')[2];
+            }
+            return {extensionId, deviceId};
+        }
+        return null;
+    }
+
+    /**
      * Regenerate blockinfo for any loaded extensions
      * @returns {Promise} resolved once all the extensions have been reinitialized
      */
@@ -429,7 +459,7 @@ class ExtensionManager {
         const allPromises = loadedExtensionsAndDevice.map(serviceName =>
             dispatch.call(serviceName, 'getInfo')
                 .then(info => {
-                    info = this._prepareExtensionInfo(serviceName, info);
+                    info = this._prepareExtensionInfo(serviceName, info, this.getIdFromServiceName(serviceName));
                     dispatch.call('runtime', '_refreshExtensionPrimitives', info);
                 })
                 .catch(e => {
@@ -506,17 +536,8 @@ class ExtensionManager {
      * @private
      */
     _registerExtensionInfo (serviceName, extensionInfo) {
-        let extensionId = null;
-        let deviceId = null;
-        // Get deviceId or extensions Id
-        if (serviceName.startsWith('device')) {
-            deviceId = serviceName.split('_')[2];
-        } else {
-            extensionId = serviceName.split('_')[2];
-        }
-
-        extensionInfo = this._prepareExtensionInfo(serviceName, extensionInfo, {extensionId, deviceId});
-        dispatch.call('runtime', '_registerExtensionPrimitives', extensionInfo, {extensionId, deviceId})
+        extensionInfo = this._prepareExtensionInfo(serviceName, extensionInfo, this.getIdFromServiceName(serviceName));
+        dispatch.call('runtime', '_registerExtensionPrimitives', extensionInfo, this.getIdFromServiceName(serviceName))
             .catch(e => {
                 log.error(`Failed to register primitives for extension on service ${serviceName}:`, e);
             });
@@ -549,7 +570,6 @@ class ExtensionManager {
             }
             if (id.deviceId) {
                 category.id = `${this.runtime.getDeviceType()}_${category.id}`;
-
             }
             category.name = category.name || category.id;
             category.blocks = category.blocks || [];

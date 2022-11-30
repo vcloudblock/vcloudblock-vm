@@ -1089,7 +1089,9 @@ class Runtime extends EventEmitter {
             }
             return categoryInfo;
         });
-        this.emit(Runtime.SCRATCH_EXTENSION_ADDED, {extensionId, deviceId, categoryInfoArray});
+        // send original device id but not real deivce id.
+        const originalDeivceId = deviceId ? this._deviceId : null;
+        this.emit(Runtime.SCRATCH_EXTENSION_ADDED, {extensionId, deviceId: originalDeivceId, categoryInfoArray});
     }
 
     /**
