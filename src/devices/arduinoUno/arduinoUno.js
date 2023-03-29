@@ -736,11 +736,11 @@ class OpenBlockArduinoUnoDevice {
                         programMode: [ProgramModeType.UPLOAD]
                     },
                     {
-                        opcode: 'serialReadData',
+                        opcode: 'serialReadAByte',
                         text: formatMessage({
-                            id: 'arduinoUno.serial.serialReadData',
-                            default: 'serial read data',
-                            description: 'arduinoUno serial read data'
+                            id: 'arduinoUno.serial.serialReadAByte',
+                            default: 'serial read a byte',
+                            description: 'arduinoUno serial read a byte'
                         }),
                         blockType: BlockType.REPORTER,
                         disableMonitor: true,

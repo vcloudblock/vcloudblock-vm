@@ -741,11 +741,11 @@ class OpenBlockArduinoLeonardoDevice {
                         programMode: [ProgramModeType.UPLOAD]
                     },
                     {
-                        opcode: 'serialReadData',
+                        opcode: 'serialReadAByte',
                         text: formatMessage({
-                            id: 'arduinoLeonardo.serial.serialReadData',
-                            default: 'serial read data',
-                            description: 'arduinoLeonardo serial read data'
+                            id: 'arduinoLeonardo.serial.serialReadAByte',
+                            default: 'serial read a byte',
+                            description: 'arduinoLeonardo serial read a byte'
                         }),
                         blockType: BlockType.REPORTER,
                         disableMonitor: true,

@@ -816,11 +816,11 @@ class OpenBlockArduinoEsp8266Device {
                         programMode: [ProgramModeType.UPLOAD]
                     },
                     {
-                        opcode: 'serialReadData',
+                        opcode: 'serialReadAByte',
                         text: formatMessage({
-                            id: 'arduinoEsp8266.serial.serialReadData',
-                            default: 'serial read data',
-                            description: 'arduinoEsp8266 serial read data'
+                            id: 'arduinoEsp8266.serial.serialReadAByte',
+                            default: 'serial read a byte',
+                            description: 'arduinoEsp8266 serial read a byte'
                         }),
                         blockType: BlockType.REPORTER,
                         programMode: [ProgramModeType.UPLOAD]
