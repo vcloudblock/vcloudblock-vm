@@ -404,29 +404,20 @@ class ExtensionManager {
     /**
      * Unload an device extension by device extension ID
      * @param {string} deviceExtensionId - the ID of an device extension
-     * @returns {Promise} resolved once the device extension is unloaded or rejected on failure
      */
     unloadDeviceExtension (deviceExtensionId) {
-        return new Promise(resolve => {
-            this.runtime.removeDeviceExtension(deviceExtensionId);
-            this.runtime.emit(this.runtime.constructor.DEVICE_EXTENSION_REMOVED);
-            return resolve();
-        });
+        this.runtime.removeDeviceExtension(deviceExtensionId);
+        this.runtime.emit(this.runtime.constructor.DEVICE_EXTENSION_REMOVED);
     }
 
     /**
      * Unload all device extensions
-     * @returns {Promise} resolved once all device extensions is unloaded
      */
     unloadAllDeviceExtension () {
-        const allPromises = [];
-
         const loadedDeviceExtensionId = this.runtime.getLoadedDeviceExtension();
         loadedDeviceExtensionId.forEach(id => {
-            allPromises.push(this.unloadDeviceExtension(id));
+            this.unloadDeviceExtension(id);
         });
-
-        return Promise.all(allPromises);
     }
 
     /**
