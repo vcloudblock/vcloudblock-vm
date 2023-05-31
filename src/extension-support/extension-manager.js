@@ -445,9 +445,9 @@ class ExtensionManager {
      * @returns {Promise} resolved once all the extensions have been reinitialized
      */
     refreshBlocks () {
-        const loadedExtensionsAndDevice = Array.from(this._loadedExtensions.values())
+        const allServiceName = Array.from(this._loadedExtensions.values())
             .concat(Array.from(this._loadedDevice.values()));
-        const allPromises = loadedExtensionsAndDevice.map(serviceName =>
+        const allPromises = allServiceName.map(serviceName =>
             dispatch.call(serviceName, 'getInfo')
                 .then(info => {
                     info = this._prepareExtensionInfo(serviceName, info, this.getIdFromServiceName(serviceName));
