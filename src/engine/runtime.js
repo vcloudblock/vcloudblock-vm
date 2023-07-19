@@ -252,22 +252,10 @@ class Runtime extends EventEmitter {
         this._isRealtimeMode = true;
 
         /**
-         * Currently selected device's id.
-         * @type {?Device}
+         * Currently selected device.
+         * @type {?object}
          */
-        this._deviceId = null;
-
-        /**
-         * Currently selected device type.
-         * @type {?DeviceType}
-         */
-        this._deviceType = null;
-
-        /**
-         * Currently device pnp id list.
-         * @type {?Array.<string>}
-         */
-        this._pnpIdList = [];
+        this._device = {deviceId: null, type: null, pnpIdList: []};
 
         /**
          * Currently device realtime firmware serialport baudrate.
@@ -1090,8 +1078,8 @@ class Runtime extends EventEmitter {
             return categoryInfo;
         });
         // send original device id but not real deivce id.
-        const originalDeivceId = deviceId ? this._deviceId : null;
-        this.emit(Runtime.SCRATCH_EXTENSION_ADDED, {extensionId, deviceId: originalDeivceId, categoryInfoArray});
+        const originalDeviceId = deviceId ? this._device.deviceId : null;
+        this.emit(Runtime.SCRATCH_EXTENSION_ADDED, {extensionId, deviceId: originalDeviceId, categoryInfoArray});
     }
 
     /**
@@ -1694,18 +1682,17 @@ class Runtime extends EventEmitter {
      * @param {?Target} [target] - the active editing target (optional)
      */
     getBlocksXML (target) {
-        const _loadedDeviceExtensionsXML = [];
+        const _loadedDeviceExtensionsInfo = [];
         this._loadedDeviceExtensions.forEach((value, id) => {
-
-            _loadedDeviceExtensionsXML.push({id: id, xml: value.xml});
+            _loadedDeviceExtensionsInfo.push({id: id, xml: value.xml});
         });
 
-        if (this.getDeviceId() === null) {
+        if (this._device.deviceId === null) {
             return this.generateXMLfromBlockInfo(target, this._blockInfo);
         } else if (this.isRealtimeMode()) {
             return this.generateXMLfromBlockInfo(target, this._deviceBlockInfo.concat(this._blockInfo));
         }
-        return this.generateXMLfromBlockInfo(target, this._deviceBlockInfo).concat(_loadedDeviceExtensionsXML);
+        return this.generateXMLfromBlockInfo(target, this._deviceBlockInfo).concat(_loadedDeviceExtensionsInfo);
 
     }
 
@@ -1780,7 +1767,7 @@ class Runtime extends EventEmitter {
         deviceId = this.analysisRealDeviceId(deviceId);
 
         if (this.peripheralExtensions[deviceId]) {
-            this.peripheralExtensions[deviceId].scan(this.getPnpIdList(), listAll);
+            this.peripheralExtensions[deviceId].scan(this._device.pnpIdList, listAll);
         }
     }
 
@@ -2515,51 +2502,26 @@ class Runtime extends EventEmitter {
     }
 
     /**
-     * Set the current selected device's id known by the runtime.
-     * @param {!Device} deviceId of current.
+     * Set the current selected device known by the runtime.
+     * @param {!object} device the object of device.
      */
-    setDeviceId (deviceId) {
-        this._deviceId = deviceId;
+    setDevice (device) {
+        this._device = device;
+    }
+
+    /**
+     * Clear the selected device.
+     */
+    clearDevice () {
+        this._device = {deviceId: null, type: null, pnpIdList: []};
     }
 
     /**
      * Get the current selected device.
      * @return {?Device} current selected device known by the runtime.
      */
-    getDeviceId () {
-        return this._deviceId;
-    }
-
-    /**
-     * Set the current selected device type known by the runtime.
-     * @param {!DeviceType} type of deivce of current.
-     */
-    setDeviceType (type) {
-        this._deviceType = type;
-    }
-
-    /**
-     * Get the current selected device type.
-     * @return {?DeviceType} current selected device type known by the runtime.
-     */
-    getDeviceType () {
-        return this._deviceType;
-    }
-
-    /**
-     * Set the device pnp id list known by the runtime.
-     * @param {Array.<string>} pnpidList pnp id list.
-     */
-    setPnpIdList (pnpidList) {
-        this._pnpIdList = pnpidList;
-    }
-
-    /**
-     * Get the current device pnp id list.
-     * @return {?Array.<string>} current device pnp id list known by the runtime.
-     */
-    getPnpIdList () {
-        return this._pnpIdList;
+    getDevice () {
+        return this._device;
     }
 
     /**
@@ -2609,11 +2571,7 @@ class Runtime extends EventEmitter {
      * @return {Array.id} array of current loaded device extension ids.
      */
     getLoadedDeviceExtension () {
-        const ids = [];
-        this._loadedDeviceExtensions.forEach((value, id) => {
-            ids.push(id);
-        });
-        return ids;
+        return Array.from(this._loadedDeviceExtensions.keys());
     }
 
     /**
@@ -2639,6 +2597,14 @@ class Runtime extends EventEmitter {
     }
 
     /**
+     * Remove a device extension of the _loadedDeviceExtensions.
+     * @param {string} id id of this device extension.
+     */
+    removeScratchExtension (id) {
+        this._loadedScratchExtensions.splice(this._loadedScratchExtensions.indexOf(id), 1);
+    }
+
+    /**
      * Clear all extensions of the _loadedScratchExtensions.
      */
     clearScratchExtension () {
@@ -2650,7 +2616,7 @@ class Runtime extends EventEmitter {
      * Get the current Loaded extension.
      * @return {Array.id} array of current loaded extension ids.
      */
-    getLoadedExtension () {
+    getLoadedScratchExtension () {
         return this._loadedScratchExtensions;
     }
 
@@ -2661,8 +2627,8 @@ class Runtime extends EventEmitter {
     setRealtimeMode (sta) {
         if (this._isRealtimeMode !== sta){
             this._isRealtimeMode = sta;
-            if (sta && this.getPeripheralIsConnected(this._deviceId)) {
-                this.setPeripheralBaudrate(this._deviceId, this._realtimeBaudrate);
+            if (sta && this.getPeripheralIsConnected(this._device.id)) {
+                this.setPeripheralBaudrate(this._device.id, this._realtimeBaudrate);
             }
             this.emit(Runtime.PROGRAM_MODE_UPDATE, {isRealtimeMode: this._isRealtimeMode});
         }

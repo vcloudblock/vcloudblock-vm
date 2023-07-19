@@ -130,10 +130,10 @@ class ExtensionManager {
         this._loadedDevice = new Map();
 
         /**
-         * Map of extensions.
+         * Map of device extensions that can be loaded.
          * @type {Array.<DeviceExtensions>}
          */
-        this._deviceExtensions = [];
+        this._deviceExtensionsList = [];
 
         /**
          * Keep a reference to the runtime so we can construct internal extension objects.
@@ -251,17 +251,16 @@ class ExtensionManager {
 
     /**
      * Load an device by URL or internal device ID
-     * @param {string} deviceId - the URL for the device to load OR the ID of an internal device
-     * @param {string} deviceType - the type of device
-     * @param {Array.<string>} pnpidList - the array of pnpid list
+     * @param {object} device - the device to be load
      * @returns {Promise} resolved once the device is loaded and initialized or rejected on failure
      */
-    loadDeviceURL (deviceId, deviceType, pnpidList) {
+    loadDeviceURL (device) {
         // if no deviceid return
-        if (deviceId === 'null') {
+        if (device.deviceId === 'null') {
             this.clearDevice();
             return Promise.resolve();
         }
+        const {deviceId, type, pnpidList} = device;
 
         const realDeviceId = this.runtime.analysisRealDeviceId(deviceId);
 
@@ -273,14 +272,12 @@ class ExtensionManager {
             }
 
             // Try to disconnect the old device before change device.
-            this.runtime.disconnectPeripheral(this.runtime.getDeviceId());
+            this.runtime.disconnectPeripheral(this.runtime.getDevice().deviceId);
 
-            this.runtime.setDeviceId(deviceId);
-            this.runtime.setDeviceType(deviceType);
-            this.runtime.setPnpIdList(pnpidList);
+            this.runtime.setDevice({deviceId: deviceId, type: type, pnpIdList: pnpidList});
             this.runtime.clearMonitor();
-            const device = builtinDevices[realDeviceId]();
-            const deviceInstance = new device(this.runtime, deviceId);
+            const dev = builtinDevices[realDeviceId]();
+            const deviceInstance = new dev(this.runtime, deviceId);
             const serviceName = this._registerInternalExtension(deviceInstance);
             this._loadedDevice.clear();
 
@@ -301,13 +298,11 @@ class ExtensionManager {
      * Clear curent device
      */
     clearDevice () {
-        this.runtime.disconnectPeripheral(this.runtime.getDeviceId());
+        this.runtime.disconnectPeripheral(this.runtime.getDevice().deviceId);
 
-        const deviceId = this.runtime.getDeviceId();
+        const deviceId = this.runtime.getDevice().deviceId;
 
-        this.runtime.setDeviceId(null);
-        this.runtime.setDeviceType(null);
-        this.runtime.setPnpIdList([]);
+        this.runtime.clearDevice();
         this.runtime.clearMonitor();
         this._loadedDevice.clear();
 
@@ -335,8 +330,8 @@ class ExtensionManager {
                         }
                         return extension;
                     });
-                    this._deviceExtensions = extensions;
-                    return resolve(this._deviceExtensions);
+                    this._deviceExtensionsList = extensions;
+                    return resolve(this._deviceExtensionsList);
                 }, err => {
                     log.warn(`Can not fetch data from local extension server: ${err}`);
                     return resolve();
@@ -360,7 +355,7 @@ class ExtensionManager {
      */
     loadDeviceExtension (deviceExtensionId) {
         return new Promise((resolve, reject) => {
-            const deviceExtension = this._deviceExtensions.find(ext => ext.extensionId === deviceExtensionId);
+            const deviceExtension = this._deviceExtensionsList.find(ext => ext.extensionId === deviceExtensionId);
             if (typeof deviceExtension === 'undefined') {
                 return reject(`Error while loadDeviceExtension device extension ` +
                     `can not find device extension: ${deviceExtensionId}`);
@@ -560,7 +555,7 @@ class ExtensionManager {
                 throw new Error('Invalid category id');
             }
             if (id.deviceId) {
-                category.id = `${this.runtime.getDeviceType()}_${category.id}`;
+                category.id = `${this.runtime.getDevice().type}_${category.id}`;
             }
             category.name = category.name || category.id;
             category.blocks = category.blocks || [];
