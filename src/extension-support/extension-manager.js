@@ -117,6 +117,12 @@ class ExtensionManager {
         this.pendingWorkers = [];
 
         /**
+         * Map of scratch extensions that can be loaded.
+         * @type {Array.<Extensions>}
+         */
+        this._extensionsList = [];
+
+        /**
          * Set of loaded extension URLs/IDs (equivalent for built-in extensions).
          * @type {Set.<string>}
          * @private
@@ -168,6 +174,26 @@ class ExtensionManager {
      */
     isDeviceLoaded (deviceID) {
         return this._loadedDevice.has(deviceID);
+    }
+
+    /**
+     * Get extensions list from local server.
+     * @param {string} extensions - raw extensions data
+     * @returns {Promise} resolved extension list has been fetched or failure
+     */
+    getExtensionsList (extensions) {
+        return new Promise(resolve => {
+            const processedExtensions = extensions.map(extension => {
+                if (this.isExtensionLoaded(extension.extensionId)) {
+                    extension.isLoaded = true;
+                } else {
+                    extension.isLoaded = false;
+                }
+                return extension;
+            });
+
+            return resolve(processedExtensions);
+        });
     }
 
     /**
@@ -224,6 +250,23 @@ class ExtensionManager {
             this.pendingExtensions.push({extensionURL, resolve, reject});
             dispatch.addWorker(new ExtensionWorker());
         });
+    }
+
+    /**
+     * Unload an extension by URL or internal extension ID
+     * @param {string} extensionURL - the URL for the extension to load OR the ID of an internal extension
+     */
+    unloadExtension (extensionURL) {
+        this._loadedExtensions.delete(extensionURL);
+        this.runtime.removeScratchExtension(extensionURL);
+    }
+
+    /**
+     * Unload all extension
+     */
+    clearExtensions () {
+        this._loadedExtensions.clear();
+        this.runtime.clearScratchExtension();
     }
 
     /**
@@ -285,9 +328,8 @@ class ExtensionManager {
             this._loadedDevice.set(deviceId, serviceName);
 
             // Clear current extentions.
-            this.runtime.clearScratchExtension();
-            this._loadedExtensions.clear();
-            this.unloadAllDeviceExtension();
+            this.clearExtensions();
+            this.clearDeviceExtension();
 
             return Promise.resolve();
         }
@@ -308,9 +350,8 @@ class ExtensionManager {
         this._loadedDevice.clear();
 
         // Clear current extentions.
-        this.runtime.clearScratchExtension();
-        this._loadedExtensions.clear();
-        this.unloadAllDeviceExtension();
+        this.clearExtensions();
+        this.clearDeviceExtension();
 
         this.runtime.emit(this.runtime.constructor.SCRATCH_EXTENSION_REMOVED, {deviceId});
     }
@@ -362,31 +403,23 @@ class ExtensionManager {
                     `can not find device extension: ${deviceExtensionId}`);
             }
 
-            let toolboxUrl;
-            let blockUrl;
-            let generatorUrl;
-            let msgUrl;
+            let registerUrls = [];
 
-            if (validUrl.isWebUri(deviceExtension.toolbox)) {
-                toolboxUrl = deviceExtension.toolbox;
-            } else {
-                toolboxUrl = localResourcesServerUrl + deviceExtension.toolbox;
-            }
-            if (validUrl.isWebUri(deviceExtension.blocks)) {
-                blockUrl = deviceExtension.blocks;
-            } else {
-                blockUrl = localResourcesServerUrl + deviceExtension.blocks;
-            }
-            if (validUrl.isWebUri(deviceExtension.generator)) {
-                generatorUrl = deviceExtension.generator;
-            } else {
-                generatorUrl = localResourcesServerUrl + deviceExtension.generator;
-            }
-            if (validUrl.isWebUri(deviceExtension.msg)) {
-                msgUrl = deviceExtension.msg;
-            } else {
-                msgUrl = localResourcesServerUrl + deviceExtension.msg;
-            }
+            registerUrls.push(deviceExtension.toolbox);
+            registerUrls.push(deviceExtension.blocks);
+            registerUrls.push(deviceExtension.msg);
+            registerUrls.push(deviceExtension.generator);
+
+            // Remove null values
+            registerUrls = registerUrls.filter(url => url !== null && typeof url !== 'undefined' && url !== '');
+
+            // If it is a local file, add the localhost address in front
+            registerUrls = registerUrls.map(url => {
+                if (!validUrl.isWebUri(url)) {
+                    return localResourcesServerUrl + url;
+                }
+                return url;
+            });
 
             // clear global register before load external extension.
             global.addToolbox = null;
@@ -398,7 +431,7 @@ class ExtensionManager {
             global.addMsg = null;
             global.registerMessages = null;
 
-            loadjs([toolboxUrl, blockUrl, generatorUrl, msgUrl], {returnPromise: true})
+            loadjs(registerUrls, {returnPromise: true})
                 .then(() => {
                     const getToolboxXML = global.registerToolboxs || global.addToolbox;
                     this.runtime.addDeviceExtension(deviceExtensionId, getToolboxXML(), deviceExtension.library);
@@ -429,7 +462,7 @@ class ExtensionManager {
     /**
      * Unload all device extensions
      */
-    unloadAllDeviceExtension () {
+    clearDeviceExtension () {
         const loadedDeviceExtensionId = this.runtime.getLoadedDeviceExtension();
         loadedDeviceExtensionId.forEach(id => {
             this.unloadDeviceExtension(id);

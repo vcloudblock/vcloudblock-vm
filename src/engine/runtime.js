@@ -1693,7 +1693,6 @@ class Runtime extends EventEmitter {
             return this.generateXMLfromBlockInfo(target, this._deviceBlockInfo.concat(this._blockInfo));
         }
         return this.generateXMLfromBlockInfo(target, this._deviceBlockInfo).concat(_loadedDeviceExtensionsInfo);
-
     }
 
     /**
@@ -2589,7 +2588,7 @@ class Runtime extends EventEmitter {
     }
 
     /**
-     * Add a extension to the _loadedScratchExtensions.
+     * Add a scratch extension id to the _loadedScratchExtensions.
      * @param {string} id id of this extension.
      */
     addScratchExtension (id) {
@@ -2597,23 +2596,26 @@ class Runtime extends EventEmitter {
     }
 
     /**
-     * Remove a device extension of the _loadedDeviceExtensions.
+     * Remove a scratch extension id from the _loadedScratchExtensions.
      * @param {string} id id of this device extension.
      */
     removeScratchExtension (id) {
+        this._blockInfo.splice(this._blockInfo.indexOf(id), 1);
         this._loadedScratchExtensions.splice(this._loadedScratchExtensions.indexOf(id), 1);
+        this.emit(Runtime.SCRATCH_EXTENSION_REMOVED);
     }
 
     /**
-     * Clear all extensions of the _loadedScratchExtensions.
+     * Clear all scratch extensions.
      */
     clearScratchExtension () {
         this._blockInfo = [];
         this._loadedScratchExtensions = [];
+        this.emit(Runtime.SCRATCH_EXTENSION_REMOVED);
     }
 
     /**
-     * Get the current Loaded extension.
+     * Get the current Loaded scratch extension.
      * @return {Array.id} array of current loaded extension ids.
      */
     getLoadedScratchExtension () {
@@ -2627,8 +2629,8 @@ class Runtime extends EventEmitter {
     setRealtimeMode (sta) {
         if (this._isRealtimeMode !== sta){
             this._isRealtimeMode = sta;
-            if (sta && this.getPeripheralIsConnected(this._device.id)) {
-                this.setPeripheralBaudrate(this._device.id, this._realtimeBaudrate);
+            if (sta && this.getPeripheralIsConnected(this._device.deviceId)) {
+                this.setPeripheralBaudrate(this._device.deviceId, this._realtimeBaudrate);
             }
             this.emit(Runtime.PROGRAM_MODE_UPDATE, {isRealtimeMode: this._isRealtimeMode});
         }
