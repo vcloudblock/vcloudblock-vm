@@ -416,7 +416,7 @@ class Scratch3VideoSensingBlocks {
         }
 
         // Return extension definition
-        return {
+        return [{
             id: 'videoSensing',
             name: formatMessage({
                 id: 'videoSensing.categoryName',
@@ -508,7 +508,7 @@ class Scratch3VideoSensingBlocks {
                     items: this._buildMenu(this.VIDEO_STATE_INFO)
                 }
             }
-        };
+        }];
     }
 
     /**

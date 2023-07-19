@@ -175,7 +175,7 @@ class Scratch3MakeyMakeyBlocks {
      * @returns {object} metadata for this extension and its blocks.
      */
     getInfo () {
-        return {
+        return [{
             id: 'makeymakey',
             name: 'Makey Makey',
             blockIconURI: blockIconURI,
@@ -270,7 +270,7 @@ class Scratch3MakeyMakeyBlocks {
                     items: this.buildSequenceMenu(this.DEFAULT_SEQUENCES)
                 }
             }
-        };
+        }];
     }
 
     /*

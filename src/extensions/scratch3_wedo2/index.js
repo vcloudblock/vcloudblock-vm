@@ -926,7 +926,7 @@ class Scratch3WeDo2Blocks {
      * @returns {object} metadata for this extension and its blocks.
      */
     getInfo () {
-        return {
+        return [{
             id: Scratch3WeDo2Blocks.EXTENSION_ID,
             name: 'WeDo 2.0',
             blockIconURI: iconURI,
@@ -1292,7 +1292,7 @@ class Scratch3WeDo2Blocks {
                     items: ['<', '>']
                 }
             }
-        };
+        }];
     }
 
     /**

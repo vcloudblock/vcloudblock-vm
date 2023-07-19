@@ -1030,7 +1030,7 @@ class Boost {
         const portID = data[3];
 
         switch (messageType) {
-        
+
         case BoostMessage.HUB_PROPERTIES: {
             const property = data[3];
             switch (property) {
@@ -1285,7 +1285,7 @@ class Scratch3BoostBlocks {
      * @returns {object} metadata for this extension and its blocks.
      */
     getInfo () {
-        return {
+        return [{
             id: Scratch3BoostBlocks.EXTENSION_ID,
             name: 'BOOST',
             blockIconURI: iconURI,
@@ -1724,7 +1724,7 @@ class Scratch3BoostBlocks {
                     ]
                 }
             }
-        };
+        }];
     }
 
     /**

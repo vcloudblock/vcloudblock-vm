@@ -584,7 +584,7 @@ class Scratch3MicroBitBlocks {
      * @returns {object} metadata for this extension and its blocks.
      */
     getInfo () {
-        return {
+        return [{
             id: Scratch3MicroBitBlocks.EXTENSION_ID,
             name: Scratch3MicroBitBlocks.EXTENSION_NAME,
             blockIconURI: blockIconURI,
@@ -782,7 +782,7 @@ class Scratch3MicroBitBlocks {
                     items: ['0', '1', '2']
                 }
             }
-        };
+        }];
     }
 
     /**

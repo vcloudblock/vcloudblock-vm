@@ -418,7 +418,7 @@ class Scratch3Text2SpeechBlocks {
             });
         }
 
-        return {
+        return [{
             id: 'text2speech',
             name: formatMessage({
                 id: 'text2speech.categoryName',
@@ -486,7 +486,7 @@ class Scratch3Text2SpeechBlocks {
                     items: this.getLanguageMenu()
                 }
             }
-        };
+        }];
     }
 
     /**

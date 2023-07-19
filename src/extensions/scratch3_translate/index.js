@@ -107,7 +107,7 @@ class Scratch3TranslateBlocks {
         this._randomLanguageCode = this._supportedLanguages[
             Math.floor(Math.random() * this._supportedLanguages.length)].value;
 
-        return {
+        return [{
             id: 'translate',
             name: formatMessage({
                 id: 'translate.categoryName',
@@ -158,7 +158,7 @@ class Scratch3TranslateBlocks {
                     items: this._supportedLanguages
                 }
             }
-        };
+        }];
     }
 
     /**
