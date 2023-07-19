@@ -1,6 +1,7 @@
 const fetch = require('node-fetch');
 const loadjs = require('loadjs');
 const formatMessage = require('format-message');
+const validUrl = require('valid-url');
 
 const dispatch = require('../dispatch/central-dispatch');
 const log = require('../util/log');
@@ -361,11 +362,31 @@ class ExtensionManager {
                     `can not find device extension: ${deviceExtensionId}`);
             }
 
-            const url = localResourcesServerUrl;
-            const toolboxUrl = url + deviceExtension.toolbox;
-            const blockUrl = url + deviceExtension.blocks;
-            const generatorUrl = url + deviceExtension.generator;
-            const msgUrl = url + deviceExtension.msg;
+            let toolboxUrl;
+            let blockUrl;
+            let generatorUrl;
+            let msgUrl;
+
+            if (validUrl.isWebUri(deviceExtension.toolbox)) {
+                toolboxUrl = deviceExtension.toolbox;
+            } else {
+                toolboxUrl = localResourcesServerUrl + deviceExtension.toolbox;
+            }
+            if (validUrl.isWebUri(deviceExtension.blocks)) {
+                blockUrl = deviceExtension.blocks;
+            } else {
+                blockUrl = localResourcesServerUrl + deviceExtension.blocks;
+            }
+            if (validUrl.isWebUri(deviceExtension.generator)) {
+                generatorUrl = deviceExtension.generator;
+            } else {
+                generatorUrl = localResourcesServerUrl + deviceExtension.generator;
+            }
+            if (validUrl.isWebUri(deviceExtension.msg)) {
+                msgUrl = deviceExtension.msg;
+            } else {
+                msgUrl = localResourcesServerUrl + deviceExtension.msg;
+            }
 
             // clear global register before load external extension.
             global.addToolbox = null;
