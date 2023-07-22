@@ -39,7 +39,7 @@ const SERIAL_CONFIG = {
 const DIVECE_OPT = {
     type: 'arduino',
     fqbn: 'arduino:avr:mega:cpu=atmega2560',
-    firmware: 'arduinoMega2560.standardFirmata.ino.hex'
+    firmware: 'arduinoMega2560.hex'
 };
 
 const Pins = {
