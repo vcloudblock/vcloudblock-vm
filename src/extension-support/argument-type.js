@@ -49,9 +49,29 @@ const ArgumentType = {
     NOTE: 'note',
 
     /**
+     * Intger numeric value with text field
+     */
+    INTEGER_NUMBER: 'intger_number',
+
+    /**
+     * Positive numeric value with text field
+     */
+    POSITIVE_NUMBER: 'positive_number',
+
+    /**
+     * Whole numeric value with text field
+     */
+    WHOLE_NUMBER: 'whole_number',
+
+    /**
      * Numeric value with slider field. from 0 to 100 value
      */
     OTO100_NUMBER: '0to100_number',
+
+    /**
+     * Numeric value with slider field. from -127 to 127 integer value
+     */
+    INT8_NUMBER: 'int8_number',
 
     /**
      * Numeric value with slider field. from 0 to 255 integer value
@@ -59,9 +79,19 @@ const ArgumentType = {
     UINT8_NUMBER: 'uint8_number',
 
     /**
+     * Numeric value with slider field. from -255 to 255 integer value
+     */
+    INT9_NUMBER: 'int9_number',
+
+    /**
      * Numeric value with slider field. from 0 to 1023 integer value
      */
-    UINT10_NUMBER: 'uint10_number'
+    UINT10_NUMBER: 'uint10_number',
+
+    /**
+     * Numeric value with slider field. from -1023 to 1023 integer value
+     */
+    INT11_NUMBER: 'int11_number'
 };
 
 module.exports = ArgumentType;

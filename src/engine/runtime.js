@@ -108,9 +108,33 @@ const ArgumentTypeMap = (() => {
             fieldName: 'NOTE'
         }
     };
+    map[ArgumentType.INTEGER_NUMBER] = {
+        shadow: {
+            type: 'math_integer',
+            fieldName: 'NUM'
+        }
+    };
+    map[ArgumentType.WHOLE_NUMBER] = {
+        shadow: {
+            type: 'math_whole_number',
+            fieldName: 'NUM'
+        }
+    };
+    map[ArgumentType.POSITIVE_NUMBER] = {
+        shadow: {
+            type: 'math_positive_number',
+            fieldName: 'NUM'
+        }
+    };
     map[ArgumentType.OTO100_NUMBER] = {
         shadow: {
             type: 'math_0to100_number',
+            fieldName: 'NUM'
+        }
+    };
+    map[ArgumentType.INT8_NUMBER] = {
+        shadow: {
+            type: 'math_int8_number',
             fieldName: 'NUM'
         }
     };
@@ -120,9 +144,21 @@ const ArgumentTypeMap = (() => {
             fieldName: 'NUM'
         }
     };
+    map[ArgumentType.INT9_NUMBER] = {
+        shadow: {
+            type: 'math_int9_number',
+            fieldName: 'NUM'
+        }
+    };
     map[ArgumentType.UINT10_NUMBER] = {
         shadow: {
             type: 'math_uint10_number',
+            fieldName: 'NUM'
+        }
+    };
+    map[ArgumentType.INT11_NUMBER] = {
+        shadow: {
+            type: 'math_int11_number',
             fieldName: 'NUM'
         }
     };
@@ -1219,7 +1255,7 @@ class Runtime extends EventEmitter {
         };
     }
 
-    _buildCustomFieldInfo (fieldName, fieldInfo, extensionId, categoryInfo) {
+    _buildCustomFieldInfo (fieldName, fieldInfo, extensionId) {
         const extendedName = `${extensionId}_${fieldName}`;
         return {
             fieldName: fieldName,
@@ -1227,14 +1263,12 @@ class Runtime extends EventEmitter {
             argumentTypeInfo: {
                 shadow: {
                     type: extendedName,
-                    fieldName: `field_${extendedName}`
+                    fieldName: fieldInfo.args0[0].name
                 }
             },
             scratchBlocksDefinition: this._buildCustomFieldTypeForScratchBlocks(
                 extendedName,
-                fieldInfo.output,
-                fieldInfo.outputShape,
-                categoryInfo
+                fieldInfo
             ),
             fieldImplementation: fieldInfo.implementation
         };
@@ -1244,28 +1278,21 @@ class Runtime extends EventEmitter {
      * Build the scratch-blocks JSON needed for a fieldType.
      * Custom field types need to be namespaced to the extension so that extensions can't interfere with each other
      * @param  {string} fieldName - The name of the field
-     * @param {string} output - The output of the field
-     * @param {number} outputShape - Shape of the field (from ScratchBlocksConstants)
-     * @param {object} categoryInfo - The category the field belongs to (Used to set its colors)
+     * @param {string} fieldInfo - The info of the field
      * @returns {object} - Object to be inserted into scratch-blocks
      */
-    _buildCustomFieldTypeForScratchBlocks (fieldName, output, outputShape, categoryInfo) {
+    _buildCustomFieldTypeForScratchBlocks (fieldName, fieldInfo) {
         return {
             json: {
                 type: fieldName,
                 message0: '%1',
                 inputsInline: true,
-                output: output,
-                colour: categoryInfo.color1,
-                colourSecondary: categoryInfo.color2,
-                colourTertiary: categoryInfo.color3,
-                outputShape: outputShape,
-                args0: [
-                    {
-                        name: `field_${fieldName}`,
-                        type: `field_${fieldName}`
-                    }
-                ]
+                output: fieldInfo.output,
+                colour: fieldInfo.color1,
+                colourSecondary: fieldInfo.color2,
+                colourTertiary: fieldInfo.color3,
+                outputShape: fieldInfo.outputShape,
+                args0: fieldInfo.args0
             }
         };
     }
