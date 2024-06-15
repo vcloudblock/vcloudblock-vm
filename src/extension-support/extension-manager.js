@@ -454,7 +454,7 @@ class ExtensionManager {
 
             registerUrls.push(deviceExtension.toolbox);
             registerUrls.push(deviceExtension.blocks);
-            registerUrls.push(deviceExtension.msg);
+            registerUrls.push(deviceExtension.translations);
             registerUrls.push(deviceExtension.generator);
 
             // Remove null values
@@ -472,7 +472,7 @@ class ExtensionManager {
             global.registerToolboxs = null;
             global.registerBlocks = null;
             global.registerGenerators = null;
-            global.registerMessages = null;
+            global.registerBlocksMessages = null;
 
             loadjs(registerUrls, {returnPromise: true})
                 .then(() => {
@@ -482,7 +482,7 @@ class ExtensionManager {
                     const deviceExtensionsRegister = {
                         defineBlocks: global.registerBlocks,
                         defineGenerators: global.registerGenerators,
-                        defineMessages: global.registerMessages
+                        defineMessages: global.registerBlocksMessages
                     };
 
                     this.runtime.emit(this.runtime.constructor.DEVICE_EXTENSION_ADDED, deviceExtensionsRegister);
