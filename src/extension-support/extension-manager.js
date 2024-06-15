@@ -469,24 +469,20 @@ class ExtensionManager {
             });
 
             // clear global register before load external extension.
-            global.addToolbox = null;
             global.registerToolboxs = null;
-            global.addBlocks = null;
             global.registerBlocks = null;
-            global.addGenerator = null;
             global.registerGenerators = null;
-            global.addMsg = null;
             global.registerMessages = null;
 
             loadjs(registerUrls, {returnPromise: true})
                 .then(() => {
-                    const getToolboxXML = global.registerToolboxs || global.addToolbox;
+                    const getToolboxXML = global.registerToolboxs;
                     this.runtime.addDeviceExtension(deviceExtensionId, getToolboxXML(), deviceExtension.library);
 
                     const deviceExtensionsRegister = {
-                        defineBlocks: global.registerBlocks || global.addBlocks,
-                        defineGenerators: global.registerGenerators || global.addGenerator,
-                        defineMessages: global.registerMessages || global.addMsg
+                        defineBlocks: global.registerBlocks,
+                        defineGenerators: global.registerGenerators,
+                        defineMessages: global.registerMessages
                     };
 
                     this.runtime.emit(this.runtime.constructor.DEVICE_EXTENSION_ADDED, deviceExtensionsRegister);
