@@ -275,10 +275,46 @@ class ExtensionManager {
      */
     getDeviceList () {
         return new Promise(resolve => {
-            fetch(`${localResourcesServerUrl}devices/cmtye/${formatMessage.setup().locale}.json`)
+            fetch(`${localResourcesServerUrl}devices/${formatMessage.setup().locale}.json`)
                 .then(response => response.json())
                 .then(devices => {
-                    devices = devices.map(dev => {
+
+                    // filter unsupported distribution content
+                    let filteredDevices = [];
+                    let currentBases = 'none';
+
+                    devices.forEach(dev => {
+                        const deviceId = dev.deviceId;
+                        if (!deviceId.startsWith('arduino') && !deviceId.startsWith('microPython')) {
+                            currentBases = deviceId;
+                            filteredDevices.push(dev);
+                        } else if (deviceId.indexOf(currentBases.charAt(0).toUpperCase() +
+                            currentBases.slice(1)) === -1) {
+                            currentBases = deviceId;
+                            filteredDevices.push(dev);
+                        } else if (deviceId.startsWith('arduino')) {
+                            filteredDevices.pop();
+                            filteredDevices.push(dev);
+                        }
+                    });
+
+                    filteredDevices = filteredDevices.filter(dev => {
+                        // Filter out external non-inherited devices
+                        if ((dev.deviceId.indexOf('_') === -1) && (!!dev.name)) {
+                            return false;
+                        }
+
+                        // Filter out devices that are inherited but have multiple programming
+                        // frameworks, and only keep devices with the Arduino framework
+                        if ((dev.deviceId.indexOf('_') !== -1) && !!dev.typeList &&
+                            (dev.deviceId.indexOf('arduino') === -1)) {
+                            return false;
+                        }
+                        return true;
+                    });
+
+                    devices = filteredDevices.map(dev => {
+                        dev.hide = false;
                         dev.iconURL = localResourcesServerUrl + dev.iconURL;
                         dev.connectionIconURL = localResourcesServerUrl + dev.connectionIconURL;
                         dev.connectionSmallIconURL = localResourcesServerUrl + dev.connectionSmallIconURL;
@@ -362,10 +398,21 @@ class ExtensionManager {
      */
     getDeviceExtensionsList () {
         return new Promise(resolve => {
-            fetch(`${localResourcesServerUrl}extensions/cmtye/${formatMessage.setup().locale}.json`)
+            fetch(`${localResourcesServerUrl}extensions/${formatMessage.setup().locale}.json`)
                 .then(response => response.json())
                 .then(extensions => {
-                    extensions = extensions.map(extension => {
+                    // filter unsupported distribution content
+                    let filteredExtensions = [];
+                    filteredExtensions = extensions.filter(extension => {
+                        // if the extension only has main.js but no blocks.js,
+                        // the plugin should be blocked
+                        if (!!extension.main && !extension.blocks) {
+                            return false;
+                        }
+                        return true;
+                    });
+
+                    extensions = filteredExtensions.map(extension => {
                         extension.iconURL = localResourcesServerUrl + extension.iconURL;
                         if (this.isDeviceExtensionLoaded(extension.extensionId)) {
                             extension.isLoaded = true;
