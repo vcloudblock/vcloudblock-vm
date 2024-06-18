@@ -278,12 +278,13 @@ class ExtensionManager {
             fetch(`${localResourcesServerUrl}devices/${formatMessage.setup().locale}.json`)
                 .then(response => response.json())
                 .then(devices => {
-
                     // filter unsupported distribution content
                     let filteredDevices = [];
                     let currentBases = 'none';
 
                     devices.forEach(dev => {
+                        // Filter out devices that are not inherited but have multiple programming
+                        // frameworks, and only keep devices with the Arduino framework
                         const deviceId = dev.deviceId;
                         if (!deviceId.startsWith('arduino') && !deviceId.startsWith('microPython')) {
                             currentBases = deviceId;
