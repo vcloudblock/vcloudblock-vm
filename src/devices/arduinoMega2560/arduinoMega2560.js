@@ -841,6 +841,8 @@ class OpenBlockArduinoMega2560Device {
 
         // Create a new Arduino mega 2560 peripheral instance
         this._peripheral = new ArduinoMega2560(this.runtime, this.DEVICE_ID, originalDeviceId);
+
+        this._peripheral.numDigitalPins = 54;
     }
 
     /**

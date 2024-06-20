@@ -474,6 +474,8 @@ class OpenBlockArduinoLeonardoDevice {
 
         // Create a new Arduino leonardo peripheral instance
         this._peripheral = new ArduinoLeonardo(this.runtime, this.DEVICE_ID, originalDeviceId);
+
+        this._peripheral.numDigitalPins = 14;
     }
 
     /**
