@@ -126,12 +126,6 @@ const ArgumentTypeMap = (() => {
             fieldName: 'NUM'
         }
     };
-    map[ArgumentType.OTO100_NUMBER] = {
-        shadow: {
-            type: 'math_0to100_number',
-            fieldName: 'NUM'
-        }
-    };
     map[ArgumentType.INT8_NUMBER] = {
         shadow: {
             type: 'math_int8_number',
@@ -159,6 +153,36 @@ const ArgumentTypeMap = (() => {
     map[ArgumentType.INT11_NUMBER] = {
         shadow: {
             type: 'math_int11_number',
+            fieldName: 'NUM'
+        }
+    };
+    map[ArgumentType.UINT16_NUMBER] = {
+        shadow: {
+            type: 'math_uint16_number',
+            fieldName: 'NUM'
+        }
+    };
+    map[ArgumentType.INTOTO100_NUMBER] = {
+        shadow: {
+            type: 'math_int0to100_number',
+            fieldName: 'NUM'
+        }
+    };
+    map[ArgumentType.OTO100_NUMBER] = {
+        shadow: {
+            type: 'math_0to100_number',
+            fieldName: 'NUM'
+        }
+    };
+    map[ArgumentType.INTN100TO100_NUMBER] = {
+        shadow: {
+            type: 'math_intn100to100_number',
+            fieldName: 'NUM'
+        }
+    };
+    map[ArgumentType.N100TO100_NUMBER] = {
+        shadow: {
+            type: 'math_n100to100_number',
             fieldName: 'NUM'
         }
     };

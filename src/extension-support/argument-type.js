@@ -64,11 +64,6 @@ const ArgumentType = {
     WHOLE_NUMBER: 'whole_number',
 
     /**
-     * Numeric value with slider field. from 0 to 100 value
-     */
-    OTO100_NUMBER: '0to100_number',
-
-    /**
      * Numeric value with slider field. from -127 to 127 integer value
      */
     INT8_NUMBER: 'int8_number',
@@ -91,7 +86,32 @@ const ArgumentType = {
     /**
      * Numeric value with slider field. from -1023 to 1023 integer value
      */
-    INT11_NUMBER: 'int11_number'
+    INT11_NUMBER: 'int11_number',
+
+    /**
+     * Numeric value with slider field. from 0 to 65535 integer value
+     */
+    UINT16_NUMBER: 'uint16_number',
+
+    /**
+     * Numeric value with slider field. from 0 to 100 value integer value
+     */
+    INTOTO100_NUMBER: 'int0to100_number',
+
+    /**
+     * Numeric value with slider field. from 0 to 100 value
+     */
+    OTO100_NUMBER: '0to100_number',
+
+    /**
+     * Numeric value with slider field. from -100 to 100 value integer value
+     */
+    INTN100TO100_NUMBER: 'intn100to100_number',
+
+    /**
+     * Numeric value with slider field. from -100 to 100 value
+     */
+    N100TO100_NUMBER: 'n100to100_number'
 };
 
 module.exports = ArgumentType;
