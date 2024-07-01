@@ -378,19 +378,21 @@ class ExtensionManager {
      * Clear curent device
      */
     clearDevice () {
-        this.runtime.disconnectPeripheral(this.runtime.getDevice().deviceId);
+        if (this.runtime.getDevice().deviceId) {
+            this.runtime.disconnectPeripheral(this.runtime.getDevice().deviceId);
 
-        const deviceId = this.runtime.getDevice().deviceId;
+            const deviceId = this.runtime.getDevice().deviceId;
 
-        this.runtime.clearDevice();
-        this.runtime.clearMonitor();
-        this._loadedDevice.clear();
+            this.runtime.clearDevice();
+            this.runtime.clearMonitor();
+            this._loadedDevice.clear();
 
-        // Clear current extentions.
-        this.clearExtensions();
-        this.clearDeviceExtension();
+            // Clear current extentions.
+            this.clearExtensions();
+            this.clearDeviceExtension();
 
-        this.runtime.emit(this.runtime.constructor.SCRATCH_EXTENSION_REMOVED, {deviceId});
+            this.runtime.emit(this.runtime.constructor.SCRATCH_EXTENSION_REMOVED, {deviceId});
+        }
     }
 
     /**
