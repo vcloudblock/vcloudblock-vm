@@ -1,7 +1,7 @@
 {
   "name": "vcloudblock-vm",
   "version": "0.2.0",
-  "description": "Virtual Machine for OpenBlock",
+  "description": "Virtual Machine for vcloudblock",
   "author": "Massachusetts Institute of Technology",
   "license": "BSD-3-Clause",
   "homepage": "https://github.com/vcloudblock/vcloudblock-vm#readme",
