@@ -1,15 +1,15 @@
 {
-  "name": "openblock-vm",
+  "name": "vcloudblock-vm",
   "version": "0.2.0",
   "description": "Virtual Machine for OpenBlock",
   "author": "Massachusetts Institute of Technology",
   "license": "BSD-3-Clause",
-  "homepage": "https://github.com/openblockcc/openblock-vm#readme",
+  "homepage": "https://github.com/vcloudblock/vcloudblock-vm#readme",
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/openblockcc/openblock-vm.git"
+    "url": "git+ssh://git@github.com/vcloudblock/vcloudblock-vm.git"
   },
-  "main": "./dist/node/openblock-vm.js",
+  "main": "./dist/node/vcloudblock-vm.js",
   "browser": "./src/index.js",
   "scripts": {
     "build": "npm run docs && webpack --progress --colors --bail",
@@ -17,7 +17,7 @@
     "deploy": "touch playground/.nojekyll",
     "docs": "jsdoc -c .jsdoc.json",
     "i18n:src": "mkdirp translations/core && format-message extract --out-file translations/core/en.json src/extensions/**/**.js src/devices/**/**.js",
-    "i18n:push": "tx-push-src openblock-editor extensions translations/core/en.json",
+    "i18n:push": "tx-push-src vcloudblock-editor extensions translations/core/en.json",
     "lint": "eslint . && format-message lint src/**/*.js",
     "prepublish": "in-publish && npm run build || not-in-publish",
     "start": "webpack-dev-server",
@@ -49,6 +49,7 @@
     "sweetalert": "^2.1.2",
     "text-encoding": "0.7.0",
     "valid-url": "^1.0.9",
+    "vcloudblock-vm": "file:",
     "worker-loader": "^1.1.1"
   },
   "peerDependencies": {
@@ -72,8 +73,6 @@
     "jsdoc": "3.6.6",
     "json": "^9.0.4",
     "lodash.defaultsdeep": "4.6.1",
-    "openblock-blocks": "0.1.0-prerelease.20210324090738",
-    "openblock-l10n": "^3.15.20230529115012",
     "pngjs": "3.3.3",
     "scratch-audio": "0.1.0-prerelease.20200528195344",
     "scratch-render": "0.1.0-prerelease.20211028200436",
@@ -85,6 +84,8 @@
     "tap": "12.0.1",
     "tiny-worker": "2.3.0",
     "uglifyjs-webpack-plugin": "1.2.7",
+    "vcloudblock-blocks": "git+https://github.com/vcloudblock/vcloudblock-blocks.git",
+    "vcloudblock-l10n": "git+https://github.com/vcloudblock/vcloudblock-l10n.git",
     "webpack": "4.46.0",
     "webpack-cli": "3.1.0",
     "webpack-dev-server": "3.11.2"
