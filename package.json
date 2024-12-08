@@ -49,7 +49,6 @@
     "sweetalert": "^2.1.2",
     "text-encoding": "0.7.0",
     "valid-url": "^1.0.9",
-    "vcloudblock-vm": "file:",
     "worker-loader": "^1.1.1"
   },
   "peerDependencies": {
