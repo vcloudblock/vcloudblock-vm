@@ -83,8 +83,8 @@
     "tap": "12.0.1",
     "tiny-worker": "2.3.0",
     "uglifyjs-webpack-plugin": "1.2.7",
-    "vcloudblock-blocks": "0.1.0",
-    "vcloudblock-l10n": "3.15.0",
+    "vcloudblock-blocks": "file://D:/vcloudblock/locallibs/vcloudblock-blocks-0.1.0.tgz",
+    "vcloudblock-l10n": "file://D:/vcloudblock/locallibs/vcloudblock-l10n-3.15.0.tgz",
     "webpack": "4.46.0",
     "webpack-cli": "3.1.0",
     "webpack-dev-server": "3.11.2"
