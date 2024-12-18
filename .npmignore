@@ -16,4 +16,4 @@
 /coverage
 
 # Exclude already built packages from testing with npm pack
-/openblock-vm-*.{tar,tgz}
+/vcloudblock-vm-*.{tar,tgz}
